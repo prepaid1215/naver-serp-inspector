@@ -1,0 +1,13 @@
+{
+  "name": "serp-lens",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-only SERP HTML/ZIP inspector for the web and Windows",
+  "scripts": {
+    "check": "node --check web/engine.js && node --check web/zip.js && node --check web/app.js",
+    "test:zip": "node tests/zip_reader.mjs",
+    "test": "npm run check && npm run test:zip"
+  },
+  "license": "MIT"
+}

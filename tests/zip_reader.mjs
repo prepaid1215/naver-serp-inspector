@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {readZip} from '../web/zip.js';
+const root=path.dirname(fileURLToPath(import.meta.url));
+const file=await fs.readFile(path.join(root,'fixtures','sample_zip.zip'));
+const source={arrayBuffer:async()=>file.buffer.slice(file.byteOffset,file.byteOffset+file.byteLength)};
+const {files,errors}=await readZip(source);
+assert.equal(errors.length,0,'ZIP decompression should not report errors');
+assert.equal(files.length,1,'Should extract one HTML file');
+assert.equal(files[0].name,'001_pc_선불폰_개통.html');
+assert.ok(new TextDecoder().decode(files[0].bytes).includes('59man.shop'));
+console.log('ZIP read test PASS');
