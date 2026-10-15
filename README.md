@@ -17,6 +17,13 @@
 - 웹/Windows 공용 `web/engine.js` 분석 엔진
 - **분석 파일은 서버 전송 없음**: 웹 분석은 브라우저 내부, Windows 분석은 로컬 WebView에서 처리합니다. 단, Windows 자동 수집을 켜면 네이버 검색 사이트로 정상 검색 요청이 전송됩니다.
 
+## Chrome · Edge 확장 프로그램 (v1.3 베타)
+
+검색 화면을 직접 연 뒤 브라우저 도구모음에서 SERP Lens 아이콘을 눌러
+**현재 화면 수집하고 분석하기**를 선택합니다. HTML과 보이는 화면 PNG가 내장 분석기로 전달됩니다.
+검색 자동화·CAPTCHA 우회는 없으며, PNG는 **전체 페이지가 아닌 현재 보이는 화면**입니다.
+Chrome/Edge 개발자 모드 설치 방법 및 제한: [docs/CHROME_EDGE_EXTENSION.md](docs/CHROME_EDGE_EXTENSION.md).
+
 ## 웹사이트 버전 사용
 
 1. GitHub 저장소의 **Settings → Pages → Build and deployment → Source = GitHub Actions** 선택.

@@ -82,7 +82,7 @@ function csvDownload(filename,content,type='text/csv;charset=utf-8'){const blob=
 $('download-blocks').addEventListener('click',()=>csvDownload('serp_blocks.csv',toCSV(analyzed.flatMap(groupBlocks),BLOCK_FIELDS)));
 $('download-rows').addEventListener('click',()=>csvDownload('serp_results.csv',toCSV(analyzed.flatMap(x=>x.rows),RESULT_FIELDS)));
 $('download-summary').addEventListener('click',()=>csvDownload('serp_share.csv',toCSV(analyzed.map(summarize),SUMMARY_FIELDS)));
-$('download-json').addEventListener('click',()=>csvDownload('serp_results.json',JSON.stringify({generated_at:new Date().toISOString(),analysis_version:'1.2.0-beta',warning:'오프라인 HTML 추정. 현재 순위 및 색인 상태 아님',results:analyzed,reviewed_evidence:[...reviewed]},null,2),'application/json;charset=utf-8'));
+$('download-json').addEventListener('click',()=>csvDownload('serp_results.json',JSON.stringify({generated_at:new Date().toISOString(),analysis_version:'1.3.0-beta',warning:'오프라인 HTML 추정. 현재 순위 및 색인 상태 아님',results:analyzed,reviewed_evidence:[...reviewed]},null,2),'application/json;charset=utf-8'));
 $('analyze').addEventListener('click',async()=>{
  els.button.disabled=true;setStatus('브라우저 안에서 분석하고 있습니다…');await new Promise(r=>setTimeout(r,20));
  const selected=domains(),out=[];const decoder=new TextDecoder('utf-8',{fatal:false});
@@ -102,3 +102,43 @@ initDesktopCollector({
  },
  analyze(){if(!els.button.disabled)els.button.click();}
 });
+
+// Extension-only bridge. Its module is absent from GitHub Pages deployments by design.
+// The extension opens the SAME web/index.html and feeds a locally captured File
+// through the ordinary file-loader, without network uploads or duplicated parsers.
+async function importExtensionCapture() {
+  if (location.protocol!=='chrome-extension:') return;
+  const id=new URLSearchParams(location.search).get('serp_lens_capture');
+  if (id!=='latest') return;
+  const panel=$('extension-evidence');
+  panel.hidden=false;
+  try {
+    const {readCapture,deleteCapture}=await import('../extension/capture-store.js');
+    const record=await readCapture(id);
+    if(!record) throw Error('브라우저에 보관된 수집 기록이 없습니다. 네이버 검색 화면에서 다시 수집하세요.');
+    if(!record.html || !record.filename || !record.pngBytes) throw Error('수집 기록이 완전하지 않습니다.');
+    $('extension-capture-info').textContent=`수집: ${new Date(record.captured_at).toLocaleString('ko-KR')} · ${record.sourceURL}`;
+    const htmlFile=new File([record.html],record.filename,{type:'text/html'});
+    const pngFile=new File([new Uint8Array(record.pngBytes)],record.screenshot,{type:'image/png'});
+    await loadFiles([htmlFile,pngFile]);
+    const downloadBlob=(name,blob)=>{
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');
+      a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),2500);
+    };
+    $('save-extension-html').addEventListener('click',()=>downloadBlob(record.filename,htmlFile));
+    $('save-extension-png').addEventListener('click',()=>downloadBlob(record.screenshot,pngFile));
+    $('erase-extension-capture').addEventListener('click',async()=>{
+      try {
+        await deleteCapture(id);
+        $('extension-capture-info').textContent='브라우저에 저장된 원본을 삭제했습니다. 이미 열린 화면은 닫을 때까지 메모리에 남습니다.';
+        for(const n of ['save-extension-html','save-extension-png','erase-extension-capture']) $(n).disabled=true;
+      }catch(error){setStatus(`원본 삭제 실패: ${error.message}`);}
+    });
+    if(!els.button.disabled)els.button.click();
+  } catch(error) {
+    $('extension-capture-info').textContent=`확장 프로그램 원본을 읽지 못했습니다: ${error.message}`;
+    for(const n of ['save-extension-html','save-extension-png','erase-extension-capture']) $(n).disabled=true;
+  }
+}
+void importExtensionCapture();

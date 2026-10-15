@@ -1,0 +1,33 @@
+name: Package Chrome and Edge extension
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'extension/**'
+      - 'web/**'
+      - 'tests/extension-meta.mjs'
+      - '.github/workflows/extension.yml'
+permissions:
+  contents: read
+jobs:
+  package-extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run offline unit tests
+        run: npm test
+      - name: Assemble load-unpacked extension
+        run: |
+          mkdir -p dist/serp-lens-extension/extension dist/serp-lens-extension/web
+          cp extension/manifest.json dist/serp-lens-extension/manifest.json
+          cp extension/{popup.html,popup.css,popup.js,capture-meta.js,capture-store.js,icon128.png} dist/serp-lens-extension/extension/
+          cp web/{index.html,style.css,icon.svg,app.js,desktop-ui.js,engine.js,zip.js} dist/serp-lens-extension/web/
+      - name: Upload Chrome/Edge extension ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: SERP-Lens-Chrome-Edge-Extension
+          path: dist/serp-lens-extension/

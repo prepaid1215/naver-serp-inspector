@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SERP Lens · 현재 화면 수집</title>
+<link rel="stylesheet" href="popup.css">
+<script type="module" src="popup.js"></script>
+</head>
+<body>
+  <header><span class="mark">S</span><div><strong>SERP Lens</strong><small>Chrome · Edge · 현재 탭 분석</small></div></header>
+  <main>
+    <div class="step">현재 네이버 검색 화면</div>
+    <div id="query" class="query">검색 페이지 확인 중…</div>
+    <p class="help">먼저 네이버에서 원하는 검색어를 검색한 뒤 이 아이콘을 눌러 주세요.</p>
+    <button type="button" id="capture" disabled>현재 화면 수집하고 분석하기 →</button>
+    <p class="status" role="status" id="status">네이버 검색결과 페이지에서만 사용할 수 있습니다.</p>
+    <p class="hint">검색은 자동으로 실행하지 않습니다. HTML은 현재 열린 탭에서 읽으며 PNG는 <strong>현재 보이는 화면만</strong> 저장합니다. 스크롤 아래쪽까지 담은 전체 화면 캡처는 아닙니다.</p>
+  </main>
+  <footer>파일과 분석결과는 사용자 브라우저 안에만 저장됩니다.</footer>
+</body>
+</html>
