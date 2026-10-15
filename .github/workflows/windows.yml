@@ -2,8 +2,14 @@ name: Build Windows desktop app
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     tags:
       - 'v*'
+    paths:
+      - 'web/**'
+      - 'desktop/**'
+      - 'requirements-desktop.txt'
+      - '.github/workflows/windows.yml'
 permissions:
   contents: write
 jobs:
