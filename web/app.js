@@ -54,15 +54,15 @@ function renderSections(result) {
    const box=document.createElement('section');box.className='section-block';
    const heading=document.createElement('div');heading.className='section-block-heading';
    const num=cell('strong',`블록 ${group.block_order}`);
-   const typ=cell('span',`${group.inferred_type} · 유형 추정`,'chip');
+   const typ=cell('span',`${group.inferred_type==='MIXED'?'혼합 유형':group.inferred_type} · ${group.type_breakdown} · 유형 추정`,'chip');
    const count=cell('span',`${group.card_count}개 문서 · 대상 ${group.target_count}개`,'section-count');
    heading.append(num,typ,count);box.append(heading);
    const list=document.createElement('ol');list.className='section-items';
    for(const row of group.items){
      const li=document.createElement('li');
-     const rank=cell('b',`${row.rank_in_block}위`,'section-rank');
+     const rank=cell('b',`${row.rank_in_block}번째`,'section-rank');
      const body=document.createElement('div');const title=cell('strong',row.result_title||row.domain);
-     const d=cell('span',row.domain+(row.is_target==='Y'?' · 대상 발견':''),'section-domain');
+     const d=cell('span',`${row.block_type} · ${row.domain}`+(row.is_target==='Y'?' · 대상 발견':''),'section-domain');
      body.append(title,d);li.append(rank,body);list.append(li);
    }
    box.append(list);root.append(box);
@@ -82,7 +82,7 @@ function csvDownload(filename,content,type='text/csv;charset=utf-8'){const blob=
 $('download-blocks').addEventListener('click',()=>csvDownload('serp_blocks.csv',toCSV(analyzed.flatMap(groupBlocks),BLOCK_FIELDS)));
 $('download-rows').addEventListener('click',()=>csvDownload('serp_results.csv',toCSV(analyzed.flatMap(x=>x.rows),RESULT_FIELDS)));
 $('download-summary').addEventListener('click',()=>csvDownload('serp_share.csv',toCSV(analyzed.map(summarize),SUMMARY_FIELDS)));
-$('download-json').addEventListener('click',()=>csvDownload('serp_results.json',JSON.stringify({generated_at:new Date().toISOString(),analysis_version:'1.3.1-beta',warning:'오프라인 HTML 추정. 현재 순위 및 색인 상태 아님',results:analyzed,reviewed_evidence:[...reviewed]},null,2),'application/json;charset=utf-8'));
+$('download-json').addEventListener('click',()=>csvDownload('serp_results.json',JSON.stringify({generated_at:new Date().toISOString(),analysis_version:'1.3.2-beta',warning:'오프라인 HTML 추정. 현재 순위 및 색인 상태 아님',results:analyzed,reviewed_evidence:[...reviewed]},null,2),'application/json;charset=utf-8'));
 $('analyze').addEventListener('click',async()=>{
  els.button.disabled=true;setStatus('브라우저 안에서 분석하고 있습니다…');await new Promise(r=>setTimeout(r,20));
  const selected=domains(),out=[];const decoder=new TextDecoder('utf-8',{fatal:false});

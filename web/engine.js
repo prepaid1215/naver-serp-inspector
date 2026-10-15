@@ -1,6 +1,6 @@
 /* SERP Lens — shared analysis engine. All processing is in the browser/WebView. */
 export const RESULT_FIELDS = ['query','device','observed_at_kst','block_order','block_type','rank_in_block','organic_rank','result_title','result_url','domain','is_target','confidence','evidence_file','evidence_sha256'];
-export const BLOCK_FIELDS = ['query','device','observed_at_kst','block_order','inferred_type','visible_section_name','card_count','target_count','first_result_url','evidence_file','evidence_sha256','validation'];
+export const BLOCK_FIELDS = ['query','device','observed_at_kst','block_order','inferred_type','type_breakdown','visible_section_name','card_count','target_count','first_result_url','evidence_file','evidence_sha256','validation'];
 export const SUMMARY_FIELDS = ['query','device','observed_at_kst','status','parsed_count','top10_web','top10_blog','top10_cafe','top10_kin','top10_news','top10_other','top10_unclassified','top10_target','evidence_file','evidence_sha256','notes'];
 const MAIN_CARD_SELECTOR = '[data-template-id="ugcItem"],[data-template-id="kinItem"],[data-template-id="clipItem"],[data-template-id="videoItem"],.sc_new > .api_subject_bx,[class*="fds-web-doc-root"],[class*="fds-web-normal-doc-root"],[class*="powerlink"],[class*="ad_group"],[class*="ad_item"]';
 const SECTION_SELECTOR = '.api_subject_bx,[class*="fds-ugc-single-intention"],[class*="fds-web-root"],[class*="fds-kin-root"],[class*="fds-nnews-root"],[class*="sc_new"],[class*="section_area"]';
@@ -94,7 +94,9 @@ export function parseSERP(html,{filename='input.html',query='',device='',domains
  const doc=new DOMParser().parseFromString(html,'text/html');
  const pageText=strip(doc.body?.textContent||'').slice(0,25000);
  if(BOT_WORDS.some(word=>pageText.includes(word))){return {rows:[],status:'수집 실패',notes:'캡차/자동입력 방지 화면',meta:shared};}
- const cards=[...doc.querySelectorAll(MAIN_CARD_SELECTOR)].filter(x=>!isNested(x));
+ // Ignore Naver's sidebar/sub_pack promotions: they are not organic result cards.
+ const main=doc.querySelector('#main_pack')||doc;
+ const cards=[...main.querySelectorAll(MAIN_CARD_SELECTOR)].filter(x=>!isNested(x));
  const input=cards.filter(card=>!card.closest('.ad_section'))
    .map(card=>({card,anchor:chooseResultAnchor(card),confidence:'medium'}));
  // Powerlink has many advertisers inside a single section. Extract one headline
@@ -105,7 +107,7 @@ export function parseSERP(html,{filename='input.html',query='',device='',domains
       text:strip(a.textContent),score:100,headline:true},confidence:'medium'}))
    .filter(x=>x.anchor.url);
  input.push(...ads);
- input.push(...fallbackCards(doc));
+ input.push(...fallbackCards(main));
  const seen=new Set(),items=[];
  for(const item of input){
    const selected=item.anchor?.url?item.anchor:chooseResultAnchor(item.card);if(!selected)continue;
@@ -121,10 +123,11 @@ export function parseSERP(html,{filename='input.html',query='',device='',domains
  // DOM order, independent of extraction selectors and hash-map processing order.
  const position=(node)=>{let i=0,p=node;while((p=p.previousElementSibling))i++;return i;};
  items.sort((a,b)=>{const rel=a.card.compareDocumentPosition(b.card);return rel&Node.DOCUMENT_POSITION_FOLLOWING?-1:rel&Node.DOCUMENT_POSITION_PRECEDING?1:0;});
- const rows=[];let block=0,inBlock=0,organic=0,lastGroup=null,lastType=null;
+ const rows=[];let block=0,inBlock=0,organic=0,lastGroup=null;
  for(const item of items){
-   // Different result types inside a section must not be merged into the same block.
-   if(item.group!==lastGroup||item.type!==lastType){block++;inBlock=0;lastGroup=item.group;lastType=item.type;}
+   // Keep different document types together if Naver put them in one DOM result cluster.
+   // A mixed BLOG/CAFE cluster is one group with individual card types, not two sections.
+   if(item.group!==lastGroup){block++;inBlock=0;lastGroup=item.group;}
    inBlock++;if(item.type!=='AD')organic++;
    const domain=item.selected.domain.replace(/^www\./,'');
    const hit=targets.some(t=>domain===t||domain.endsWith('.'+t));
@@ -152,13 +155,19 @@ export function groupBlocks(result) {
    let group=groups[groups.length-1];
    if (!group || group.block_order!==row.block_order) {
      group={...result.meta,block_order:row.block_order,inferred_type:row.block_type,
-       visible_section_name:'미표시 / 확인 필요',card_count:0,target_count:0,
+       type_breakdown:'',visible_section_name:'미표시 / 확인 필요',card_count:0,target_count:0,
        first_result_url:row.result_url,validation:'스크린샷 대조 필요',items:[]};
      groups.push(group);
    }
    group.card_count++;
    if(row.is_target==='Y')group.target_count++;
    group.items.push(row);
+ }
+ for (const group of groups){
+   const counts={};
+   for (const item of group.items) counts[item.block_type]=(counts[item.block_type]||0)+1;
+   group.type_breakdown=Object.entries(counts).map(([type,num])=>`${type} ${num}`).join(' · ');
+   if(Object.keys(counts).length>1) group.inferred_type='MIXED';
  }
  return groups;
 }

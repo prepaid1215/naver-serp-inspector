@@ -15,9 +15,13 @@ with sync_playwright() as p:
     print('FDS test rows:',[(r['block_order'],r['rank_in_block'],r['block_type'],r['result_title']) for r in rows])
     assert len(rows)==6,rows
     assert [r['block_type'] for r in rows]==['AD','AD','CAFE','CAFE','BLOG','WEB'],rows
-    assert [r['block_order'] for r in rows]==[1,1,2,2,3,4],rows
-    assert [r['rank_in_block'] for r in rows]==[1,2,1,2,1,1],rows
+    assert [r['block_order'] for r in rows]==[1,1,2,2,3,3],rows
+    assert [r['rank_in_block'] for r in rows]==[1,2,1,2,1,2],rows
     assert rows[-1]['result_title']=='선불폰 개통',rows[-1]
+    groups=page.evaluate('(html)=>groupBlocks(parseSERP(html,{filename:"input.html"}))',FIX)
+    assert len(groups)==3,groups
+    assert groups[-1]['inferred_type']=='MIXED',groups
+    assert groups[-1]['type_breakdown']=='BLOG 1 · WEB 1',groups
     assert rows[-1]['is_target']=='Y',rows[-1]
     assert result['meta']['device']=='PC'
     print('Naver FDS synthetic regression PASS')
