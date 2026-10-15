@@ -8,7 +8,7 @@ html=re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]+>', '', html)
 html=re.sub(r'<link rel="stylesheet"[^>]+>', '', html)
 html=re.sub(r'<script type="module"[^>]+></script>', '', html)
 css=(ROOT/'web/style.css').read_text()
-code='\n'.join((ROOT/'web'/name).read_text().replace('export ','') for name in ('engine.js','zip.js'))
+code='\n'.join((ROOT/'web'/name).read_text().replace('export ','') for name in ('engine.js','zip.js','desktop-ui.js'))
 app=(ROOT/'web/app.js').read_text()
 app=re.sub(r'^import .*?;\s*','',app,flags=re.M)
 code+='\n'+app

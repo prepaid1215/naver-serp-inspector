@@ -22,10 +22,12 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: python -m pip install -r requirements-desktop.txt
-      - name: Build Windows EXE (WebView2 required)
+      - name: Test Windows capture engine without network
+        run: python -m unittest discover -s tests -p "test_collector.py" -v
+      - name: Build Windows EXE (Edge and WebView2 required)
         shell: pwsh
         run: |
-          python -m PyInstaller --noconfirm --clean --onefile --windowed --name SERP-Lens --add-data "web;web" --collect-all webview desktop/launcher.py
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name SERP-Lens --add-data "web;web" --paths desktop --collect-all webview --collect-all playwright desktop/launcher.py
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:

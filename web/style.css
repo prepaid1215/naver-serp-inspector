@@ -11,3 +11,15 @@
 .section-items li strong{display:block;line-height:1.4;word-break:break-word}.section-domain{display:block;color:#7a8aa0;font-size:11px;overflow-wrap:anywhere}
 .section-rank{font-size:11px;color:#3665bc;background:#eaf1ff;padding:3px;text-align:center;border-radius:5px}
 @media(max-width:760px){.section-blocks{grid-template-columns:1fr}}
+
+/* Windows-only user-triggered search collection surface. */
+[hidden]{display:none!important}
+.desktop-collector{margin-bottom:24px}
+.collector-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px}
+.collector-controls{display:flex;flex-direction:column;gap:10px}
+.collector-label{font-weight:700}
+.collector-controls label{font-size:14px;display:flex;align-items:center;gap:8px}
+.collector-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.collector-progress{margin-top:14px;padding:11px 14px;background:#eef4ff;border-radius:10px;display:flex;align-items:center;gap:12px;font-size:13px}
+.collector-progress #collect-count{font-weight:800;white-space:nowrap}
+@media(max-width:800px){.collector-layout{grid-template-columns:1fr}}

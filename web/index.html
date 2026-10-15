@@ -15,6 +15,21 @@
 <header class="top"><div class="wrap top-row"><div class="logo"><span class="mark" aria-hidden="true">S</span><div><b>SERP Lens</b><small>Offline Search Results Inspector</small></div></div><div class="nav-right"><span class="pill"><span class="live-dot"></span> 로컬 분석 · 외부 전송 없음</span><a href="https://github.com/prepaid1215/naver-serp-inspector" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div></div></header>
 <main class="wrap">
 <section class="hero"><p class="eyebrow">PC · 모바일 · 웹 · 블로그 · 카페</p><h1>검색 화면을 데이터로.</h1><p>직접 저장한 네이버 검색결과 HTML과 ZIP을 불러와 검색 블록, 노출 URL, 특정 도메인의 등장 여부를 비교하세요. 브라우저 안에서만 처리합니다.</p><div class="hero-notice"><strong>중요</strong> 파일의 HTML 구조로 추정한 순위입니다. 실제 화면 스크린샷과 대조하기 전에는 네이버 노출 순위나 색인 성공으로 확정할 수 없습니다.</div></section>
+<section id="desktop-collector" class="panel desktop-collector" hidden aria-labelledby="collector-title">
+ <div class="section-heading"><span class="step">W</span><div><h2 id="collector-title">Windows에서 네이버 검색결과 직접 수집</h2><p>사용자가 실행 · Microsoft Edge PC/모바일 에뮬레이션 · 검색결과 HTML·PNG 로컬 저장</p></div></div>
+ <div class="collector-layout"><div><label for="collect-keywords">검색 키워드 (한 줄에 하나, 최대 10개)</label>
+ <textarea id="collect-keywords" rows="4" spellcheck="false">선불폰 개통
+선불폰 개통방법
+선불폰 셀프개통</textarea>
+ </div><div class="collector-controls"><span class="collector-label">검색 환경</span>
+ <label><input id="collect-pc" type="checkbox" checked> PC</label>
+ <label><input id="collect-mo" type="checkbox" checked> 모바일 에뮬레이션</label>
+ <span class="subtle">각 검색 사이 최소 6초 간격. 제한 화면이 나타나면 중단하며 우회하지 않습니다.</span>
+ <div class="collector-buttons"><button class="btn primary" id="collect-start">SERP 수집 시작 →</button><button class="btn ghost" id="collect-stop" disabled>중지</button><button class="btn ghost" id="collect-open-folder" disabled>저장 폴더 열기</button></div>
+ </div></div>
+ <div class="collector-progress" aria-live="polite"><span id="collect-count">0/0</span><span id="collect-status">대기 중 · 수집은 명시적으로 시작할 때만 실행됩니다.</span></div>
+ <p class="subtle">수집 후 저장된 HTML을 아래 분석기에 자동으로 불러옵니다. 원본 PNG·ZIP은 Windows 문서 폴더에 보관됩니다. 검색 접근과 데이터 사용에는 네이버 이용 조건이 적용됩니다.</p>
+</section>
 <div class="main-grid">
 <section class="panel upload-panel" aria-labelledby="upload-title"><div class="section-heading"><span class="step">01</span><div><h2 id="upload-title">원본 파일 불러오기</h2><p>네이버 검색을 자동 수행하지 않습니다.</p></div></div>
  <div class="drop" id="drop" tabindex="0" role="button" aria-label="HTML ZIP 또는 PNG 파일 선택"><svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 16V3m-5 5 5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg><strong>HTML·ZIP 파일을 여기에 끌어놓으세요</strong><span>또는 클릭하여 선택 · 다중 파일 지원 · PNG는 화면 대조용</span><button type="button" id="choose-files" class="btn blue">파일 선택하기</button><input type="file" id="files" hidden multiple accept=".html,.htm,.zip,.png,image/png,text/html,application/zip"></div>

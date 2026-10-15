@@ -11,3 +11,7 @@ serp_raw/
 private-serp-evidence/
 exports/
 *.local.html
+
+# User-collected search evidence, never publish
+runs/
+serp_evidence.zip

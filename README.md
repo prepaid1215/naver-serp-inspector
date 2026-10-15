@@ -1,6 +1,6 @@
-# SERP Lens — 오프라인 네이버 검색결과 분석기
+# SERP Lens v1.2 beta — Windows 자동 수집 + 웹 오프라인 분석기
 
-**Windows 앱 + 웹사이트가 하나의 JavaScript 분석 엔진을 사용합니다.** 네이버 검색을 자동 실행하거나 우회하지 않습니다. 사용자가 직접 저장한 HTML, PNG, ZIP을 자신의 기기에서 분석해 블록별 등장 URL, 카페/블로그/웹사이트 구분, 타깃 도메인의 발견 여부를 확인합니다.
+**Windows 앱 + 웹사이트가 하나의 JavaScript 분석 엔진을 사용합니다.** 웹 버전은 사용자가 직접 저장한 HTML·PNG·ZIP만 분석합니다. **Windows v1.2에는 사용자가 `SERP 수집 시작`을 누를 때만** Microsoft Edge/Playwright로 네이버 PC·모바일(에뮬레이션) 검색 화면을 저장하는 선택 기능이 추가되었습니다. 이후 저장된 HTML을 자동으로 분석합니다. CAPTCHA나 접근 제한은 우회하지 않습니다.
 
 > **비공식 오픈소스 프로그램**입니다. 네이버와 무관하며 결과의 정확도, 실시간 순위, 색인을 보장하지 않습니다. HTML만으로 실제 화면 블록 순서가 재현되지 않을 수 있어 PNG 캡처와 반드시 비교해야 합니다.
 
@@ -15,7 +15,7 @@
 - 10개 결과 유형별 요약, CSV 및 JSON 저장
 - 파일별 SHA-256 저장, 캡처 확인 표시
 - 웹/Windows 공용 `web/engine.js` 분석 엔진
-- **100% 클라이언트 처리**: HTML·PNG·ZIP 파일을 외부 서버로 전송하지 않음
+- **분석 파일은 서버 전송 없음**: 웹 분석은 브라우저 내부, Windows 분석은 로컬 WebView에서 처리합니다. 단, Windows 자동 수집을 켜면 네이버 검색 사이트로 정상 검색 요청이 전송됩니다.
 
 ## 웹사이트 버전 사용
 
@@ -36,6 +36,23 @@ python -m http.server 8000 --directory web
 
 **주의:** `file://`에서 ES 모듈을 직접 열면 일부 브라우저가 차단합니다. 반드시 정적 서버 또는 GitHub Pages로 열어 주세요.
 
+## Windows v1.2: 검색 → 수집 → 자동 분석 (새 기능)
+
+1. 최신 **`SERP-Lens.exe` v1.2**를 실행합니다. Windows에 **Microsoft Edge**가 설치되어 있어야 합니다.
+2. 상단 **Windows에서 네이버 검색결과 직접 수집** 창에 검색어를 한 줄씩 입력합니다. **한 번에 최대 10개 키워드**까지 가능합니다.
+3. **PC**, **모바일 에뮬레이션** 중 원하는 환경을 선택하고 **SERP 수집 시작**을 클릭합니다. 모바일 결과는 실제 스마트폰이 아니라 브라우저 에뮬레이션입니다.
+4. 열리는 Edge 창에서 검색이 진행됩니다. 검색마다 **최소 6초 간격**을 두며, CAPTCHA/자동입력 방지 화면이 나오면 해당 실행을 즉시 중단합니다. 프로그램에는 우회 기능이 없습니다.
+5. 정상 완료 시 HTML이 하단 SERP 분석기로 **자동 연결**됩니다. 원본 HTML·PNG 및 `serp_evidence.zip`은 `문서\SERP-Lens\runs\<실행시각>`에 저장됩니다. **저장 폴더 열기** 버튼으로 확인하세요.
+6. 결과 상단 **블록별 CSV / 개별 결과 CSV**를 내려받을 수 있습니다. 블록 분류와 화면 순위는 **PNG 캡처와 수동 대조 전에는 추정치**입니다.
+
+**중지 버튼**으로 다음 검색 진행을 중단할 수 있습니다. 실행 중인 현재 화면 처리에는 시간이 걸릴 수 있습니다. 검색 요청의 허용 범위는 네이버의 적용 가능한 약관과 정책을 따라야 합니다. 수집 파일은 자동으로 GitHub 등에 업로드되지 않습니다.
+
+### 수집 기능이 보이지 않는다면
+
+- 최신 **Windows v1.2 EXE**인지 확인하세요. `v1.1` Windows EXE에는 자동 수집이 없습니다.
+- GitHub Pages **웹사이트에는 자동 검색 버튼이 표시되지 않습니다.** 웹은 HTML/ZIP 수동 가져오기 전용입니다.
+- Edge가 없거나 Playwright 드라이버가 Windows 빌드에 포함되지 않은 경우 오류가 표시됩니다. 이 경우 Chrome/Edge에서 저장한 HTML·ZIP을 기존 방식으로 가져올 수 있습니다.
+
 ## Windows 앱 사용
 
 1. GitHub Actions의 **Build Windows desktop app**에서 `workflow_dispatch`로 빌드를 실행합니다.
@@ -52,7 +69,7 @@ pip install -r requirements-desktop.txt
 python desktop/launcher.py
 ```
 
-Windows 실행파일은 `web/`을 포함한 `PyInstaller --onefile --windowed` 구성으로 Actions에서 만듭니다. **해당 빌드는 Windows CI에서 실제 실행 테스트를 추가하기 전까지 베타로 취급하세요.**
+Windows 실행파일은 `web/` 및 Python Playwright 드라이버를 포함한 `PyInstaller --onefile --windowed` 구성으로 Actions에서 만듭니다. Microsoft Edge 브라우저 자체는 번들하지 않습니다. **해당 빌드는 Windows CI에서 실제 실행 테스트를 추가하기 전까지 베타로 취급하세요.**
 
 ## 파일 준비 방법
 
@@ -86,7 +103,7 @@ npm test                 # JavaScript 구문 검사, ZIP 로더 오프라인 테
 python tests/browser_in_memory.py   # Chromium/Playwright 설치된 환경에서 브라우저 기능 검증
 ```
 
-`web/engine.js`만 브라우저 DOMParser API에 의존하며, 외부 npm/CDN 라이브러리를 사용하지 않습니다. Windows GUI 프레임워크는 Python `pywebview`이고, 실제 결과 분석은 공통 JavaScript 엔진이 수행합니다.
+`web/engine.js`만 브라우저 DOMParser API에 의존하며, 외부 npm/CDN 라이브러리를 사용하지 않습니다. Windows에서만 `desktop/collector.py`가 사용자의 직접 실행 요청으로 검색 사이트에 접속합니다. Windows GUI 프레임워크는 Python `pywebview`이고, 실제 결과 분석은 공통 JavaScript 엔진이 수행합니다.
 
 ## 다음 개선 목표
 

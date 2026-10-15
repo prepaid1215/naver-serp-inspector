@@ -1,7 +1,7 @@
 """Windows desktop shell for the shared static browser app.
 
 Uses only the loopback interface and a random ephemeral port. GUI via WebView2
-(pywebview). Neither the app nor the analyzer sends search requests.
+(pywebview). Explicit Windows collection uses a separate local Playwright worker.
 """
 from __future__ import annotations
 
@@ -40,6 +40,7 @@ class LoopbackServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 def main():
     import webview
+    from api import DesktopAPI
 
     root = web_root()
     if not (root / "index.html").is_file():
@@ -58,6 +59,7 @@ def main():
             height=900,
             min_size=(940, 680),
             confirm_close=False,
+            js_api=DesktopAPI(),
         )
         webview.start(gui="edgechromium", debug=False)
     finally:
