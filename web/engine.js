@@ -1,5 +1,6 @@
 /* SERP Lens — shared analysis engine. All processing is in the browser/WebView. */
 export const RESULT_FIELDS = ['query','device','observed_at_kst','block_order','block_type','rank_in_block','organic_rank','result_title','result_url','domain','is_target','confidence','evidence_file','evidence_sha256'];
+export const BLOCK_FIELDS = ['query','device','observed_at_kst','block_order','inferred_type','visible_section_name','card_count','target_count','first_result_url','evidence_file','evidence_sha256','validation'];
 export const SUMMARY_FIELDS = ['query','device','observed_at_kst','status','parsed_count','top10_web','top10_blog','top10_cafe','top10_kin','top10_news','top10_other','top10_unclassified','top10_target','evidence_file','evidence_sha256','notes'];
 const MAIN_CARD_SELECTOR = '[data-template-id="ugcItem"],[data-template-id="kinItem"],[data-template-id="clipItem"],[data-template-id="videoItem"],[class*="fds-web-doc-root"],[class*="fds-web-normal-doc-root"],[class*="powerlink"],[class*="ad_group"],[class*="ad_item"]';
 const SECTION_SELECTOR = '.api_subject_bx,[class*="fds-ugc-single-intention"],[class*="fds-web-root"],[class*="fds-kin-root"],[class*="fds-nnews-root"],[class*="sc_new"],[class*="section_area"]';
@@ -122,5 +123,22 @@ export function summarize(result){
   top10_news:get('NEWS'),top10_other:get('OTHER')+get('CLIP')+get('VIDEO'),
   top10_unclassified:get('UNCLASSIFIED'),top10_target:visible.filter(x=>x.is_target==='Y').length,
   notes:result.notes};
+}
+/** Section labels are not always present on Naver. Never invent an official name. */
+export function groupBlocks(result) {
+ const groups=[];
+ for (const row of result.rows || []) {
+   let group=groups[groups.length-1];
+   if (!group || group.block_order!==row.block_order) {
+     group={...result.meta,block_order:row.block_order,inferred_type:row.block_type,
+       visible_section_name:'미표시 / 확인 필요',card_count:0,target_count:0,
+       first_result_url:row.result_url,validation:'스크린샷 대조 필요',items:[]};
+     groups.push(group);
+   }
+   group.card_count++;
+   if(row.is_target==='Y')group.target_count++;
+   group.items.push(row);
+ }
+ return groups;
 }
 export async function sha256(bytes){const raw=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);const hash=await crypto.subtle.digest('SHA-256',raw);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('');}

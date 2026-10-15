@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+build/
+*.spec
+.DS_Store
+# Do not commit saved search screens, real HTML, PNG or output CSVs.
+serp_raw/
+private-serp-evidence/
+exports/
+*.local.html

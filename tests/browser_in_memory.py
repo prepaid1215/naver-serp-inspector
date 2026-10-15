@@ -23,6 +23,7 @@ with sync_playwright() as p:
     page.add_style_tag(content=css)
     page.add_script_tag(content=code)
     assert page.locator('h1').inner_text()=='검색 화면을 데이터로.'
+    page.locator('#domains').fill('59man.shop')
     page.locator('#files').set_input_files(str(FIX))
     page.locator('#analyze').click()
     page.wait_for_function("document.querySelector('#metric-files')?.textContent==='1'")
@@ -33,6 +34,8 @@ with sync_playwright() as p:
     assert int(page.locator('#metric-results').inner_text())>=5
     assert page.locator('#metric-target').inner_text()=='1'
     assert page.locator('#rows').get_by_text('NEWS').count()>0
+    assert page.locator('#section-blocks .section-block').count() >= 4
+    assert page.locator('#download-blocks').is_visible()
     page.locator('#files').set_input_files(str(ZIP))
     page.locator('#analyze').click()
     page.wait_for_function("document.querySelector('#metric-files')?.textContent==='2'")
