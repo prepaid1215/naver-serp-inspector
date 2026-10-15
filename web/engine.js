@@ -2,7 +2,7 @@
 export const RESULT_FIELDS = ['query','device','observed_at_kst','block_order','block_type','rank_in_block','organic_rank','result_title','result_url','domain','is_target','confidence','evidence_file','evidence_sha256'];
 export const BLOCK_FIELDS = ['query','device','observed_at_kst','block_order','inferred_type','visible_section_name','card_count','target_count','first_result_url','evidence_file','evidence_sha256','validation'];
 export const SUMMARY_FIELDS = ['query','device','observed_at_kst','status','parsed_count','top10_web','top10_blog','top10_cafe','top10_kin','top10_news','top10_other','top10_unclassified','top10_target','evidence_file','evidence_sha256','notes'];
-const MAIN_CARD_SELECTOR = '[data-template-id="ugcItem"],[data-template-id="kinItem"],[data-template-id="clipItem"],[data-template-id="videoItem"],[class*="fds-web-doc-root"],[class*="fds-web-normal-doc-root"],[class*="powerlink"],[class*="ad_group"],[class*="ad_item"]';
+const MAIN_CARD_SELECTOR = '[data-template-id="ugcItem"],[data-template-id="kinItem"],[data-template-id="clipItem"],[data-template-id="videoItem"],.sc_new > .api_subject_bx,[class*="fds-web-doc-root"],[class*="fds-web-normal-doc-root"],[class*="powerlink"],[class*="ad_group"],[class*="ad_item"]';
 const SECTION_SELECTOR = '.api_subject_bx,[class*="fds-ugc-single-intention"],[class*="fds-web-root"],[class*="fds-kin-root"],[class*="fds-nnews-root"],[class*="sc_new"],[class*="section_area"]';
 const HEADLINE_SELECTOR = 'a:has(.sds-comps-text-type-headline1),a[class*="title_link"],a[class*="link_tit"],a[class*="total_tit"],a[class*="title"],a[class*="tit_main"]';
 const STRUCTURED_AREAS = new Set(['BLOG','CAFE','KIN','NEWS','CLIP','VIDEO']);
@@ -44,7 +44,14 @@ export function classifyDomain(domain){
 }
 function marker(el){return String(el?.className?.baseVal||el?.className||'')+' '+(el?.getAttribute?.('data-template-id')||'');}
 function hasAncestor(el,re,depth=6){let p=el;for(let i=0;p&&i<depth;i++,p=p.parentElement){if(re.test(marker(p)))return true;}return false;}
-function closestSection(card){return card.closest(SECTION_SELECTOR)||card.parentElement;}
+function closestSection(card){
+ // Sponsored links in a single ad area share one advertising block.
+ if (card.matches('a.lnk_head') && card.closest('.ad_section')) return card.closest('.ad_section');
+ // In Naver's Oct-2026 FDS markup an api_subject_bx is one result card.
+ // Its nearest spw_fsolid is the common visible result cluster, not the card itself.
+ if (card.matches('.api_subject_bx')) return card.closest('.spw_fsolid')||card.closest('.ad_section')||card;
+ return card.closest(SECTION_SELECTOR)||card.parentElement;
+}
 function classifyCard(card,urlType){
  if (urlType==='AD')return 'AD';
  if (hasAncestor(card,/powerlink|ad_group|sp_ad|ad_item|ad_link|ads_area/i,6))return 'AD';
@@ -58,10 +65,15 @@ function classifyCard(card,urlType){
 function chooseResultAnchor(card){
  const anchors=[...card.querySelectorAll('a[href]')].map(a=>{
    const url=normalizedURL(a.getAttribute('href'));if(!url)return null;
-   const d=new URL(url).hostname.toLowerCase();const text=strip(a.textContent||'');
-   const klass=marker(a);const headline=/sds-comps-text-type-headline1|total_tit|link_tit|title_link|tit_main|title/i.test(klass+' '+(a.innerHTML||'').slice(0,200));
+   const d=new URL(url).hostname.toLowerCase();const text=strip(a.textContent||'').replace(/새 창 열림/g,'').trim();
+   const klass=marker(a);
+   const signal=(a.getAttribute('data-heatmap-target')||'').toLowerCase();
+   const headline=!!a.querySelector('.sds-comps-text-type-headline1')||/total_tit|link_tit|title_link|tit_main|title/i.test(klass);
    const profile=hasAncestor(a,/profile|source|author|account|writer/i,4);
-   const score=(headline?110:0)+(text.length>10?35:0)+(text.length>25?10:0)-(!text?90:0)-(profile?125:0)-(/새 창 열림|바로가기|더보기/.test(text)&&text.length<16?100:0);
+   const score=(headline?110:0)+(signal==='.link'?85:0)+(signal==='.title'?125:0)
+    +(text.length>10?35:0)+(text.length>25?10:0)-(!text?90:0)-(profile?125:0)
+    -(/\.(?:answer|cmt|simg|imgc|mimg|url)$/.test(signal)?90:0)
+    -(/새 창 열림|바로가기|더보기/.test(text)&&text.length<16?100:0);
    return {url,domain:d,text,score,headline};
  }).filter(Boolean).sort((a,b)=>b.score-a.score);
  return anchors[0]&&anchors[0].score>=0?anchors[0]:null;
@@ -83,14 +95,23 @@ export function parseSERP(html,{filename='input.html',query='',device='',domains
  const pageText=strip(doc.body?.textContent||'').slice(0,25000);
  if(BOT_WORDS.some(word=>pageText.includes(word))){return {rows:[],status:'수집 실패',notes:'캡차/자동입력 방지 화면',meta:shared};}
  const cards=[...doc.querySelectorAll(MAIN_CARD_SELECTOR)].filter(x=>!isNested(x));
- const input=cards.map(card=>({card,anchor:chooseResultAnchor(card),confidence:'medium'}))
-   .concat(fallbackCards(doc)).filter(x=>x.anchor);
+ const input=cards.filter(card=>!card.closest('.ad_section'))
+   .map(card=>({card,anchor:chooseResultAnchor(card),confidence:'medium'}));
+ // Powerlink has many advertisers inside a single section. Extract one headline
+ // per ad rather than treating its whole api_subject_bx as a single result.
+ const ads=[...doc.querySelectorAll('#main_pack .ad_section a.lnk_head[href]')]
+   .map(a=>({card:a,anchor:{url:normalizedURL(a.getAttribute('href')),
+      domain:(()=>{try{return new URL(a.href).hostname.toLowerCase();}catch{return '';}})(),
+      text:strip(a.textContent),score:100,headline:true},confidence:'medium'}))
+   .filter(x=>x.anchor.url);
+ input.push(...ads);
+ input.push(...fallbackCards(doc));
  const seen=new Set(),items=[];
  for(const item of input){
    const selected=item.anchor?.url?item.anchor:chooseResultAnchor(item.card);if(!selected)continue;
    const url=selected.url;
    const key=url.replace(/\/$/,'');if(seen.has(key))continue;seen.add(key);
-   let type=classifyCard(item.card,classifyDomain(selected.domain));
+   let type=item.card.matches('a.lnk_head')&&item.card.closest('.ad_section')?'AD':classifyCard(item.card,classifyDomain(selected.domain));
    const section=closestSection(item.card);
    // Identifiers are normalized by actual DOM identity, not HTML/text offsets.
    const group=section||item.card;

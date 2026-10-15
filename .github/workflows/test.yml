@@ -30,3 +30,4 @@ jobs:
           python tests/browser_in_memory.py
           python tests/browser_desktop_bridge.py
           python tests/browser_extension.py
+          python tests/browser_fds_2026.py

@@ -82,7 +82,7 @@ function csvDownload(filename,content,type='text/csv;charset=utf-8'){const blob=
 $('download-blocks').addEventListener('click',()=>csvDownload('serp_blocks.csv',toCSV(analyzed.flatMap(groupBlocks),BLOCK_FIELDS)));
 $('download-rows').addEventListener('click',()=>csvDownload('serp_results.csv',toCSV(analyzed.flatMap(x=>x.rows),RESULT_FIELDS)));
 $('download-summary').addEventListener('click',()=>csvDownload('serp_share.csv',toCSV(analyzed.map(summarize),SUMMARY_FIELDS)));
-$('download-json').addEventListener('click',()=>csvDownload('serp_results.json',JSON.stringify({generated_at:new Date().toISOString(),analysis_version:'1.3.0-beta',warning:'오프라인 HTML 추정. 현재 순위 및 색인 상태 아님',results:analyzed,reviewed_evidence:[...reviewed]},null,2),'application/json;charset=utf-8'));
+$('download-json').addEventListener('click',()=>csvDownload('serp_results.json',JSON.stringify({generated_at:new Date().toISOString(),analysis_version:'1.3.1-beta',warning:'오프라인 HTML 추정. 현재 순위 및 색인 상태 아님',results:analyzed,reviewed_evidence:[...reviewed]},null,2),'application/json;charset=utf-8'));
 $('analyze').addEventListener('click',async()=>{
  els.button.disabled=true;setStatus('브라우저 안에서 분석하고 있습니다…');await new Promise(r=>setTimeout(r,20));
  const selected=domains(),out=[];const decoder=new TextDecoder('utf-8',{fatal:false});
