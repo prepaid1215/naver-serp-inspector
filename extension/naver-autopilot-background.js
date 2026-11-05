@@ -107,9 +107,9 @@ async function postJobComment(config,secret,number,payload){
     method:'POST',body:JSON.stringify({body})
   });
 }
-async function finishJob(config,secret,number){
+async function finishJob(config,secret,number,resultStatus){
   await github(raw(config.name,'issues/'+number),secret,{
-    method:'PATCH',body:JSON.stringify({state:'closed',state_reason:'completed'})
+    method:'PATCH',body:JSON.stringify({state:'closed',state_reason:resultStatus==='completed'?'completed':'not_planned'})
   });
 }
 async function ensureJobLabel(config,secret){
@@ -188,7 +188,8 @@ async function executeJob(job,config,secret){
   }
   if(uploaded.length)await updateEvidenceIndex({config,token:secret,entries:uploaded});
   return {
-    status:'completed',
+    status:uploaded.filter(x=>x.kind==='pages').length===0?'incomplete':
+      uploaded.filter(x=>x.kind==='pages').length<articles.length?'partial':'completed',
     query:job.query,limit:job.limit,issue_number:job.issue_number,
     captured_at,search_candidates:serp.rows.length,
     attempted_articles:articles.length,
@@ -240,14 +241,14 @@ async function poll(){
         error:short(error.message),captured_at:now(),paths:[]
       };
     }
-    await status('네이버 조사 '+(result.status==='completed'?'완료':'실패')+
+    await status('네이버 조사 '+(result.status==='completed'?'완료':result.status==='partial'?'일부 수집':'본문 수집 실패')+
       ': '+job.query,{issue_number:job.issue_number,phase:result.status,result});
     try{await postJobComment(config,secret,job.issue_number,result);}
     catch(error){
       await status('조사 결과 댓글 등록 실패: '+short(error.message),{phase:'report-error'});
       return {ok:false,message:'댓글 등록 실패'};
     }
-    try{await finishJob(config,secret,job.issue_number);}
+    try{await finishJob(config,secret,job.issue_number,result.status);}
     catch(error){await status('조사 댓글은 저장했으나 이슈를 닫지 못했습니다.',{phase:'close-error'});}
     await markProcessed(job.issue_number);
     return {ok:true,processed:1,result};
