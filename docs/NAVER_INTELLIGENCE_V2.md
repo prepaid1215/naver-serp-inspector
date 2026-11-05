@@ -39,3 +39,18 @@ Separate the observed search-result page, user-visited document evidence, and AI
 - Add source-specific extraction regression tests for Naver blog and cafe variations.
 - Compare user-owned content against competitors with evidence-backed topic coverage, with a manual review step.
 - Optional scheduled collection only after separate scope, policy and consent design. This release does not do that.
+
+
+## Added in v1.5 beta — Own vs competitor document comparison
+
+1. Capture **your own public page** with the popup's document-capture button. Capture one or more public competitor documents manually. Only already visited and explicitly saved pages enter the comparison.
+2. Open the Intelligence dashboard and find **내 문서 vs 경쟁 문서 비교**.
+3. Choose your own saved document, choose up to 8 competing pages (Ctrl/Shift multiple select), and optionally enter the query you are researching.
+4. Click **수집 문서 비교하기**. The dashboard groups observed competitor headings into review candidates and lists exact source links.
+5. Review the source material manually, then click **근거 보고서 TXT 저장** or use the existing ChatGPT prompt/JSON buttons to hand off a source-linked evidence summary.
+
+The comparison is a **simple lexical check**, not a semantic, intent, freshness, quality, or ranking algorithm. A candidate topic is identified by matching words in observed headings against words in your saved title/headings/body. Words in a different context may count as present, and equivalent phrases with different words may count as missing. These limitations are always shown. Neither a missing expression nor a common heading establishes why Naver ranked a result.
+
+The captured pages can be outdated, incomplete or truncated. The feature does not collect any new pages by itself, and it does not edit or automatically publish your content. Manual review remains mandatory.
+
+Tests: tests/content-gap.mjs and tests/browser_intelligence.py cover source-linked review candidates and the Chromium UI.
