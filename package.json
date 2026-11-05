@@ -1,6 +1,6 @@
 {
   "name": "serp-lens",
-  "version": "2.2.1-beta",
+  "version": "2.3.0-beta",
   "private": true,
   "type": "module",
   "description": "Offline Naver SERP inspector (GitHub Pages + Windows + opt-in Chrome/Edge extension capture)",
