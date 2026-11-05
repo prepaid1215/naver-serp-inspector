@@ -73,7 +73,7 @@ function createPrompt(){
   const own=$('own-domains').value.trim();
   return buildAIPrompt(selectedSearches,pages,diff)+'\n\n내 사이트 도메인: '+(own||'미입력');
 }
-function updatePrompt(){text($('preview'),createPrompt());}
+function updatePrompt(){$('preview').value=createPrompt();}
 function download(name,data,type){
   const url=URL.createObjectURL(new Blob([data],{type}));
   const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
