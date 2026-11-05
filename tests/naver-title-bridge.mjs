@@ -39,11 +39,11 @@ globalThis.chrome={
           rows:[
             {type:'BLOG',url:'https://blog.naver.com/demo/224465859329?track='+query,
               title:'KT 바로유심 개통 후기',visible_title:'KT 바로유심 개통 후기',
-              title_confidence:'high',title_source:'headline_anchor',
+              title_confidence:'unverified',title_source:'no_reliable_article_title',
               is_article_link:true,document_visual_order:1,source_visual_order:1,y:200},
             {type:'CAFE',url:'https://cafe.naver.com/dowajo/1614530?art='+query,
               title:'바로유심 비용과 신청 방법',visible_title:'바로유심 비용과 신청 방법',
-              title_confidence:'heuristic',title_source:'nearby_card_heading',
+              title_confidence:'unverified',title_source:'no_reliable_article_title',
               is_article_link:true,document_visual_order:2,source_visual_order:1,y:350}
           ]
         }}];
@@ -90,6 +90,9 @@ globalThis.fetch=async(url,opts={})=>{
     assert.equal(result.captured_articles,2);
     assert.equal(result.paths.length,4); // 2 searches + 2 posts
     assert.ok(result.article_summaries.every(x=>x.observed_queries.length===2));
+    // When displayed search titles are not independently verified, a
+    // disagreement with the article title cannot be reported as a fact.
+    assert.ok(result.article_summaries.every(x=>x.title_disagreement===null));
     results.push(result);
     return response(201,{id:123});
   }
