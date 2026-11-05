@@ -19,6 +19,7 @@ assert.equal(evidenceFileBase(pc,new Date('2026-10-15T06:30:00Z')),'20261015-153
 assert.equal(evidenceFileBase(mo,new Date('2026-10-15T06:30:00Z')),'20261015-1530_mo_KT 선불폰');
 const manifest=JSON.parse(readFileSync(new URL('../extension/manifest.json',import.meta.url)));
 assert.equal(manifest.manifest_version,3);
-assert.deepEqual(manifest.permissions,['activeTab','scripting']);
-assert.ok(!manifest.host_permissions && !manifest.background);
+assert.deepEqual(manifest.permissions,['activeTab','scripting','storage']);
+assert.deepEqual(manifest.host_permissions,['https://api.github.com/*']);
+assert.ok(!manifest.background);
 console.log('Extension URL permission, metadata and manifest tests passed');
