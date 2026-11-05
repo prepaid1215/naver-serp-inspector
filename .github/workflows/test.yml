@@ -32,3 +32,4 @@ jobs:
           python tests/browser_extension.py
           python tests/browser_fds_2026.py
           python tests/browser_intelligence.py
+          python tests/browser_visual_audit.py

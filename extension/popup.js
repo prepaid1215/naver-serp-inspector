@@ -2,9 +2,12 @@ import {isNaverSearchURL,queryFromSearchURL,evidenceFileBase} from './capture-me
 import {saveCapture} from './capture-store.js';
 import {saveSearch,savePage} from './intelligence-store.js';
 import {deviceFromSearchURL} from './capture-meta.js';
+import {inspectVisibleSearch} from './visual-viewport.js';
+import {saveVisualAudit} from './visual-store.js';
 
 const $ = id => document.getElementById(id);
 const captureButton = $('capture');
+const visualButton = $('visual-capture');
 const pageButton = $('capture-page');
 const dashboardButton = $('open-intelligence');
 let currentTab = null;
@@ -21,6 +24,7 @@ try {
   if (currentTab) {
     $('query').textContent=queryFromSearchURL(currentTab.url);
     captureButton.disabled=false;
+    visualButton.disabled=false;
     status('현재 탭에서 직접 수집할 준비가 됐습니다.');
   } else {
     $('query').textContent='네이버 검색결과 또는 분석할 문서를 열어 주세요.';
@@ -85,6 +89,82 @@ captureButton.addEventListener('click', async()=>{
   }
 });
 
+
+
+function auditGeometryChanged(before,after){
+  if(!after||before.source_url!==after.source_url||before.query!==after.query)return true;
+  const a=before.viewport,b=after.viewport;
+  if(Math.abs(a.scroll_y-b.scroll_y)>2||Math.abs(a.scroll_x-b.scroll_x)>2||
+    Math.abs(a.width-b.width)>2||Math.abs(a.height-b.height)>2||
+    Math.abs(a.vv_scale-b.vv_scale)>0.02)return true;
+  const previous=new Map(before.candidates.map(c=>[c.url+'|'+c.title,c]));
+  const matches=after.candidates.map(c=>[previous.get(c.url+'|'+c.title),c]).filter(([x])=>x);
+  if(matches.length<Math.min(3,before.candidates.length))return before.candidates.length>0;
+  return matches.slice(0,25).some(([x,y])=>Math.abs(x.y-y.y)>18||Math.abs(x.x-y.x)>18);
+}
+function decodePng(dataURL){
+  if(!dataURL?.startsWith('data:image/png;base64,'))throw Error('PNG 화면 캡처에 실패했습니다.');
+  const binary=atob(dataURL.slice('data:image/png;base64,'.length));
+  if(binary.length>MAX_PNG_BYTES)throw Error('화면 이미지가 12MB를 초과합니다.');
+  return Uint8Array.from(binary,c=>c.charCodeAt(0));
+}
+async function screenshotSize(dataURL){
+  const img=new Image();img.src=dataURL;await img.decode();
+  return {width:img.naturalWidth,height:img.naturalHeight};
+}
+visualButton.addEventListener('click',async()=>{
+  visualButton.disabled=true;
+  status('실제 네이버 화면의 제목·광고 후보 위치를 측정하는 중…');
+  try{
+    const tab=await currentSearchTab();
+    if(!tab||tab.id!==currentTab?.id)throw Error('네이버 검색 탭이 바뀌었습니다. 확장프로그램을 다시 여세요.');
+    const before=await chrome.scripting.executeScript({target:{tabId:tab.id},func:inspectVisibleSearch});
+    const geometry=before?.[0]?.result;
+    if(!geometry?.viewport||!isNaverSearchURL(geometry.source_url))throw Error('검색 화면의 위치 자료를 읽지 못했습니다.');
+    status('스크린샷을 저장하고 위치가 바뀌지 않았는지 확인 중…');
+    const pngDataURL=await chrome.tabs.captureVisibleTab(tab.windowId,{format:'png'});
+    const screenshot_png=decodePng(pngDataURL);
+    const screenshot_image_size=await screenshotSize(pngDataURL);
+    const after=await chrome.scripting.executeScript({target:{tabId:tab.id},func:inspectVisibleSearch});
+    const capture_moved=auditGeometryChanged(geometry,after?.[0]?.result);
+    const viewAspect=geometry.viewport.width/geometry.viewport.height;
+    const imageAspect=screenshot_image_size.width/screenshot_image_size.height;
+    const screenshot_dimension_mismatch=Math.abs(viewAspect-imageAspect)/viewAspect>0.055;
+    let parsed_rows=[],parser_warning='';
+    try{
+      const [htmlResult]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>({
+        url:location.href,html:document.documentElement?.outerHTML||''
+      })});
+      const html=htmlResult?.result?.html||'';
+      if(html.length>0&&new TextEncoder().encode(html).byteLength<=MAX_HTML_BYTES){
+        const {parseSERP}=await import('../web/engine.js');
+        const result=parseSERP(html,{query:geometry.query,device:geometry.url_device,
+          filename:'viewport-audit.html',observed:new Date().toISOString()});
+        parsed_rows=result.rows;
+        if(result.status.startsWith('수집 실패'))parser_warning=result.notes||result.status;
+      }else parser_warning='HTML을 읽지 못했거나 22MB를 초과했습니다.';
+    }catch(error){parser_warning='DOM 파서 결과 없음: '+error.message;}
+    const id=crypto.randomUUID();
+    const record={
+      id,captured_at:new Date().toISOString(),...geometry,
+      screenshot_png,screenshot_image_size,capture_moved,screenshot_dimension_mismatch,
+      reviews:{},added:[],checked_complete:false,parsed_rows,parser_warning,
+      capture_scope:'visible_viewport_only'
+    };
+    await saveVisualAudit(record);
+    const warnings=[capture_moved?'측정 중 화면 변화 감지':'',screenshot_dimension_mismatch?'이미지 비율 확인 필요':'',
+      geometry.root_fallback?'검색 결과 영역 불확실':''].filter(Boolean).join(' · ');
+    status('검수 화면 저장 완료'+(warnings?' · '+warnings:''));
+    await chrome.tabs.create({url:chrome.runtime.getURL(
+      'extension/visual-audit.html?audit='+encodeURIComponent(id))});
+    window.close();
+  }catch(error){status('위치 검수 수집 실패: '+error.message,true);visualButton.disabled=false;}
+});
+
+$('open-visual-audit').addEventListener('click',async()=>{
+  await chrome.tabs.create({url:chrome.runtime.getURL('extension/visual-audit.html')});
+  window.close();
+});
 
 dashboardButton.addEventListener('click',async()=>{
   await chrome.tabs.create({url:chrome.runtime.getURL('extension/intelligence.html')});
