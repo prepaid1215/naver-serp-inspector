@@ -33,9 +33,32 @@ export function naverSearchURL(query){
 export function validNaverArticleURL(input){
   let u;try{u=new URL(input);}catch{return null;}
   if(u.protocol!=='https:'||u.username||u.password)return null;
-  const hostname=u.hostname.toLowerCase();
-  if(!['blog.naver.com','m.blog.naver.com','cafe.naver.com','m.cafe.naver.com'].includes(hostname))return null;
-  if(!/^\/[^\s]{1,400}$/.test(u.pathname))return null;
+  const host=u.hostname.toLowerCase();
+  const blog=['blog.naver.com','m.blog.naver.com'].includes(host);
+  const cafe=['cafe.naver.com','m.cafe.naver.com'].includes(host);
+  if(!blog&&!cafe)return null;
+  const path=u.pathname;
+  let isArticle=false;
+  if(blog){
+    // Blog profile links (/blogId) are NOT individual posts.
+    isArticle=/^\/[A-Za-z0-9_-]{2,80}\/\d{8,20}\/?$/.test(path);
+    if(!isArticle&&/^\/PostView\.naver$/i.test(path)){
+      const id=u.searchParams.get('blogId'),number=u.searchParams.get('logNo');
+      isArticle=/^[A-Za-z0-9_-]{2,80}$/.test(id||'')&&/^\d{8,20}$/.test(number||'');
+    }
+    if(!isArticle&&/^\/PostView\.nhn$/i.test(path)){
+      const id=u.searchParams.get('blogId'),number=u.searchParams.get('logNo');
+      isArticle=/^[A-Za-z0-9_-]{2,80}$/.test(id||'')&&/^\d{8,20}$/.test(number||'');
+    }
+  }else if(cafe){
+    // Cafe homepage links (/clubSlug) are NOT individual articles.
+    isArticle=/^\/[A-Za-z0-9_-]{2,80}\/\d{1,20}\/?$/.test(path);
+    if(!isArticle&&/^\/ArticleRead\.(?:nhn|naver)$/i.test(path)){
+      const club=u.searchParams.get('clubid'),article=u.searchParams.get('articleid');
+      isArticle=/^\d{1,20}$/.test(club||'')&&/^\d{1,20}$/.test(article||'');
+    }
+  }
+  if(!isArticle)return null;
   u.hash='';
   return u.href;
 }
