@@ -53,7 +53,7 @@ try:
     ctx.add_init_script("""(()=>{
       let stored={};
       window.chrome={
-        runtime:{getManifest:()=>({version:'2.1.1'})},
+        runtime:{getManifest:()=>({version:'2.2.0'})},
         storage:{session:{
           get:async key=>({[key]:stored[key]}),
           set:async obj=>{Object.assign(stored,obj);},

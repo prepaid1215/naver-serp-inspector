@@ -4,7 +4,7 @@ const STATUS='serp-lens-chat-bridge-token';
 const loadedVersion=chrome.runtime.getManifest().version;
 const versionElement=$('installed-extension-version');
 if(versionElement)versionElement.textContent='설치된 확장프로그램 v'+loadedVersion+
-  (loadedVersion==='2.1.2'?' · 원본/정제 본문과 검증 범위 분리 적용':' · 이전 버전: 본문 구조 개선이 적용되지 않았습니다.');
+  (loadedVersion==='2.2.0'?' · Plus 채팅 조사 연결·결과 요약 개선 적용':' · 이전 버전: 최신 채팅 조사 개선이 적용되지 않았습니다.');
 
 const buttonIds=['autopilot-enable','autopilot-disable','autopilot-check-now'];
 function status(message,error=false){

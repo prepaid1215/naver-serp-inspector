@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "2.1.2",
-  "description": "네이버 공개 검색·게시글 자동 조사 및 원본/정제 본문·구조·검증 범위 분리",
+  "version": "2.2.0",
+  "description": "Plus 채팅에서 GitHub 요청 → 네이버 자동 수집 → 출처별 본문·구조 결과 반환",
   "permissions": [
     "activeTab",
     "scripting",
