@@ -161,6 +161,11 @@ visualButton.addEventListener('click',async()=>{
   }catch(error){status('위치 검수 수집 실패: '+error.message,true);visualButton.disabled=false;}
 });
 
+$('open-chat-bridge').addEventListener('click',async()=>{
+  await chrome.tabs.create({url:chrome.runtime.getURL('extension/chat-bridge.html')});
+  window.close();
+});
+
 $('open-full-validation').addEventListener('click',async()=>{
   await chrome.tabs.create({url:chrome.runtime.getURL('extension/full-validation.html')});
   window.close();
