@@ -119,7 +119,7 @@ function inspectOpenArticle() {
   }
   const canonical=document.querySelector('link[rel="canonical"]')?.href||'';
   return {url:location.href,source_frame:location.href,title:norm(meta('og:title')||document.title).slice(0,300),
-    description:norm(meta('description')||meta('og:description')).slice(0,500),canonical,
+    description:norm(meta('description')||meta('og:description')).slice(0,500),robots:meta('robots'),canonical,
     text:allText.slice(0,18000),truncated:allText.length>18000,
     headings,images:root.querySelectorAll('img').length,
     internal_links:internal,external_links:external,
