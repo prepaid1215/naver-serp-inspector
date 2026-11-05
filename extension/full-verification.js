@@ -22,7 +22,7 @@ const buildStage=(key,title,ready,metrics,next,problems=[])=>({
   key,title,status:ready?'ready':problems.length?'review':'pending',ready,
   metrics,next,problems
 });
-export function verifyCompletePipeline({searches=[],pages=[],experiments=[],visualAudits=[]}){
+export function verifyCompletePipeline({searches=[],pages=[],experiments=[],visualAudits=[],visualReports=[]}){
   // Never trust a passed-in record to be a live capture; these statuses
   // apply equally to offline fixtures and therefore are not a live-site proof.
   const validSearches=searches.filter(s=>s&&s.id&&Array.isArray(s.rows)&&s.rows.some(r=>r.result_url));
@@ -68,23 +68,25 @@ export function verifyCompletePipeline({searches=[],pages=[],experiments=[],visu
   },'실제 변경시각을 입력하고 동일한 검색어·기기로 전후 2회 이상 수집하세요. 같은 유형의 대조 문서가 필요합니다.',
   expErrors.map(s=>'실험 분석 오류: '+s));
 
-  const visualResults=[],visualErrors=[];
-  for(const a of visualAudits){
-    try{visualResults.push(summarizeVisualAudit(a));}
-    catch(error){visualErrors.push((a?.id||'ID 없음')+': '+error.message);}
+  const visualResults=visualReports.slice(),visualErrors=[];
+  if(!visualReports.length){
+    for(const a of visualAudits){
+      try{visualResults.push(summarizeVisualAudit(a));}
+      catch(error){visualErrors.push((a?.id||'ID 없음')+': '+error.message);}
+    }
   }
   const verified=visualResults.filter(r=>r.verified_viewport);
   const pc=verified.filter(r=>r.device_url==='PC'&&r.layout==='데스크톱 너비');
   const mobile=verified.filter(r=>r.device_url==='모바일'&&r.layout==='모바일 너비');
   const viewportReady=pc.length>0&&mobile.length>0;
   const viewport=buildStage('viewport','5. 실제 화면 PC·모바일 수동 검수',viewportReady,{
-    screenshot_records:visualAudits.length,
+    screenshot_records:visualReports.length||visualAudits.length,
     manually_verified:verified.length,pc_verified:pc.length,mobile_verified:mobile.length
   },'PC와 실제 모바일 너비의 네이버 검색 화면을 각각 캡처하고, 제목·광고·블록·누락 항목을 전부 수동 검수하세요.',
   [
     ...visualErrors.map(s=>'화면 검수 오류: '+s),
-    ...(visualAudits.some(a=>a?.capture_moved)?['화면 위치 측정 중 스크롤/크기 변화가 발생한 캡처가 있습니다.']:[]),
-    ...(visualAudits.some(a=>a?.screenshot_dimension_mismatch)?['측정한 화면과 PNG 비율이 다른 캡처가 있습니다.']:[])
+    ...(visualAudits.some(a=>a?.capture_moved)||visualResults.some(r=>r.warnings.some(w=>w.includes('스크롤')))?['화면 위치 측정 중 스크롤/크기 변화가 발생한 캡처가 있습니다.']:[]),
+    ...(visualAudits.some(a=>a?.screenshot_dimension_mismatch)||visualResults.some(r=>r.warnings.some(w=>w.includes('비율')))?['측정한 화면과 PNG 비율이 다른 캡처가 있습니다.']:[])
   ]);
 
   const linked=verified.filter(r=>naverSearches.some(s=>s.query===r.query&&s.device===r.device_url));
@@ -110,7 +112,7 @@ export function verifyCompletePipeline({searches=[],pages=[],experiments=[],visu
       confirmed_live_site:false,
       reason:'도구는 입력 자료가 실제 네이버 사이트에서 사용자가 직접 수집된 것인지 암호학적으로 증명하지 못합니다. PC/모바일 현장 확인 필요.',
       search_record_count:searches.length,
-      visual_record_count:visualAudits.length,
+      visual_record_count:visualReports.length||visualAudits.length,
       page_record_count:pages.length
     },
     limitations:[
