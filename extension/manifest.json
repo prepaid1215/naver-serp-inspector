@@ -1,12 +1,14 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "2.0.0",
-  "description": "네이버 검색 결과·게시글 본문을 사용자 동의로 수집해 별도 비공개 GitHub 저장소를 통해 ChatGPT에서 조회합니다.",
+  "version": "2.1.1",
+  "description": "ChatGPT의 조사 요청을 GitHub를 통해 전달받아 네이버 공개 검색 결과와 블로그·카페 본문을 사용자 동의하에 자동 수집합니다.",
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "tabs",
+    "alarms"
   ],
   "action": {
     "default_title": "현재 네이버 검색결과 분석",
@@ -19,6 +21,16 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "host_permissions": [
-    "https://api.github.com/*"
-  ]
+    "https://api.github.com/*",
+    "https://search.naver.com/*",
+    "https://m.search.naver.com/*",
+    "https://blog.naver.com/*",
+    "https://m.blog.naver.com/*",
+    "https://cafe.naver.com/*",
+    "https://m.cafe.naver.com/*"
+  ],
+  "background": {
+    "service_worker": "extension/naver-autopilot-background.js",
+    "type": "module"
+  }
 }
