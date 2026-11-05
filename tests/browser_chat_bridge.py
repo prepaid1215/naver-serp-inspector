@@ -41,7 +41,7 @@ try:
     assert '태블릿 번호' in cafe['text']
     assert cafe['title']=='LG 원칩 신규가입 안내'
 
-    ctx.add_init_script("""()=>{
+    ctx.add_init_script("""(()=>{
       let stored={};
       window.chrome={
         storage:{session:{
@@ -50,7 +50,7 @@ try:
           remove:async key=>{delete stored[key];}
         }}
       };
-    }""")
+    })()""")
     requests=[]
     def github(route):
       req=route.request
