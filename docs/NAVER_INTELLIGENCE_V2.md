@@ -8,7 +8,7 @@ Separate the observed search-result page, user-visited document evidence, and AI
 
 ## User steps
 
-1. In Chrome/Edge, go to chrome://extensions or edge://extensions, turn on Developer mode and load this repository root as an unpacked extension. If upgrading, refresh the existing extension.
+1. In Chrome/Edge, go to chrome://extensions or edge://extensions, turn on Developer mode and run the GitHub Actions workflow **Package Chrome and Edge extension** on the feature branch (or download its successful PR run artifact). Unzip **SERP-Lens-Chrome-Edge-Extension** and load the extracted folder containing manifest.json as the unpacked extension. The repository root itself does not contain a manifest.json. If upgrading, refresh the existing extension.
 2. Open a real Naver PC/mobile search page, click SERP Lens, then **현재 네이버 검색 수집 · 기록 저장**. The original SERP Lens HTML/PNG viewer opens as before. The Intelligence store saves compact extracted cards, title, URL, approximate DOM order, capture time, and evidence SHA-256.
 3. Repeat the same keyword/device search another day. Open **Intelligence 분석 대시보드 열기**, choose the newer and older snapshots. New, missing, and shifted links are shown. This is a comparison of captured observations, not a confirmed change in official rankings.
 4. Open a public blog, cafe, or website article manually. In the popup click **현재 문서 분석용 저장**. The extension reads only the currently visited page and frames the activeTab permission allows, then stores visible text (up to 18,000 characters), headings, title, description, canonical, robots meta, image count, and link counts locally. The longest relevant article frame is preferred where available.
