@@ -89,14 +89,19 @@ async function openAndRead(url,extractor,allFrames=false){
     await chrome.tabs.remove(tab.id).catch(()=>{});
   }
 }
-async function currentProcessed(){
+async function currentProcessed(repository){
   const value=await chrome.storage.local.get(SEEN);
-  return value?.[SEEN]||{day:now().slice(0,10),numbers:[],today_count:0};
+  const previous=value?.[SEEN];
+  // Issue numbers are repo-local. Never skip #1 in a new private repository
+  // just because a previous repository had a processed issue #1.
+  if(previous?.repository!==repository)
+    return {repository,day:now().slice(0,10),numbers:[],today_count:0};
+  return previous;
 }
-async function markProcessed(number){
-  const existing=await currentProcessed(),today=now().slice(0,10);
+async function markProcessed(number,repository){
+  const existing=await currentProcessed(repository),today=now().slice(0,10);
   const next={
-    day:today,
+    repository,day:today,
     today_count:(existing.day===today?existing.today_count:0)+1,
     numbers:[...new Set([number,...existing.numbers])].slice(0,200)
   };
@@ -131,6 +136,22 @@ async function ensureJobLabel(config,secret){
   });
   if(!response.ok)throw Error('GitHub 작업 라벨 생성에 실패했습니다. 토큰에 Issues 읽기/쓰기 권한이 필요합니다. HTTP '+response.status);
 }
+async function existingJobResult(config,secret,number){
+  const url=raw(config.name,'issues/'+number+'/comments?per_page=100');
+  const comments=await github(url,secret);
+  if(!Array.isArray(comments))throw Error('기존 작업 댓글을 확인하지 못했습니다.');
+  for(const comment of comments){
+    const body=String(comment.body||'');
+    if(!body.startsWith(JOB_RESULT_MARKER+'\n'))continue;
+    try{
+      const data=JSON.parse(body.slice(JOB_RESULT_MARKER.length+1));
+      if(data.issue_number===number &&
+         ['completed','partial','incomplete','failed'].includes(data.status))
+        return data;
+    }catch{}
+  }
+  return null;
+}
 async function fetchJobs(config,secret){
   const url=raw(config.name,'issues')+'?state=open&labels='+encodeURIComponent(JOB_LABEL)+
     '&per_page=20&sort=created&direction=asc';
@@ -150,7 +171,7 @@ async function executeJob(job,config,secret){
     block_order:index+1,headline_hint:r.headline_hint,
     note:'DOM 후보 목록이며 실제 검색순위 아님'
   }));
-  const uploaded=[],failures=[];
+  const uploaded=[],failures=[],article_summaries=[];
   if(rows.length){
     uploaded.push(await uploadEvidence({
       config,token:secret,type:'searches',
@@ -176,13 +197,25 @@ async function executeJob(job,config,secret){
         throw Error('게시글 본문을 확인할 수 없습니다.');
       delete candidate.score;
       candidate.origin_url=article.url;
-      uploaded.push(await uploadEvidence({
+      const saved=await uploadEvidence({
         config,token:secret,type:'pages',
         record:{
           id:'issue-'+job.issue_number+'-article-'+index,
           captured_at:now(),...candidate
         }
-      }));
+      });
+      uploaded.push(saved);
+      article_summaries.push({
+        title:String(candidate.title||'').slice(0,250),
+        url:String(candidate.url||article.url).slice(0,2048),
+        source_kind:candidate.source_kind||article.type,
+        path:saved.path,
+        raw_characters:candidate.text?.length||0,
+        clean_characters:candidate.clean_text?.length||0,
+        heading_candidates:(candidate.headings||[]).slice(0,8).map(h=>String(h.text||'').slice(0,130)),
+        images:Number.isInteger(candidate.images)?candidate.images:0,
+        completeness:'not_verified'
+      });
     }catch(error){
       failures.push({url:article.url,reason:short(error.message)});
     }
@@ -193,8 +226,10 @@ async function executeJob(job,config,secret){
       uploaded.filter(x=>x.kind==='pages').length<articles.length?'partial':'completed',
     query:job.query,limit:job.limit,issue_number:job.issue_number,
     captured_at,search_candidates:serp.rows.length,
+    // Candidate counts are NOT actual Naver result ranking positions.
     attempted_articles:articles.length,
-    captured_articles:uploaded.filter(x=>x.kind==='pages').length,
+    captured_articles:article_summaries.length,
+    article_summaries,
     paths:uploaded.map(x=>x.path),
     failed_articles:failures,
     warning:'검색 결과의 DOM 링크 후보를 조사한 것이며 실제 네이버 순위는 검증되지 않았습니다.'
@@ -214,7 +249,7 @@ async function poll(){
     const config=await checkPrivateRepository({
       repository:settings.repository,token:secret
     });
-    const progress=await currentProcessed(),today=now().slice(0,10);
+    const progress=await currentProcessed(config.name),today=now().slice(0,10);
     if(progress.day===today&&progress.today_count>=MAX_JOBS_PER_DAY){
       await status('하루 최대 '+MAX_JOBS_PER_DAY+'건을 처리했습니다.',{phase:'limit'});
       return {ok:false,message:'일일 상한'};
@@ -234,8 +269,19 @@ async function poll(){
     catch(error){
       // Ignore arbitrary issues rather than executing untrusted issue bodies.
       await status('유효하지 않은 요청 건너뜀: #'+item.number,{phase:'ignored'});
-      await markProcessed(item.number);
+      await markProcessed(item.number,config.name);
       return {ok:false,skipped:item.number,message:short(error.message)};
+    }
+    // A browser crash or restart after writing a result comment should not
+    // cause a second search and duplicate GitHub uploads for the same issue.
+    const previous=await existingJobResult(config,secret,job.issue_number);
+    if(previous){
+      await finishJob(config,secret,job.issue_number,previous.status);
+      await markProcessed(job.issue_number,config.name);
+      await status('이미 처리된 조사 요청 #'+job.issue_number+'을 정리했습니다.',{
+        phase:'already-reported',issue_number:job.issue_number,last_result:previous
+      });
+      return {ok:true,processed:0,already_reported:true,result:previous};
     }
     let result;
     try{
@@ -256,7 +302,7 @@ async function poll(){
     }
     try{await finishJob(config,secret,job.issue_number,result.status);}
     catch(error){await status('조사 댓글은 저장했으나 이슈를 닫지 못했습니다.',{phase:'close-error'});}
-    await markProcessed(job.issue_number);
+    await markProcessed(job.issue_number,config.name);
     return {ok:true,processed:1,result};
   }catch(error){
     await status('자동 조사 오류: '+short(error.message),{phase:'error'});
@@ -264,7 +310,8 @@ async function poll(){
   }finally{running=false;}
 }
 async function ensureAlarm(){
-  await chrome.alarms.create(ALARM,{periodInMinutes:1});
+  // Chrome 120+ supports 30-second alarms; actual dispatch can be delayed.
+  await chrome.alarms.create(ALARM,{periodInMinutes:0.5});
 }
 chrome.runtime.onInstalled.addListener(()=>{void ensureAlarm();});
 chrome.runtime.onStartup.addListener(()=>{void ensureAlarm();});
