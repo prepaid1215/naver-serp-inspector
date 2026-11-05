@@ -27,10 +27,10 @@ const chosen=pickNaverArticles([
   {type:'WEB',url:'https://example.com/other',title:'other'},
   {type:'BLOG',url:'https://blog.naver.com/demo',title:'블로그 프로필'},
   {type:'CAFE',url:'https://cafe.naver.com/example',title:'카페 메인'},
-  {type:'BLOG',url:'https://blog.naver.com/demo/12345',title:'post'},
-  {type:'BLOG',url:'https://blog.naver.com/demo/12345',title:'duplicate'},
+  {type:'BLOG',url:'https://blog.naver.com/demo/224465527655',title:'post'},
+  {type:'BLOG',url:'https://blog.naver.com/demo/224465527655',title:'duplicate'},
   {type:'CAFE',url:'https://cafe.naver.com/example/12345',title:'cafe'},
-  {type:'BLOG',url:'https://blog.naver.com/demo/99999',title:'third'}
+  {type:'BLOG',url:'https://blog.naver.com/demo/224465548044',title:'third'}
 ],2);
 assert.equal(chosen.length,2);
 assert.equal(chosen[0].type,'BLOG');
