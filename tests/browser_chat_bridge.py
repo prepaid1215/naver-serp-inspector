@@ -50,6 +50,35 @@ try:
     assert '태블릿 번호' in cafe['text']
     assert cafe['title']=='LG 원칩 신규가입 안내'
 
+    # Check title provenance and the fact that observed position is only
+    # ordered among detected individual article links, not official rank.
+    page.set_content("""
+      <main id="main_pack">
+        <section class="sc_new">
+          <h2>인기글</h2>
+          <div style="margin-top:25px">
+            <a class="title_link" href="https://blog.naver.com/demo/224465859329">KT 바로유심 개통 순서</a>
+          </div>
+          <div style="margin-top:25px">
+            <h3>GS25 유심 개통 전 확인사항</h3>
+            <a href="https://cafe.naver.com/dowajo/1614530">새 창 열림</a>
+          </div>
+        </section>
+      </main>""")
+    observed=page.evaluate("""async()=>{
+      const {collectNaverSearchDOM}=await import('/extension/naver-autopilot-search.js');
+      return collectNaverSearchDOM();
+    }""")
+    articles=[r for r in observed['rows'] if r['is_article_link']]
+    assert len(articles)==2, articles
+    assert articles[0]['visible_title']=='KT 바로유심 개통 순서'
+    assert articles[0]['title_confidence']=='high'
+    assert articles[0]['document_visual_order']==1
+    assert articles[1]['visible_title']=='GS25 유심 개통 전 확인사항'
+    assert articles[1]['title_confidence']=='heuristic'
+    assert articles[1]['document_visual_order']==2
+    assert observed['position_basis']=='approximate_document_y_order_of_detected_links'
+
     ctx.add_init_script("""(()=>{
       let stored={};
       window.chrome={
