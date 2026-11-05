@@ -38,6 +38,7 @@
     </div>
    </div>
    <div class="legend"><span>번호: 화면의 제목 후보</span><span>실선: 확인됨</span><span>점선: 미검수</span></div>
+   <label class="block-overlay-toggle"><input id="show-blocks" type="checkbox"> 검색 결과 블록의 추정 경계 표시</label>
   </div>
   <div class="review-column">
    <div class="mini-metrics">
@@ -46,6 +47,11 @@
     <div><strong id="count-unreviewed">0</strong><span>미검수·불명확</span></div>
     <div><strong id="count-missed">0</strong><span>직접 추가</span></div>
    </div>
+   <details id="block-review" class="block-review" open>
+    <summary>검색 블록 경계 및 유형 검수 <span id="count-blocks">0개 블록</span></summary>
+    <p class="muted">탐지된 블록의 실제 노출 여부와 유형을 지정하세요. 블록 분류가 불명확하면 ‘불명확’을 선택합니다.</p>
+    <div id="block-list" class="block-list"></div>
+   </details>
    <div id="candidate-list" class="candidate-list"><p>수집 자료 없음</p></div>
   </div>
  </div>
@@ -61,7 +67,7 @@
    <option value="WEB">웹문서</option><option value="AD">광고</option>
    <option value="KIN">지식iN</option><option value="NEWS">뉴스</option>
    <option value="VIDEO">동영상</option><option value="CLIP">클립</option>
-   <option value="OTHER">기타/블록</option>
+   <option value="AI">AI 요약</option><option value="MIXED">혼합 블록</option><option value="OTHER">기타/블록</option>
   </select></label>
   <label>원본 주소 (알면 입력)<input id="missing-url" type="url" placeholder="https://..."></label>
  </div>
