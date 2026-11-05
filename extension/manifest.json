@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "ChatGPT의 조사 요청을 GitHub를 통해 전달받아 네이버 공개 검색 결과와 블로그·카페 본문을 사용자 동의하에 자동 수집합니다.",
   "permissions": [
     "activeTab",
