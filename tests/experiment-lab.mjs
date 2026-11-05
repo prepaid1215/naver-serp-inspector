@@ -57,6 +57,20 @@ assert.equal(missing.target.after.median_position,null);
 assert.equal(missing.relative_delta,null);
 assert.equal(missing.target.after.missing,1);
 assert.match(missing.interpretation,/노출이 부족/);
+
+const narrow=analyzeExperiment({...exp,window_days:3},searches);
+assert.equal(narrow.window_days,3);
+assert.equal(narrow.counts.before,2);
+assert.equal(narrow.counts.after,2);
+const wrongType=captured('type-other','2026-11-05T03:00:00Z',1,5);
+wrongType.rows[5].block_type='CAFE'; // control shown with a different result type in after window
+const incompatible=analyzeExperiment(exp,[searches[0],wrongType]);
+assert.equal(incompatible.controls[0].same_document_type,false);
+assert.equal(incompatible.relative_delta,null);
+const outside=captured('outside','2026-10-01T03:00:00Z',1,5);
+const bounded=analyzeExperiment({...exp,window_days:3},[outside,searches[2]]);
+assert.equal(bounded.counts.before,0);
+assert.equal(bounded.counts.after,1);
 const absent=analyzeExperiment(exp,[searches[0]]);
 assert.equal(absent.relative_delta,null);
 assert.equal(absent.counts.after,0);
