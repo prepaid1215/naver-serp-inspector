@@ -21,7 +21,7 @@ try:
   with sync_playwright() as p:
     browser=p.chromium.launch(headless=True,executable_path=os.environ.get('SERP_CHROME_PATH') or None,args=['--no-sandbox'])
     ctx=browser.new_context(accept_downloads=True)
-    ctx.add_init_script(script="""({fixture})=>{
+    mock_script="""(function(fixture){
       const job={
         schema:'naver-chat-job-v1',job_id:'20261105T093000Z-aabbccdd',mode:'search_and_read',
         query:'선불폰 개통',device:'PC',max_articles:2,
@@ -81,11 +81,8 @@ try:
           }
         }
       };
-    }""".replace('({fixture})=>','({fixture})=>') )
-    # Supply fixture through a separate seeded init script to avoid JS string interpolation.
-    ctx.add_init_script(script="window.__testFixture="+json.dumps(fixture,ensure_ascii=False)+";")
-    # The above mock takes an argument, but init scripts are invoked without args.
-    # Define a compatible wrapper around the injected function.
+    })(__FIXTURE__)"""
+    ctx.add_init_script(script=mock_script.replace('__FIXTURE__',json.dumps(fixture,ensure_ascii=False)))
     page=ctx.new_page()
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
