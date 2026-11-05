@@ -72,7 +72,7 @@ async function refresh(){
     else if(preferences.open)preferences.open=false;
     renderSummary(response);
     let info=s.message|| (enabled?'GitHub 조사 요청을 확인하고 있습니다.':'자동 조사가 꺼져 있습니다.');
-    if(s.phase==='idle')info=info.replace(/^새 요청 없음 · /,'')+' · 새 요청 대기 중';
+    if(s.phase==='idle')info='새 조사 요청을 기다리는 중입니다. Chrome이 켜져 있으면 자동으로 확인합니다.';
     status(info,problem);
   }catch(error){
     state('상태 확인 오류','error');
