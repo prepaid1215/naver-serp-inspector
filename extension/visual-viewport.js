@@ -50,6 +50,7 @@ export function inspectVisibleSearch() {
   }
   const all=[...root.querySelectorAll('a[href]')].slice(0,2500);
   const seen=new Set(),results=[];
+  const groupIDs=new WeakMap(),blocks=[];
   for(const a of all){
     const href=a.href;
     let u;
@@ -74,10 +75,25 @@ export function inspectVisibleSearch() {
     seen.add(key);
     const block=candidateBlock(a);
     const br=block.getBoundingClientRect();
+    if(!groupIDs.has(block)){
+      const groupId='block-'+(blocks.length+1);
+      groupIDs.set(block,groupId);
+      blocks.push({
+        id:groupId,
+        x:Math.round(br.left*100)/100,y:Math.round(br.top*100)/100,
+        width:Math.round(br.width*100)/100,height:Math.round(br.height*100)/100,
+        marker:marker(block).slice(0,130),
+        candidates:0,type_hints:[]
+      });
+    }
+    const group=blocks.find(b=>b.id===groupIDs.get(block));
+    group.candidates++;
+    const kind=kindOf(u,a);
+    if(!group.type_hints.includes(kind))group.type_hints.push(kind);
     const id='item-'+(results.length+1);
     const blockName=(block.querySelector('h2,h3,[class*="title"]')?.textContent||'').replace(/\s+/g,' ').trim().slice(0,70);
     results.push({
-      id,url:u.href,title:text,type_hint:kindOf(u,a),
+      id,url:u.href,title:text,type_hint:kind,block_id:groupIDs.get(block),
       dom_index:all.indexOf(a)+1,headline_signal:headline,block_name:blockName,
       block_marker:marker(block).slice(0,120),
       x:Math.round(rect.left*100)/100,y:Math.round(rect.top*100)/100,
@@ -98,6 +114,7 @@ export function inspectVisibleSearch() {
     url_device:location.hostname==='m.search.naver.com'?'모바일':'PC',
     layout_device:viewport.width<760?'모바일 너비':'데스크톱 너비',
     candidates:results.slice(0,160),
+    blocks:blocks.filter(b=>b.x+b.width>0&&b.y+b.height>0&&b.x<viewport.width&&b.y<viewport.height).slice(0,80),
     total_candidates:results.length,
     truncated:results.length>160,
     errors:results.length===0?['화면에서 제목 링크 후보를 찾지 못했습니다. 실제 검색 화면의 HTML 구조를 확인해야 합니다.']:[]
