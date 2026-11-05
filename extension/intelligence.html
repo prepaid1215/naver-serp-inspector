@@ -25,6 +25,19 @@
 <div id="pages" class="pages"></div>
 </section>
 <section class="panel">
+<h2>내 문서 vs 경쟁 문서 비교 <span class="hint">수집한 본문 근거만 사용</span></h2>
+<p class="muted">내 문서 1개와 직접 방문해 수집한 경쟁 문서 1~8개를 선택합니다. 단어 기반 검토 후보를 표시하며, 네이버의 노출 원인을 확정하거나 SEO 점수를 계산하지 않습니다.</p>
+<div class="controls">
+<label>내 문서<select id="own-page"><option value="">내 문서 선택</option></select></label>
+<label>분석 대상 키워드 (선택)<input id="gap-keyword" placeholder="예: 선불폰 개통"></label>
+</div>
+<label class="multi-label">경쟁 문서 (Ctrl/Shift로 여러 개 선택)
+<select id="rival-pages" multiple size="5" aria-label="비교할 경쟁 문서"></select></label>
+<div class="actions"><button id="compare-content" disabled>수집 문서 비교하기</button><button id="download-gap" class="secondary" disabled>근거 보고서 TXT 저장</button></div>
+<div id="gap-message" class="muted" role="status">내 문서와 경쟁 문서를 수집하면 비교할 수 있습니다.</div>
+<div id="gap-results" class="gap-results" aria-live="polite"></div>
+</section>
+<section class="panel">
 <h2>ChatGPT 분석용 증거 묶음</h2>
 <p class="muted">현재 선택한 검색 기록과 수집 문서를 함께 전달합니다. 본문은 문서별 최대 2,200자만 포함합니다. 계정 정보 등이 있는 페이지는 수집하지 마세요.</p>
 <label>분석할 내 도메인 (선택)<input id="own-domains" placeholder="preplan.site, 59man.shop, 앤텔레콤개통방법.shop"></label>
