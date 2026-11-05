@@ -240,7 +240,8 @@ function renderExperimentReport(){
   root.append(node('h3',null,experiment.title));
   root.append(node('p','muted',
     '변경 유형: '+(CHANGE_TYPES[experiment.change_type]||experiment.change_type)+
-    ' · 수정 시각: '+new Date(experiment.changed_at).toLocaleString('ko-KR')));
+    ' · 수정 시각: '+new Date(experiment.changed_at).toLocaleString('ko-KR')+
+    ' · 관측 기간: 전후 '+report.window_days+'일'));
   root.append(node('p','muted','대조 문서 미수정 여부: 사용자 계획에 따른 입력 · 자동 검증하지 않음'));
   const metrics=node('div','exp-metrics');
   const entries=[
@@ -268,7 +269,7 @@ function renderExperimentReport(){
     card.append(a,node('span',null,
       '전: '+expText(item.before.median_position)+' (발견 '+item.before.found+'/'+item.before.observations+') · '+
       '후: '+expText(item.after.median_position)+' (발견 '+item.after.found+'/'+item.after.observations+') · '+
-      '변화: '+expText(item.delta)));
+      '변화: '+expText(item.delta)+(item.role==='control'&&!item.same_document_type?' · 유형 불일치/불확실':'')));
     rows.append(card);
   }
   root.append(rows);
@@ -306,6 +307,7 @@ $('experiment-form').addEventListener('submit',async event=>{
     const record=makeExperiment({
       title:$('exp-title').value,query:$('exp-query').value,device:$('exp-device').value,
       change_type:$('exp-type').value,changed_at:$('exp-changed-at').value,
+      window_days:Number($('exp-window-days').value),
       target_url:$('exp-target-url').value,
       control_urls:$('exp-control-urls').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean),
       change_note:$('exp-change-note').value,control_note:$('exp-control-note').value,
