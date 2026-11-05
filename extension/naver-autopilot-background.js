@@ -362,8 +362,11 @@ async function executeTitleComparison(job,config,secret){
         raw_characters:candidate.text?.length||0,
         clean_characters:candidate.clean_text?.length||0,
         observed_queries:observations,
-        title_disagreement:observations.some(x=>x.title_confidence!=='unverified'&&
-          x.displayed_title&&x.displayed_title!==candidate.title),
+        // Only a directly observed headline can support a comparison.
+        // Missing/uncertain titles must not become false mismatches.
+        title_disagreement:observations.some(x=>x.title_confidence==='high')?
+          observations.some(x=>x.title_confidence==='high'&&
+            x.displayed_title&&x.displayed_title!==candidate.title):null,
         completeness:'not_verified'
       });
     }catch(error){failures.push({url:article.url,reason:short(error.message)});}
