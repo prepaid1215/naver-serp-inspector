@@ -1,9 +1,10 @@
 import {listSearches,listPages,removeSearch,removePage} from './intelligence-store.js';
 import {compareSearches,buildAIPrompt,pageStats} from './intelligence-analysis.js';
+import {compareCapturedContent,gapReportText} from './content-gap.js';
 const $=id=>document.getElementById(id);
 const text=(node,value)=>{node.textContent=String(value??'');return node;};
 const node=(tag,klass,value)=>{const e=document.createElement(tag);if(klass)e.className=klass;if(value!==undefined)text(e,value);return e;};
-let searches=[],pages=[];
+let searches=[],pages=[],contentComparison=null;
 function showMessage(value){text($('message'),value);}
 function option(id,label){const e=node('option',null,label);e.value=id;return e;}
 function selected(){return searches.find(s=>s.id===$('newer').value);}
@@ -62,16 +63,83 @@ function renderPages(){
     const list=node('ul');for(const h of (p.headings||[]).slice(0,24))list.append(node('li',null,h.level+' '+h.text));
     details.append(list,node('pre',null,(p.text||'').slice(0,2400)));card.append(details);
     const del=node('button','secondary','삭제');del.type='button';
-    del.addEventListener('click',async()=>{await removePage(p.id);pages=pages.filter(item=>item.id!==p.id);renderPages();renderComparison();});
+    del.addEventListener('click',async()=>{await removePage(p.id);pages=pages.filter(item=>item.id!==p.id);renderPages();resetGap();renderComparison();});
     card.append(del);$('pages').append(card);
   }
 }
+
+function renderGapControls(){
+  const oldOwn=$('own-page').value;
+  const oldRivals=[...$('rival-pages').selectedOptions].map(o=>o.value);
+  const choices=pages.map(p=>option(p.id,p.title||p.url||p.id));
+  $('own-page').replaceChildren(option('','내 문서 선택'),...choices);
+  if(pages.some(p=>p.id===oldOwn))$('own-page').value=oldOwn;
+  const ownId=$('own-page').value;
+  $('rival-pages').replaceChildren(...pages.filter(p=>p.id!==ownId).map(p=>option(p.id,p.title||p.url||p.id)));
+  for(const el of $('rival-pages').options){el.selected=oldRivals.includes(el.value);}
+  $('compare-content').disabled=pages.length<2||!ownId;
+}
+function renderGapResult(){
+  const root=$('gap-results');
+  root.replaceChildren();
+  const result=contentComparison;
+  $('download-gap').disabled=!result;
+  if(!result)return;
+  const stats=node('p','muted','비교한 경쟁 문서 '+result.competitors.length+'개 · 검토 후보 '+result.review.length+'개 · 관련 표현 확인 '+result.related.length+'개');
+  root.append(stats);
+  const review=node('div','gap-cards');
+  if(!result.review.length)review.append(node('p','empty','단어 기반 검토 후보가 없습니다. 실제 내용의 정확성이나 검색 경쟁력이 확인된 것은 아닙니다.'));
+  for(const topic of result.review.slice(0,30)){
+    const card=node('article','gap-card');
+    card.append(node('h3',null,topic.topic));
+    card.append(node('p','muted','내 문서에서 일치한 단어: '+(topic.mentioned.join(' · ')||'없음')+' · 검토 후보(정보 누락 확정 아님)'));
+    for(const ref of topic.references){
+      const link=node('a',null,(ref.title||ref.heading)+' · '+ref.heading);
+      link.href=ref.url;link.target='_blank';link.rel='noopener noreferrer';
+      card.append(link);
+    }
+    review.append(card);
+  }
+  root.append(review);
+  if(result.related.length){
+    const detail=node('details');
+    detail.append(node('summary',null,'내 문서에 관련 표현이 발견된 주제 '+result.related.length+'개'));
+    const list=node('ul');
+    for(const x of result.related.slice(0,40))list.append(node('li',null,x.topic+' · '+x.status));
+    detail.append(list);root.append(detail);
+  }
+  root.append(node('p','muted',result.limitations.join(' ')));
+}
+function compareGap(){
+  const own=pages.find(p=>p.id===$('own-page').value);
+  const rivals=[...$('rival-pages').selectedOptions].map(o=>pages.find(p=>p.id===o.value)).filter(Boolean).slice(0,8);
+  if(!own||!rivals.length){
+    contentComparison=null;renderGapResult();text($('gap-message'),'내 문서 1개와 경쟁 문서 1개 이상을 선택해 주세요.');updatePrompt();return;
+  }
+  contentComparison=compareCapturedContent(own,rivals,{keyword:$('gap-keyword').value});
+  text($('gap-message'),'수집된 제목·소제목·본문 단어를 비교했습니다. 표시된 후보는 직접 읽고 판단해야 합니다.');
+  renderGapResult();updatePrompt();
+}
+function resetGap(){
+  contentComparison=null;
+  renderGapControls();renderGapResult();
+  text($('gap-message'),'문서를 선택하고 비교하기를 누르세요.');
+  updatePrompt();
+}
+$('own-page').addEventListener('change',resetGap);
+$('rival-pages').addEventListener('change',()=>{contentComparison=null;renderGapResult();updatePrompt();});
+$('gap-keyword').addEventListener('input',()=>{contentComparison=null;renderGapResult();updatePrompt();});
+$('compare-content').addEventListener('click',compareGap);
+$('download-gap').addEventListener('click',()=>{
+  if(contentComparison)download('naver-content-gap-evidence.txt',gapReportText(contentComparison),'text/plain;charset=utf-8');
+});
+
 function createPrompt(){
   const s=selected();
   const diff=s&&older()?compareSearches(s,older()):null;
   const selectedSearches=[s,older()].filter(Boolean);
   const own=$('own-domains').value.trim();
-  return buildAIPrompt(selectedSearches,pages,diff)+'\n\n내 사이트 도메인: '+(own||'미입력');
+  return buildAIPrompt(selectedSearches,pages,diff)+'\n\n내 사이트 도메인: '+(own||'미입력')+ (contentComparison?'\n\n수집 문서의 단어 기반 비교 (관측 근거, 검색 원인 아님):\n'+JSON.stringify({keyword:contentComparison.keyword,own:contentComparison.own,competitors:contentComparison.competitors,review:contentComparison.review.slice(0,20),limitations:contentComparison.limitations},null,2):'');
 }
 function updatePrompt(){$('preview').value=createPrompt();}
 function download(name,data,type){
@@ -95,13 +163,13 @@ $('export-json').addEventListener('click',()=>{
   download('naver-intelligence-evidence.json',JSON.stringify({
     generated_at:new Date().toISOString(),selected_searches:[s,prior].filter(Boolean),
     selected_comparison:s&&prior?compareSearches(s,prior):null,
-    pages:pages.map(pageStats),warning:'사용자 수집 자료 · DOM 추정 · 공식 검색 순위 아님'
+    pages:pages.map(pageStats),content_comparison:contentComparison,warning:'사용자 수집 자료 · DOM 추정 · 공식 검색 순위 아님'
   },null,2),'application/json;charset=utf-8');
 });
 async function init(){
   try{
     [searches,pages]=await Promise.all([listSearches(),listPages()]);
-    renderOptions();renderPages();
+    renderOptions();renderPages();renderGapControls();
     showMessage('검색 기록 '+searches.length+'개, 방문 문서 '+pages.length+'개를 이 브라우저에서 불러왔습니다.');
   }catch(error){showMessage('로컬 분석 자료 로드 실패: '+error.message);}
 }
