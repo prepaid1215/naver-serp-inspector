@@ -74,8 +74,10 @@ try:
     assert articles[0]['visible_title']=='KT 바로유심 개통 순서'
     assert articles[0]['title_confidence']=='high'
     assert articles[0]['document_visual_order']==1
-    assert articles[1]['visible_title']=='GS25 유심 개통 전 확인사항'
-    assert articles[1]['title_confidence']=='heuristic'
+    # A nearby <h3> may be the cafe's name instead of the article title.
+    # Without a same-URL headline, mark title as unverified.
+    assert articles[1]['visible_title']==''
+    assert articles[1]['title_confidence']=='unverified'
     assert articles[1]['document_visual_order']==2
     assert observed['position_basis']=='approximate_document_y_order_of_detected_links'
 
