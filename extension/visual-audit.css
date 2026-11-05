@@ -5,3 +5,23 @@
 .candidate-rect.confirmed{border-style:solid;border-color:#147da0}
 .candidate-rect.rejected{opacity:.22}
 .candidate-rect.uncertain{border-color:#d18a24}
+
+
+/* Visible search block boundaries are hints until manually verified. */
+.block-overlay-toggle{font-size:12px;color:#526c8d;display:flex;gap:8px;align-items:center;margin-top:8px}
+.block-overlay-toggle input{width:auto;margin:0}
+.block-rect{position:absolute;pointer-events:none;border:2px solid #c38a38;background:#c38a380b;border-radius:6px}
+.block-rect.confirmed{border-color:#2d8d74}
+.block-rect.rejected{opacity:.2}
+.block-rect.uncertain{border-style:dashed}
+.block-review{border:1px solid #e1e9f5;border-radius:10px;margin-bottom:12px;padding:10px}
+.block-review summary{font-size:13px;font-weight:800;cursor:pointer}
+.block-review summary span{font-weight:500;color:#657c97;font-size:11px}
+.block-review .muted{margin:9px 0}
+.block-list{max-height:260px;overflow:auto}
+.block-item{padding:10px;border-bottom:1px solid #e8edf4;display:grid;grid-template-columns:minmax(0,1fr) 130px 130px;gap:8px;align-items:end}
+.block-item .block-meta{min-width:0;font-size:11px;color:#526a8f;overflow-wrap:anywhere}
+.block-item strong{display:block;color:#193a6c;font-size:12px}
+.block-item label{font-size:11px}
+.block-item select{margin:4px 0 0;font-size:11px;padding:6px}
+@media(max-width:690px){.block-item{grid-template-columns:1fr 1fr}.block-item .block-meta{grid-column:1/-1}}
