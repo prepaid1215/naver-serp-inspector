@@ -9,7 +9,7 @@
 import {extractOpenArticle} from './naver-article.js';
 import {collectNaverSearchDOM} from './naver-autopilot-search.js';
 import {checkPrivateRepository,uploadEvidence,updateEvidenceIndex} from './github-evidence-sync.js';
-import {JOB_LABEL,JOB_RESULT_MARKER,parseNaverJob,naverSearchURL,pickNaverArticles} from './naver-autopilot-core.js';
+import {JOB_LABEL,JOB_RESULT_MARKER,MAX_ARTICLES,MAX_CANDIDATES,parseNaverJob,naverSearchURL,pickNaverArticles,validNaverArticleURL} from './naver-autopilot-core.js';
 
 const SETTINGS='serp-autopilot-settings-v1';
 const STATUS='serp-autopilot-status-v1';
@@ -164,7 +164,17 @@ async function executeJob(job,config,secret){
   await status('네이버 검색 중: '+job.query,{issue_number:job.issue_number,phase:'search'});
   const [serp]=await openAndRead(naverSearchURL(job.query),collectNaverSearchDOM);
   if(!serp||!Array.isArray(serp.rows))throw Error('검색 결과를 읽지 못했습니다.');
-  const articles=pickNaverArticles(serp.rows,job.limit);
+  // Collect more validated candidates than requested so a blocked/inaccessible
+  // post can be replaced without reporting an avoidable incomplete result.
+  // The upper bound limits navigation and stays within the user's job scope.
+  const articles=pickNaverArticles(serp.rows,
+    Math.min(MAX_CANDIDATES,Math.max(job.limit+2,job.limit*2)));
+  const discovered={BLOG:0,CAFE:0};
+  for(const row of serp.rows){
+    if(validNaverArticleURL(row.url)&&Object.hasOwn(discovered,row.type))
+      discovered[row.type]++;
+  }
+  let attempted=0;
   const captured_at=now();
   const rows=serp.rows.slice(0,100).map((r,index)=>({
     result_url:r.url,result_title:r.title,block_type:r.type,
@@ -185,9 +195,11 @@ async function executeJob(job,config,secret){
     }));
   }
   for(const [index,article] of articles.entries()){
+    if(article_summaries.length>=job.limit)break;
     await ensureEnabled();
-    await status('게시글 본문 수집 '+(index+1)+'/'+articles.length+' — '+job.query,{
-      issue_number:job.issue_number,phase:'articles',completed:index,total:articles.length
+    attempted++;
+    await status('게시글 본문 수집 '+(article_summaries.length+1)+'/'+job.limit+' — '+job.query,{
+      issue_number:job.issue_number,phase:'articles',completed:article_summaries.length,total:job.limit,attempted
     });
     try{
       const frames=await openAndRead(article.url,extractOpenArticle,true);
@@ -214,25 +226,34 @@ async function executeJob(job,config,secret){
         clean_characters:candidate.clean_text?.length||0,
         heading_candidates:(candidate.headings||[]).slice(0,8).map(h=>String(h.text||'').slice(0,130)),
         images:Number.isInteger(candidate.images)?candidate.images:0,
-        completeness:'not_verified'
+        completeness:'not_verified',
+        extraction_warnings:(candidate.extraction_audit?.warnings||[]).slice(0,4)
       });
     }catch(error){
       failures.push({url:article.url,reason:short(error.message)});
     }
   }
   if(uploaded.length)await updateEvidenceIndex({config,token:secret,entries:uploaded});
+  const captured=article_summaries.length;
   return {
-    status:uploaded.filter(x=>x.kind==='pages').length===0?'incomplete':
-      uploaded.filter(x=>x.kind==='pages').length<articles.length?'partial':'completed',
+    status:captured>=job.limit?'completed':captured?'partial':'incomplete',
     query:job.query,limit:job.limit,issue_number:job.issue_number,
     captured_at,search_candidates:serp.rows.length,
-    // Candidate counts are NOT actual Naver result ranking positions.
-    attempted_articles:articles.length,
-    captured_articles:article_summaries.length,
+    // These are visible DOM link candidates, never a measured Naver ranking.
+    search_article_links:discovered,
+    candidate_articles:articles.length,
+    requested_articles:job.limit,
+    attempted_articles:attempted,
+    captured_articles:captured,
+    captured_sources:{
+      BLOG:article_summaries.filter(x=>x.source_kind==='NAVER_BLOG').length,
+      CAFE:article_summaries.filter(x=>x.source_kind==='NAVER_CAFE').length
+    },
+    selection_strategy:'alternate_blog_cafe_retry_on_failure',
     article_summaries,
     paths:uploaded.map(x=>x.path),
     failed_articles:failures,
-    warning:'검색 결과의 DOM 링크 후보를 조사한 것이며 실제 네이버 순위는 검증되지 않았습니다.'
+    warning:'네이버 검색 페이지의 DOM 링크 후보에서 블로그와 카페를 번갈아 조사했습니다. 수집 순서는 네이버 노출 순위가 아니며 원문 완전성은 검증되지 않았습니다.'
   };
 }
 async function poll(){
@@ -327,7 +348,7 @@ chrome.runtime.onMessage.addListener((message,_sender,respond)=>{
       return {enabled:!!data[SETTINGS]?.enabled,
         repository:data[SETTINGS]?.repository||'',
         status:data[STATUS]||null,limits:{
-          jobsPerDay:MAX_JOBS_PER_DAY,articlesPerJob:3
+          jobsPerDay:MAX_JOBS_PER_DAY,articlesPerJob:MAX_ARTICLES
         }};
     }
     if(message.type==='AUTOPILOT_DISABLE'){
@@ -340,9 +361,10 @@ chrome.runtime.onMessage.addListener((message,_sender,respond)=>{
       const secret=await token();
       const config=await checkPrivateRepository({repository:value,token:secret});
       await ensureJobLabel(config,secret);
-      await chrome.storage.local.set({[SETTINGS]:{
-        enabled:true,repository:config.name,enabled_at:now()
-      }});
+      await chrome.storage.local.set({
+        [SETTINGS]:{enabled:true,repository:config.name,enabled_at:now()},
+        'serp-lens-private-evidence-repository':config.name
+      });
       await status('자동 조사가 켜졌습니다. 전용 GitHub 요청만 실행합니다.',{phase:'enabled'});
       return {ok:true,enabled:true,repository:config.name};
     }

@@ -5,7 +5,8 @@
 export const JOB_LABEL='serp-lens-request';
 export const JOB_MARKER='SERP_LENS_JOB_V1';
 export const JOB_RESULT_MARKER='SERP_LENS_JOB_RESULT_V1';
-export const MAX_ARTICLES=3;
+export const MAX_ARTICLES=6;
+export const MAX_CANDIDATES=12;
 const clean=x=>String(x??'').replace(/\s+/g,' ').trim();
 export function parseNaverJob(issue){
   if(!issue||!Number.isInteger(issue.number)||issue.number<1)throw Error('올바르지 않은 작업 번호');
@@ -53,6 +54,7 @@ export function validNaverArticleURL(input){
   }else if(cafe){
     // Cafe homepage links (/clubSlug) are NOT individual articles.
     isArticle=/^\/[A-Za-z0-9_-]{2,80}\/\d{1,20}\/?$/.test(path);
+    if(!isArticle&&/^\/ca-fe\/cafes\/\d+\/articles\/\d+\/?$/i.test(path))isArticle=true;
     if(!isArticle&&/^\/ArticleRead\.(?:nhn|naver)$/i.test(path)){
       const club=u.searchParams.get('clubid'),article=u.searchParams.get('articleid');
       isArticle=/^\d{1,20}$/.test(club||'')&&/^\d{1,20}$/.test(article||'');
@@ -62,15 +64,38 @@ export function validNaverArticleURL(input){
   u.hash='';
   return u.href;
 }
-export function pickNaverArticles(rows,limit=MAX_ARTICLES){
-  const selected=[],seen=new Set();
+// Choose from both Naver sources when both are available. This is source
+// diversity, NOT an assertion about visual or organic ranking. Preserve the
+// search DOM order within each source and keep all search-linked parameters
+// (some Cafe articles need the referral token for public rendering).
+export function pickNaverArticles(rows,limit=3){
+  const cap=Math.min(MAX_CANDIDATES,Math.max(1,Math.floor(limit)||1));
+  const byType={BLOG:[],CAFE:[]},seen=new Set();
+  let firstType='';
   for(const row of rows||[]){
-    if(selected.length>=Math.min(MAX_ARTICLES,Math.max(1,limit)))break;
     if(row.type!=='BLOG'&&row.type!=='CAFE')continue;
     const url=validNaverArticleURL(row.url);
-    if(!url||seen.has(url))continue;
-    seen.add(url);
-    selected.push({title:clean(row.title).slice(0,250),url,type:row.type});
+    if(!url)continue;
+    const u=new URL(url);
+    let key=u.hostname+u.pathname.replace(/\/$/,'');
+    if(/\/PostView\.(?:naver|nhn)$/i.test(u.pathname)){
+      key=u.hostname+'/'+u.searchParams.get('blogId')+'/'+u.searchParams.get('logNo');
+    }
+    if(/\/ArticleRead\.(?:naver|nhn)$/i.test(u.pathname)){
+      key=u.hostname+'/'+u.searchParams.get('clubid')+'/'+u.searchParams.get('articleid');
+    }
+    if(seen.has(key))continue;
+    seen.add(key);
+    if(!firstType)firstType=row.type;
+    byType[row.type].push({title:clean(row.title).slice(0,250),url,type:row.type});
+  }
+  const order=firstType==='CAFE'?['CAFE','BLOG']:['BLOG','CAFE'];
+  const selected=[];
+  while(selected.length<cap&&(byType.BLOG.length||byType.CAFE.length)){
+    for(const kind of order){
+      if(selected.length>=cap)break;
+      if(byType[kind].length)selected.push(byType[kind].shift());
+    }
   }
   return selected;
 }

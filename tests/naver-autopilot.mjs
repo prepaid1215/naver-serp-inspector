@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   JOB_LABEL,JOB_RESULT_MARKER,jobIssueBody,parseNaverJob,
-  naverSearchURL,validNaverArticleURL,pickNaverArticles
+  naverSearchURL,validNaverArticleURL,pickNaverArticles,MAX_ARTICLES,MAX_CANDIDATES
 } from '../extension/naver-autopilot-core.js';
 
 const issue={number:42,state:'open',labels:[{name:JOB_LABEL}],
@@ -35,6 +35,21 @@ const chosen=pickNaverArticles([
 assert.equal(chosen.length,2);
 assert.equal(chosen[0].type,'BLOG');
 assert.equal(chosen[1].type,'CAFE');
+assert.equal(MAX_ARTICLES,6);
+assert.equal(MAX_CANDIDATES,12);
+assert.equal(parseNaverJob({...issue,body:jobIssueBody('KT 바로유심',6)}).limit,6);
+assert.throws(()=>parseNaverJob({...issue,body:'SERP_LENS_JOB_V1\\n{"query":"KT 바로유심","limit":7}'}));
+assert.equal(validNaverArticleURL(
+  'https://cafe.naver.com/ca-fe/cafes/12345/articles/98765'),
+  'https://cafe.naver.com/ca-fe/cafes/12345/articles/98765');
+const mixed=pickNaverArticles([
+  {type:'CAFE',url:'https://cafe.naver.com/demo/101?art=abc',title:'cafe1'},
+  {type:'CAFE',url:'https://cafe.naver.com/demo/101?art=xyz',title:'same article'},
+  {type:'CAFE',url:'https://cafe.naver.com/demo/102',title:'cafe2'},
+  {type:'BLOG',url:'https://blog.naver.com/demo/12345678',title:'blog1'},
+  {type:'BLOG',url:'https://blog.naver.com/demo/12345679',title:'blog2'}
+],6);
+assert.deepEqual(mixed.map(x=>x.title),['cafe1','blog1','cafe2','blog2']);
 
 const local={},session={'serp-lens-chat-bridge-token':'test-private-token'};
 let listener,alarmListener,tabId=10;
@@ -74,10 +89,13 @@ globalThis.chrome={
         source_url:tab.url,query:'396 요금제',rows:[
           {url:'https://blog.naver.com/demo',title:'인용 블로그 프로필',type:'BLOG',headline_hint:true},
           {url:'https://cafe.naver.com/demo',title:'인용 카페 프로필',type:'CAFE',headline_hint:true},
-          {url:'https://blog.naver.com/demo/10000000',title:'396 요금제 글',type:'BLOG',headline_hint:true},
+          {url:'https://blog.naver.com/demo/10000000',title:'접근 실패 테스트',type:'BLOG',headline_hint:true},
           {url:'https://cafe.naver.com/demo/20000000',title:'396 요금제 카페',type:'CAFE',headline_hint:true},
+          {url:'https://blog.naver.com/demo/10000001',title:'다른 공개 블로그',type:'BLOG',headline_hint:true},
           {url:'https://evil.example/redirect',title:'잘못된 링크',type:'BLOG'}
         ]}}];
+      if(func.name==='extractOpenArticle'&&tab.url.endsWith('/10000000'))
+        return [{result:null}]; // Retries the next candidate, not the same page.
       if(func.name==='extractOpenArticle')return [{result:{
         url:tab.url,source_frame:tab.url,title:'396 요금제 본문 테스트',
         text:'네이버 공개 게시글 본문 내용입니다. '.repeat(12),
@@ -121,7 +139,12 @@ globalThis.fetch=async (url,opts={})=>{
     const p=JSON.parse(obj.body.split('\n').slice(1).join('\n'));
     assert.equal(p.status,'completed');
     assert.equal(p.captured_articles,2);
-    assert.equal(p.search_candidates,5);
+    assert.equal(p.search_candidates,6);
+    assert.equal(p.requested_articles,2);
+    assert.equal(p.attempted_articles,3);
+    assert.equal(p.failed_articles.length,1);
+    assert.equal(p.captured_sources.CAFE,1);
+    assert.equal(p.captured_sources.BLOG,1);
     assert.equal(p.paths.length,3);
     assert.equal(p.article_summaries.length,2);
     assert.equal(p.article_summaries[0].title,'396 요금제 본문 테스트');
@@ -154,7 +177,7 @@ assert.equal(r.ok,true);
 r=await send('AUTOPILOT_CHECK_NOW');
 assert.equal(r.ok,true,JSON.stringify(r));
 assert.equal(r.result.captured_articles,2);
-assert.equal(urls.length,3);
+assert.equal(urls.length,4);
 assert.ok(urls.every(u=>u.startsWith('https://search.naver.com/')||
   u.startsWith('https://blog.naver.com/')||u.startsWith('https://cafe.naver.com/')));
 assert.equal(files.size,4); // 1 result list + 2 posts + 1 index
@@ -164,7 +187,7 @@ assert.equal(local['serp-autopilot-processed-v1'].repository,'demo/private-evide
 assert.ok(alarmCadences.some(x=>x.settings.periodInMinutes===0.5));
 r=await send('AUTOPILOT_CHECK_NOW');
 assert.equal(r.processed,0);
-assert.equal(urls.length,3);
+assert.equal(urls.length,4);
 // Simulate extension restart or lost local processed state after a GitHub
 // result comment was written, while the issue remains open.
 retryOpen=true;
@@ -173,7 +196,7 @@ r=await send('AUTOPILOT_CHECK_NOW');
 assert.equal(r.ok,true);
 assert.equal(r.already_reported,true);
 assert.equal(r.processed,0);
-assert.equal(urls.length,3);
+assert.equal(urls.length,4);
 assert.equal(history.length,1);
 retryOpen=false;
 r=await send('AUTOPILOT_DISABLE');

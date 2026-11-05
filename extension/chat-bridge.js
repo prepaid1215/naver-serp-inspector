@@ -13,6 +13,21 @@ const node=(tag,klass,txt)=>{
 };
 let searches=[],pages=[],verified=null,selected=[],uploadBusy=false,readyToShare=false;
 const STATUS='serp-lens-chat-bridge-token';
+const REPO_KEY='serp-lens-private-evidence-repository';
+const AUTOPILOT_KEY='serp-autopilot-settings-v1';
+const DEFAULT_REPO='prepaid1215/serp-lens-private-data';
+async function restoreRepository(){
+  // The repository's full name is not a secret and may be persisted. The
+  // fine-grained token must stay exclusively in chrome.storage.session.
+  const cached=await chrome.storage.local.get([REPO_KEY,AUTOPILOT_KEY]);
+  const configured=cached?.[AUTOPILOT_KEY]?.repository;
+  const saved=cached?.[REPO_KEY];
+  const legacy=localStorage.getItem(REPO_KEY);
+  const candidate=[configured,saved,legacy,DEFAULT_REPO].find(value=>{
+    try{return Boolean(validateRepository(value));}catch{return false;}
+  });
+  $('bridge-repo').value=candidate||DEFAULT_REPO;
+}
 function setStatus(text,isError=false){
   const el=$('bridge-status');
   el.textContent=text;
@@ -76,8 +91,7 @@ async function loadRecords(){
     $('page-items').replaceChildren(...(pagesView.length?
       pagesView.map(item=>makeChoice(item,'pages')):
       [node('p','bridge-empty','저장한 게시글 본문이 없습니다.')]));
-    const cachedRepo=localStorage.getItem('serp-lens-private-evidence-repository');
-    if(cachedRepo)$('bridge-repo').value=cachedRepo;
+    await restoreRepository();
     const session=await chrome.storage.session.get(STATUS);
     if(session?.[STATUS]){
       $('bridge-token').placeholder='세션 토큰 저장됨 · 변경 시 다시 입력';
@@ -137,7 +151,8 @@ $('verify-repo').addEventListener('click',async()=>{
     verified=config;
     await chrome.storage.session.set({[STATUS]:token});
     $('bridge-token').value='';$('bridge-token').placeholder='이 세션에만 토큰 보관 중';
-    localStorage.setItem('serp-lens-private-evidence-repository',repository);
+    await chrome.storage.local.set({[REPO_KEY]:config.name});
+    localStorage.setItem(REPO_KEY,config.name);
     repoStatus('확인 완료: '+repository+' (비공개 저장소 / 기본 브랜치 '+config.branch+')','ok');
     setStatus('비공개 저장소 연결을 확인했습니다. 선택한 자료를 미리 보고 공유 동의 후 전송하세요.');
   }catch(error){

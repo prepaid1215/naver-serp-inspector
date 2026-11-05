@@ -53,12 +53,19 @@ try:
     ctx.add_init_script("""(()=>{
       let stored={};
       window.chrome={
-        runtime:{getManifest:()=>({version:'2.2.1'}),sendMessage:async()=>({enabled:true,repository:'example/private-evidence',status:{phase:'idle',message:'새 요청 없음 · 최근 다이소 유심 본문 3/3건',last_result:{query:'다이소 유심',captured_articles:3,attempted_articles:3,issue_number:7,captured_at:'2026-11-05T08:00:00Z'}}})},
-        storage:{session:{
-          get:async key=>({[key]:stored[key]}),
-          set:async obj=>{Object.assign(stored,obj);},
-          remove:async key=>{delete stored[key];}
-        }}
+        runtime:{getManifest:()=>({version:'2.3.1'}),sendMessage:async()=>({enabled:true,repository:'example/private-evidence',status:{phase:'idle',message:'새 요청 없음 · 최근 다이소 유심 본문 3/3건',last_result:{query:'다이소 유심',captured_articles:3,attempted_articles:3,issue_number:7,captured_at:'2026-11-05T08:00:00Z'}}})},
+        storage:{
+          session:{
+            get:async key=>({[key]:stored[key]}),
+            set:async obj=>{Object.assign(stored,obj);},
+            remove:async key=>{delete stored[key];}
+          },
+          local:{
+            get:async keys=>Object.fromEntries(
+              (Array.isArray(keys)?keys:[keys]).map(key=>[key,stored[key]])),
+            set:async obj=>{Object.assign(stored,obj);}
+          }
+        }
       };
     })()""")
     requests=[]
@@ -104,6 +111,7 @@ try:
     }""")
     page.reload()
     expect(page.locator('h1')).to_contain_text('네이버 자동 조사')
+    expect(page.locator('#bridge-repo')).to_have_value('prepaid1215/serp-lens-private-data')
     expect(page.locator('#autopilot-state-label')).to_contain_text('자동 조사 켜짐')
     expect(page.locator('#autopilot-last-query')).to_have_text('다이소 유심')
     expect(page.locator('#autopilot-last-count')).to_have_text('3 / 3건')
