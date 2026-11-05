@@ -63,7 +63,7 @@ const item=await uploadEvidence({
 assert.equal(item.kind,'pages');
 assert.ok(item.path.startsWith('serp-lens/pages/'));
 assert.equal(uploads.length,1);
-assert.equal(uploads[0].payload.data.text,page.text);
+assert.equal(uploads[0].payload.data.text,page.text.trim());
 assert.equal(uploads[0].payload.data.sensitive_unknown_field,undefined);
 await updateEvidenceIndex({config,token:'secret-token',entries:[item],fetcher:fakeFetch});
 assert.equal(uploads[1].payload.records[0].path,item.path);
