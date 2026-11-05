@@ -53,7 +53,7 @@ try:
     ctx.add_init_script("""(()=>{
       let stored={};
       window.chrome={
-        runtime:{getManifest:()=>({version:'2.2.0'})},
+        runtime:{getManifest:()=>({version:'2.2.1'}),sendMessage:async()=>({enabled:true,repository:'example/private-evidence',status:{phase:'idle',message:'새 요청 없음 · 최근 다이소 유심 본문 3/3건',last_result:{query:'다이소 유심',captured_articles:3,attempted_articles:3,issue_number:7,captured_at:'2026-11-05T08:00:00Z'}}})},
         storage:{session:{
           get:async key=>({[key]:stored[key]}),
           set:async obj=>{Object.assign(stored,obj);},
