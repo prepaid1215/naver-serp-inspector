@@ -1,16 +1,17 @@
 {
   "name": "serp-lens",
-  "version": "1.4.0-beta",
+  "version": "1.5.0-beta",
   "private": true,
   "type": "module",
   "description": "Offline Naver SERP inspector (GitHub Pages + Windows + opt-in Chrome/Edge extension capture)",
   "scripts": {
-    "check": "node --check web/engine.js && node --check web/zip.js && node --check web/app.js && node --check web/desktop-ui.js && node --check extension/popup.js && node --check extension/capture-store.js && node --check extension/capture-meta.js && node --check extension/intelligence-store.js && node --check extension/intelligence-analysis.js && node --check extension/intelligence.js",
+    "check": "node --check web/engine.js && node --check web/zip.js && node --check web/app.js && node --check web/desktop-ui.js && node --check extension/popup.js && node --check extension/capture-store.js && node --check extension/capture-meta.js && node --check extension/intelligence-store.js && node --check extension/intelligence-analysis.js && node --check extension/intelligence.js && node --check extension/content-gap.js",
     "test:zip": "node tests/zip_reader.mjs",
     "test:blocks": "node tests/blocks.mjs",
-    "test": "npm run check && npm run test:zip && npm run test:blocks && npm run test:extension && npm run test:intelligence",
+    "test": "npm run check && npm run test:zip && npm run test:blocks && npm run test:extension && npm run test:intelligence && npm run test:content-gap",
     "test:extension": "node tests/extension-meta.mjs",
-    "test:intelligence": "node tests/intelligence.mjs"
+    "test:intelligence": "node tests/intelligence.mjs",
+    "test:content-gap": "node tests/content-gap.mjs"
   },
   "license": "MIT"
 }
