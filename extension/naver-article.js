@@ -70,7 +70,9 @@ export function extractOpenArticle() {
     'h1,h2,h3,h4,.se-section-title,.se-title-text,.se-text-paragraph'
   )].slice(0,1500);
   const headings=[],headingSeen=new Set();
-  const numericSection=/^\d{1,2}[.)]\s+\S.{0,120}$/;
+  // Naver authors commonly use keycap emoji, circled digits and compact
+  // numbered labels for section headings. These remain *candidates*.
+  const numericSection=/^(?:\d{1,2}[.)]\s*|[0-9]\uFE0F?\u20E3\s*|[①-⑳]\s*|▣\s+)\S.{0,130}$/u;
   for(const node of headingNodes){
     if(node.closest('table,.se-table,.se-table-container,.se-table-content,'+
       '.se-module-oglink,.se-module-image,.se-module-caption'))continue;
@@ -89,9 +91,9 @@ export function extractOpenArticle() {
     });
     if(headings.length>=90)break;
   }
-  // Some editor layouts split a numbered section across inner text nodes.
-  // Use the observed text as a fallback if no DOM section labels were found.
-  if(!headings.some(h=>h.basis==='NUMBERED_TEXT_CANDIDATE')){
+  // Add candidate headings that the DOM misses (including emoji headings).
+  // Preserve all raw prose; this is metadata for ChatGPT, not a rewrite.
+  {
     for(const line of rawText.split(/\n/)){
       const text=oneLine(line);
       if(!numericSection.test(text)||headingSeen.has(text))continue;
@@ -141,7 +143,11 @@ export function extractOpenArticle() {
     if(id&&number&&/^[\w-]{2,80}$/.test(id)&&/^\d{8,20}$/.test(number))
       canonical='https://blog.naver.com/'+encodeURIComponent(id)+'/'+number;
   }
+  const previewCount=root.querySelectorAll(
+    '.se-module-oglink,.se-component-oglink,.se-module-link,.se-oglink'
+  ).length;
   const warnings=['원문 전체와 대조하지 않아 완전성을 검증하지 않았습니다.'];
+  if(previewCount)warnings.push('링크 미리보기 '+previewCount+'개가 본문 텍스트에 포함됐을 수 있습니다.');
   if(imageNodes.length)warnings.push('이미지 안의 글자는 OCR로 추출하지 않았습니다.');
   if(fullText.length>textLimit)warnings.push('본문 텍스트가 60000자를 넘어 잘렸습니다.');
   return {
@@ -153,6 +159,7 @@ export function extractOpenArticle() {
     truncated:fullText.length>textLimit,text_length:fullText.length,
     headings,images:imageNodes.length,image_alt_samples:imageAlts,
     image_captions:captions,internal_links:internal,external_links:external,
+    embedded_link_preview_count:previewCount,
     extraction_selector:selected?.selector||'body-fallback',
     extraction_quality:selected?'article':'fallback',
     extraction_audit:{
