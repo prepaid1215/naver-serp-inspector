@@ -39,7 +39,7 @@ assert.equal(report.articles[0].text.length,15000);
 assert.equal(report.search.rows.length,5);
 const requests=[];
 const privateRepo={private:true,full_name:'prepaid1215/private-data'};
-const resultFile=()=>({type:'file',encoding:'base64',content:btoa(JSON.stringify(job))});
+const resultFile=()=>({type:'file',encoding:'base64',content:Buffer.from(JSON.stringify(job),'utf8').toString('base64')});
 const fakeFetch=async (url,opts)=>{
  requests.push({url,method:opts.method,headers:opts.headers,body:opts.body});
  let body;
@@ -61,7 +61,7 @@ assert.equal((await connection.fetchJob(id)).query,'다이소 유심');
 const saved=await connection.uploadResult(job,report);
 assert.equal(saved.sha,'saved-sha');
 const payload=JSON.parse(requests.find(x=>x.method==='PUT').body);
-const decoded=JSON.parse(atob(payload.content));
+const decoded=JSON.parse(Buffer.from(payload.content,'base64').toString('utf8'));
 assert.equal(decoded.articles[0].title,'본문 제목');
 assert.equal(payload.branch,'main');
 assert.ok(!JSON.stringify(payload).includes('memory-token'));
