@@ -12,3 +12,18 @@
 .gap-card a{display:block;color:#214fa5;font-size:12px;overflow-wrap:anywhere;margin-top:5px}
 .gap-results details{margin-top:16px;font-size:13px}
 .gap-results ul{padding-left:22px}
+
+
+/* Rank Lab: observational evidence, not an unofficial authority score. */
+.rank-subtitle{font-size:15px;margin:22px 0 12px}
+.factor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.factor-card{background:#fafbfe;border:1px solid #dde5f4;border-radius:12px;padding:15px;min-width:0}
+.factor-card h4{font-size:14px;margin:0 0 6px}
+.factor-verdict{font-size:13px;font-weight:750;color:#3458a2;margin:0 0 7px}
+.factor-card details{font-size:12px}
+.factor-example{display:flex;flex-direction:column;gap:2px;border-top:1px solid #e4eaf5;padding:9px 0}
+.factor-example a{color:#2253aa;overflow-wrap:anywhere}
+.factor-example small{color:#677991}
+.source-record{padding:10px 12px;border-bottom:1px solid #e5eaf3;display:flex;flex-direction:column;gap:1px}
+.source-record strong{font-size:13px;overflow-wrap:anywhere}
+.source-record span{font-size:12px;color:#64748b}

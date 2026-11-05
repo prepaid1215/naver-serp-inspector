@@ -1,10 +1,11 @@
 import {listSearches,listPages,removeSearch,removePage} from './intelligence-store.js';
 import {compareSearches,buildAIPrompt,pageStats} from './intelligence-analysis.js';
 import {compareCapturedContent,gapReportText} from './content-gap.js';
+import {analyzeRankingEvidence,rankLabPrompt} from './rank-lab.js';
 const $=id=>document.getElementById(id);
 const text=(node,value)=>{node.textContent=String(value??'');return node;};
 const node=(tag,klass,value)=>{const e=document.createElement(tag);if(klass)e.className=klass;if(value!==undefined)text(e,value);return e;};
-let searches=[],pages=[],contentComparison=null;
+let searches=[],pages=[],contentComparison=null,rankReport=null;
 function showMessage(value){text($('message'),value);}
 function option(id,label){const e=node('option',null,label);e.value=id;return e;}
 function selected(){return searches.find(s=>s.id===$('newer').value);}
@@ -63,7 +64,7 @@ function renderPages(){
     const list=node('ul');for(const h of (p.headings||[]).slice(0,24))list.append(node('li',null,h.level+' '+h.text));
     details.append(list,node('pre',null,(p.text||'').slice(0,2400)));card.append(details);
     const del=node('button','secondary','삭제');del.type='button';
-    del.addEventListener('click',async()=>{await removePage(p.id);pages=pages.filter(item=>item.id!==p.id);renderPages();resetGap();renderComparison();});
+    del.addEventListener('click',async()=>{await removePage(p.id);pages=pages.filter(item=>item.id!==p.id);renderPages();resetGap();clearRankLab();renderComparison();});
     card.append(del);$('pages').append(card);
   }
 }
@@ -134,6 +135,81 @@ $('download-gap').addEventListener('click',()=>{
   if(contentComparison)download('naver-content-gap-evidence.txt',gapReportText(contentComparison),'text/plain;charset=utf-8');
 });
 
+
+function renderRankLab(report){
+  const factors=$('rank-factors'),sources=$('rank-sources'),groups=$('rank-query-groups');
+  factors.replaceChildren();sources.replaceChildren();groups.replaceChildren();
+  $('rank-keywords').textContent=report.used_latest_capture_count;
+  $('rank-matched').textContent=report.matched_page_count;
+  $('rank-pairs').textContent=report.pair_comparisons;
+  const evidence=report.factors.slice().sort((a,b)=>b.pairs-a.pairs);
+  for(const f of evidence){
+    const card=node('article','factor-card');
+    card.append(node('h4',null,f.label));
+    card.append(node('p','factor-verdict',f.interpretation));
+    card.append(node('p','muted','비교 '+f.pairs+'쌍 · 검색 조건 '+f.observed_queries+'개 · 상위 문서 값이 더 큼 '+f.higher_greater+'쌍 · 하위 문서 값이 더 큼 '+f.lower_greater+'쌍'));
+    if(f.examples.length){
+      const details=node('details');
+      details.append(node('summary',null,'관측 근거 사례'));
+      for(const example of f.examples.slice(0,3)){
+        const v=node('div','factor-example');
+        const a=node('a',null,example.higher.title||example.higher.url);
+        a.href=example.higher.url;a.target='_blank';a.rel='noopener noreferrer';
+        const b=node('a',null,example.lower.title||example.lower.url);
+        b.href=example.lower.url;b.target='_blank';b.rel='noopener noreferrer';
+        v.append(node('strong',null,example.query+' · '+example.device),
+          node('small',null,'추정 위치 '+example.higher.estimated_order+' vs '+example.lower.estimated_order),
+          a,node('small',null,'관측 값: '+example.higher.value),
+          b,node('small',null,'관측 값: '+example.lower.value));
+        details.append(v);
+      }
+      card.append(details);
+    }
+    factors.append(card);
+  }
+  if(!evidence.length)factors.append(node('p','empty','비교할 문서의 본문 자료가 없습니다.'));
+  if(!report.top_sources.length)sources.append(node('p','empty','출처 집계 자료 없음'));
+  for(const source of report.top_sources.slice(0,15)){
+    const div=node('div','source-record');
+    div.append(node('strong',null,source.source),
+      node('span',null,'검색어 '+source.query_count+'개 · 노출 후보 '+source.appearances+'건 · 서로 다른 문서 '+source.distinct_urls+'건 · 최상단 추정 위치 '+source.best_estimated_order));
+    sources.append(div);
+  }
+  if(!report.groups.length)groups.append(node('p','empty','검색 기록이 없습니다.'));
+  for(const group of report.groups.slice(0,70)){
+    const div=node('div','source-record');
+    div.append(node('strong',null,group.query+' · '+group.device),
+      node('span',null,'문서 '+group.result_count+'건 · 본문 연결 '+group.captured_document_count+'건 · 출처 '+group.distinct_sources+'곳 · 유형 '+Object.entries(group.types).map(([k,n])=>k+' '+n).join(', ')));
+    groups.append(div);
+  }
+}
+function runRankLab(){
+  rankReport=analyzeRankingEvidence(searches,pages,{device:$('rank-device').value,keyword:$('rank-filter').value});
+  renderRankLab(rankReport);
+  $('copy-rank-lab').disabled=false;$('download-rank-lab').disabled=false;
+  text($('rank-message'),
+    '최신 검색 화면 '+rankReport.used_latest_capture_count+'건의 관측치와 방문 문서 '+rankReport.matched_page_count+'건을 비교했습니다. 공식 순위나 로직의 가중치를 표시하는 자료가 아닙니다.');
+}
+function clearRankLab(){
+  rankReport=null;
+  $('copy-rank-lab').disabled=true;$('download-rank-lab').disabled=true;
+  $('rank-keywords').textContent='—';$('rank-matched').textContent='—';$('rank-pairs').textContent='—';
+  for(const id of ['rank-factors','rank-sources','rank-query-groups'])$(id).replaceChildren();
+  text($('rank-message'),'검색 이력 또는 본문 자료가 달라졌습니다. 다시 분석해 주세요.');
+}
+$('run-rank-lab').addEventListener('click',runRankLab);
+$('rank-filter').addEventListener('input',clearRankLab);
+$('rank-device').addEventListener('change',clearRankLab);
+$('copy-rank-lab').addEventListener('click',async()=>{
+  if(!rankReport)return;
+  try{await navigator.clipboard.writeText(rankLabPrompt(rankReport));text($('rank-message'),'관측 근거와 가설 검증 요청문이 복사됐습니다.');}
+  catch(error){text($('rank-message'),'클립보드 실패: JSON 내보내기를 이용하세요.');}
+});
+$('download-rank-lab').addEventListener('click',()=>{
+  if(!rankReport)return;
+  download('naver-rank-lab-evidence.json',JSON.stringify(rankReport,null,2),'application/json;charset=utf-8');
+});
+
 function createPrompt(){
   const s=selected();
   const diff=s&&older()?compareSearches(s,older()):null;
@@ -151,7 +227,7 @@ $('older').addEventListener('change',renderComparison);
 $('own-domains').addEventListener('input',updatePrompt);
 $('remove-search').addEventListener('click',async()=>{
   const s=selected();if(!s)return;
-  await removeSearch(s.id);searches=searches.filter(x=>x.id!==s.id);renderOptions();
+  await removeSearch(s.id);searches=searches.filter(x=>x.id!==s.id);clearRankLab();renderOptions();
 });
 $('copy').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(createPrompt());showMessage('분석 요청문을 클립보드에 복사했습니다. ChatGPT 대화에 붙여넣으세요.');}

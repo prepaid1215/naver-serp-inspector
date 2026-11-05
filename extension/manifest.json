@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SERP Lens + NAVER Intelligence",
-  "version": "1.4.0",
-  "description": "네이버 검색 기록 변화와 직접 방문한 경쟁 문서 구조를 로컬에서 분석하고 AI 분석 요청문을 생성합니다.",
+  "name": "SERP Lens · NAVER Rank Lab",
+  "version": "1.6.0",
+  "description": "네이버 검색결과 관측과 경쟁 문서 비교로 상위노출 가설을 실험하는 로컬 분석기",
   "permissions": [
     "activeTab",
     "scripting"
