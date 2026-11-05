@@ -12,6 +12,11 @@ const page={id:'one',url:'https://blog.naver.com/demo/224123456789',
   origin_url:'https://blog.naver.com/demo',
   title:'다이소 유심과 LG 원칩 차이',text:'다이소 고고비 유심 비교 본문입니다. '.repeat(12),
   captured_at:'2026-11-05T10:00:00Z',source_frame:'https://blog.naver.com/PostView.naver?logNo=224123456789',
+  clean_text:'다이소 고고비 유심 비교 본문입니다.'.repeat(12),
+  clean_text_length:204,image_captions:['유심 포장 사진'],
+  extraction_audit:{comparison_to_original:'not_verified',source:'rendered_dom',
+    images_ocr:false,root_candidates:2,numbered_section_candidates:3,
+    warnings:['이미지 안의 글자는 OCR로 추출하지 않았습니다.']},
   headings:[{level:'H2',text:'NFC 기능 비교'}],images:3,score:90000,
   sensitive_unknown_field:'must not be exported'};
 const prepared=prepareSharedRecord('pages',page);
@@ -21,6 +26,11 @@ assert.ok(prepared.data.text.includes('고고비'));
 assert.equal(prepared.data.score,undefined);
 assert.equal(prepared.data.sensitive_unknown_field,undefined);
 assert.equal(prepared.data.origin_url,page.origin_url);
+assert.equal(prepared.data.clean_text,page.clean_text);
+assert.deepEqual(prepared.data.image_captions,['유심 포장 사진']);
+assert.equal(prepared.data.extraction_audit.comparison_to_original,'not_verified');
+assert.equal(prepared.data.extraction_audit.images_ocr,false);
+assert.equal(prepared.data.extraction_audit.root_candidates,2);
 assert.match(await evidencePath('pages',page),/^serp-lens\/pages\/2026-11\/[a-f0-9]{24}\.json$/);
 assert.equal(await evidencePath('pages',page),await evidencePath('pages',page));
 assert.throws(()=>prepareSharedRecord('pages',{url:page.url,title:'title',text:'abc'}),/본문/);

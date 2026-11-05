@@ -3,7 +3,8 @@
  * local records. GitHub access token is provided by the user, never embedded.
  */
 const PAGE_FIELDS=['url','source_frame','origin_url','title','description','canonical',
-  'published_at','text','truncated','text_length','headings','images','image_alt_samples',
+  'published_at','text','clean_text','clean_text_length','truncated','text_length',
+  'headings','images','image_alt_samples','image_captions','extraction_audit',
   'internal_links','external_links','extraction_selector','extraction_quality','source_kind',
   'captured_at'];
 const SEARCH_FIELDS=['query','device','sourceURL','captured_at','status','notes',
@@ -25,15 +26,31 @@ export function prepareSharedRecord(type,raw) {
   const entry={};
   for(const field of fields){
     if(!Object.hasOwn(raw,field))continue;
-    if(['text'].includes(field))entry[field]=toString(raw[field],60000);
+    if(['text','clean_text'].includes(field))entry[field]=toString(raw[field],60000);
     else if(['url','source_frame','origin_url','sourceURL','canonical'].includes(field))
       entry[field]=toString(raw[field],2048);
     else if(field==='headings')
       entry.headings=(Array.isArray(raw.headings)?raw.headings:[]).slice(0,90)
-        .map(h=>({level:toString(h.level,20),text:toString(h.text,250)}));
+        .map(h=>({level:toString(h.level,20),text:toString(h.text,250),basis:toString(h.basis,32)}));
     else if(field==='image_alt_samples')
       entry.image_alt_samples=(Array.isArray(raw.image_alt_samples)?raw.image_alt_samples:[])
         .slice(0,30).map(x=>toString(x,100));
+    else if(field==='image_captions')
+      entry.image_captions=(Array.isArray(raw.image_captions)?raw.image_captions:[])
+        .slice(0,40).map(x=>toString(x,250));
+    else if(field==='extraction_audit'){
+      const audit=raw.extraction_audit||{};
+      entry.extraction_audit={
+        comparison_to_original:toString(audit.comparison_to_original,40),
+        source:toString(audit.source,40),
+        images_ocr:audit.images_ocr===true,
+        root_candidates:Number.isFinite(audit.root_candidates)?audit.root_candidates:0,
+        numbered_section_candidates:Number.isFinite(audit.numbered_section_candidates)?
+          audit.numbered_section_candidates:0,
+        warnings:(Array.isArray(audit.warnings)?audit.warnings:[]).slice(0,5)
+          .map(w=>toString(w,220))
+      };
+    }
     else if(field==='rows')
       entry.rows=(Array.isArray(raw.rows)?raw.rows:[]).slice(0,200)
         .map(row=>Object.fromEntries(ROW_FIELDS.filter(k=>Object.hasOwn(row,k))

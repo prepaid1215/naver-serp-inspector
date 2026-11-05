@@ -32,6 +32,15 @@ try:
     assert '원칩' in result['text']
     assert result['images']==1
     assert result['score']>40000
+    assert 'AI 활용' in result['text']
+    assert 'AI 활용' not in result['clean_text']
+    assert any(h['text']=='1. NFC 지원 확인 방법' for h in result['headings'])
+    assert any(h['text']=='2. 편의점 구매 전 확인' for h in result['headings'])
+    assert not any(h['text'] in ('39,600원','10.3GB') for h in result['headings'])
+    assert result['image_captions']==['유심 외관 사진 설명']
+    assert result['extraction_audit']['comparison_to_original']=='not_verified'
+    assert result['extraction_audit']['images_ocr'] is False
+    assert result['extraction_audit']['numbered_section_candidates']==2
     page.goto(origin+'/tests/fixtures/naver_cafe_article.html')
     cafe=page.evaluate("""async()=>{
       const {extractOpenArticle}=await import('/extension/naver-article.js');
