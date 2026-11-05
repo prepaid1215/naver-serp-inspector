@@ -1,9 +1,9 @@
 // Independent local evidence store. No server uploads or background crawling.
 const DB = 'naver-intelligence-v2';
 const VERSION = 2;
-const MAX_EXPERIMENTS = 50;
-const MAX_SEARCHES = 100;
-const MAX_PAGES = 60;
+const MAX_EXPERIMENTS = 150;
+const MAX_SEARCHES = 2500;
+const MAX_PAGES = 500;
 
 function openDB() {
   return new Promise((resolve, reject) => {
