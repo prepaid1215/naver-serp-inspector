@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SERP Lens 전체 통합 검증</title>
+<link rel="stylesheet" href="verification-center.css">
+<script type="module" src="verification-center.js"></script>
+</head><body>
+<header><div class="wrap">
+<div class="eyebrow">NAVER RANK LAB · END-TO-END CHECK</div>
+<h1>검색 분석 전체 통합 검증</h1>
+<p>검색 수집 → 문서 연결 → 패턴 분석 → 실험 → 실제 PC·모바일 화면 검수 → 파서 교차검증</p>
+</div></header>
+<main class="wrap">
+<section class="panel intro">
+<h2>한 번에 실행하는 로컬 검증</h2>
+<p>현재 Chrome·Edge 브라우저 프로필에 저장된 자료를 읽어 여섯 단계의 연결 상태를 검사합니다. 검색 자동 실행이나 외부 전송은 하지 않습니다.</p>
+<div class="actions">
+<button id="verify-all">6단계 통합 검증 실행</button>
+<button id="export-summary" class="secondary" disabled>검증 보고서 JSON 저장</button>
+</div>
+<p id="message" role="status">검증 전입니다. 버튼을 누르면 로컬 검색·문서·실험·화면 검수 기록을 확인합니다.</p>
+<div class="summary-row">
+<div><strong id="completed">—</strong><span>증거 요건 충족 단계</span></div>
+<div><strong id="total">6</strong><span>전체 단계</span></div>
+<div><strong id="overall">검증 전</strong><span>현장 데이터 연결 상태</span></div>
+</div>
+</section>
+<section class="panel">
+<h2>단계별 연결 상태</h2>
+<p class="muted">‘준비됨’은 저장된 관측 자료가 검사 조건을 만족한다는 의미이며, 네이버 순위 정확성·인과관계가 입증됐다는 뜻이 아닙니다.</p>
+<div id="stages" class="stages"><p>아직 검증하지 않았습니다.</p></div>
+</section>
+<section class="panel">
+<h2>실제 검색 화면을 한 번에 검수하는 순서</h2>
+<ol>
+<li>네이버에서 검색 결과를 열어 <strong>현재 네이버 검색 수집</strong>과 <strong>현재 화면 위치 검수용 캡처</strong>를 모두 실행합니다.</li>
+<li><a href="visual-audit.html">검색 화면 검수 페이지</a>에서 PC·모바일 제목·광고·블록 위치와 누락 항목을 확인합니다.</li>
+<li><a href="intelligence.html">NAVER Intelligence</a>에서 동일 검색어에 나온 문서를 저장·비교하고 실험 기록을 분석합니다.</li>
+<li>이 페이지로 돌아와 <strong>6단계 통합 검증 실행</strong>을 눌러 누락된 자료를 확인합니다.</li>
+<li>필요하다면 이 화면의 보고서와 검수 화면의 <strong>PNG·JSON</strong>을 함께 내려받아 실제 화면 정확도를 검사합니다.</li>
+</ol>
+<p class="muted">추천 첫 검수 키워드: <strong>396요금제</strong>. PC와 모바일은 별도 캡처가 필요합니다. 변경 전후 실험은 실제 시간차 관측이 필요하므로 하루에 모든 현장 증거를 완성하지 못할 수 있습니다.</p>
+</section>
+<section class="panel">
+<h2>자동 테스트와 현장 검증은 별개입니다</h2>
+<p class="muted">GitHub Actions는 코드의 오프라인 단위 테스트·브라우저 테스트·확장프로그램 ZIP 제작 상태를 확인합니다. 이 페이지는 로컬 브라우저에 저장된 사용자 수집 자료의 요건을 검사합니다. 어느 쪽도 네이버 비공개 검색 로직을 복원하지 않습니다.</p>
+<a href="https://github.com/prepaid1215/naver-serp-inspector/actions" target="_blank" rel="noopener noreferrer">GitHub Actions 자동 테스트 기록 확인</a>
+</section>
+<footer>검색 결과 원본은 서버로 자동 전송되지 않습니다. 중요한 보고서는 사용자가 직접 내려받아 보관하세요.</footer>
+</main></body></html>
