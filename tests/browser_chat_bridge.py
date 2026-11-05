@@ -107,7 +107,17 @@ try:
     assert 'test-session-secret' not in json.dumps(uploaded)
     assert page.locator('#bridge-jobs').get_by_text('완료').count()>=1
     assert not errors,errors
-    print('CHAT BRIDGE GITHUB QUEUE MOCK CHROMIUM PASS')
+    ctx.route('https://blog.naver.com/**',lambda route:route.fulfill(
+      status=200,body=article,headers={'content-type':'text/html; charset=utf-8'}))
+    article_page=ctx.new_page()
+    article_page.goto('https://blog.naver.com/demo/224444444444')
+    article_page.add_script_tag(content=inspector+'\nwindow.__inspect=inspectNaverArticle;')
+    inspected=article_page.evaluate('window.__inspect()')
+    assert inspected['fetch_status']=='ok',inspected
+    assert inspected['content_confidence']=='medium'
+    assert '다이소 유심' in inspected['text']
+    assert inspected['images']==1
+    print('CHAT BRIDGE GITHUB QUEUE + NAVER ARTICLE EXTRACTION MOCK CHROMIUM PASS')
     ctx.close();browser.close()
 finally:
   server.shutdown()
