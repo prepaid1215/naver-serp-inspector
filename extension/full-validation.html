@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NAVER SERP 통합 검증 | SERP Lens</title>
+<link rel="stylesheet" href="intelligence.css">
+<script type="module" src="full-validation-ui.js"></script>
+</head><body>
+<header><div class="wrap"><div class="eyebrow">SERP LENS · EVIDENCE VALIDATION</div>
+<h1>네이버 SERP 5단계 통합 검증</h1><p>검색 수집부터 실화면 검수까지, 현재 브라우저에 저장된 근거가 충분한지 확인합니다.</p></div></header>
+<main class="wrap">
+<p id="validation-status" role="status">로컬 증거를 점검하는 중입니다.</p>
+<section class="panel">
+<h2>검증 결과 <span class="hint">사용자가 수집한 자료 기준, 네이버 공식 인증 아님</span></h2>
+<div class="actions"><button id="run-validation">전체 단계 다시 점검</button>
+<button id="download-validation" class="secondary" disabled>5단계 검증 보고서 JSON 저장</button></div>
+<div id="validation-summary" class="validation-summary">검증 자료를 불러오는 중입니다.</div>
+<div id="validation-stages" class="validation-stages"></div>
+</section>
+<section class="panel">
+<h2>PC·모바일 화면 검수 기록</h2>
+<p class="muted">PC 검색 화면과 실제 모바일 너비의 모바일 검색 화면을 별도로 수집하고, 제목 후보와 블록을 확인해야 합니다. 이 패널은 로컬 기록만 읽습니다.</p>
+<div id="validation-audits"></div>
+<div class="actions"><a href="visual-audit.html">화면 검수 기록 확인</a><a href="intelligence.html">Rank Lab 분석 화면</a></div>
+</section>
+<section class="panel">
+<h2>판정 범위와 한계</h2>
+<div id="validation-limitations" class="muted"></div>
+<p class="muted">GitHub Actions 자동 테스트와 실제 네이버 화면 검수는 별개입니다. **코드 테스트가 모두 통과하더라도 PC·모바일 실사용 검증은 완료되지 않은 상태일 수 있습니다.**</p>
+</section>
+<footer>로컬 근거 검사 · 자동 네이버 검색 없음 · 보고서 생성 시 외부 전송 없음</footer>
+</main></body></html>
