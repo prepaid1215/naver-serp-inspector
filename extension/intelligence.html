@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NAVER Intelligence | SERP Lens</title>
+<link rel="stylesheet" href="intelligence.css">
+<script type="module" src="intelligence.js"></script>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">SERP LENS · LOCAL RESEARCH</div>
+<h1>NAVER Intelligence</h1><p>내가 확인한 네이버 검색과 경쟁 문서의 증거를 모아 비교합니다.</p></div></header>
+<main class="wrap">
+<p id="message" role="status">로컬 수집 자료를 읽는 중입니다.</p>
+<section class="panel">
+<h2>검색 결과 변화 분석 <span class="hint">DOM 추정 · 공식 순위 아님</span></h2>
+<div class="controls"><label>최근 검색 기록<select id="newer"></select></label><label>비교할 이전 기록<select id="older"></select></label></div>
+<div class="metrics"><div><strong id="search-count">0</strong><span>수집 기록</span></div><div><strong id="doc-count">0</strong><span>방문 문서</span></div><div><strong id="diff-count">—</strong><span>신규 등장 링크</span></div></div>
+<div id="comparison" class="grid"></div>
+<div class="actions"><button id="remove-search" class="secondary">선택한 검색 기록 삭제</button></div>
+</section>
+<section class="panel">
+<h2>직접 방문한 경쟁 문서</h2>
+<p class="muted">네이버 블로그·카페·웹문서에서 SERP Lens 아이콘 → ‘현재 문서 분석용 저장’을 누르면 목록에 들어옵니다. 방문하지 않은 문서는 분석하지 않습니다.</p>
+<div id="pages" class="pages"></div>
+</section>
+<section class="panel">
+<h2>ChatGPT 분석용 증거 묶음</h2>
+<p class="muted">현재 선택한 검색 기록과 수집 문서를 함께 전달합니다. 본문은 문서별 최대 2,200자만 포함합니다. 계정 정보 등이 있는 페이지는 수집하지 마세요.</p>
+<label>분석할 내 도메인 (선택)<input id="own-domains" placeholder="preplan.site, 59man.shop, 앤텔레콤개통방법.shop"></label>
+<div class="actions"><button id="copy">AI 분석 요청문 복사</button><button id="download" class="secondary">분석 요청문 TXT 저장</button><button id="export-json" class="secondary">증거 JSON 저장</button></div>
+<textarea id="preview" rows="8" readonly aria-label="AI 요청문 미리보기"></textarea>
+</section>
+<footer>사용자 클릭으로만 수집합니다. 검색 기록·문서 분석은 이 브라우저에 저장되고 자동 업로드되지 않습니다.</footer>
+</main>
+</body>
+</html>
