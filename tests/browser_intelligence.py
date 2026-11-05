@@ -63,6 +63,15 @@ try:
         with page.expect_download() as report:
             page.locator('#download-gap').click()
         assert report.value.suggested_filename=='naver-content-gap-evidence.txt'
+        page.locator('#rank-filter').fill('선불폰')
+        page.locator('#run-rank-lab').click()
+        assert page.locator('#rank-keywords').inner_text()=='1'
+        assert page.locator('#rank-matched').inner_text()=='1'
+        assert page.locator('#rank-factors .factor-card').count()>=7
+        assert page.locator('#rank-sources .source-record').count()>=1
+        with page.expect_download() as rank_download:
+            page.locator('#download-rank-lab').click()
+        assert rank_download.value.suggested_filename=='naver-rank-lab-evidence.json'
         with page.expect_download() as info:
             page.locator('#download').click()
         assert info.value.suggested_filename=='naver-intelligence-ai-prompt.txt'
