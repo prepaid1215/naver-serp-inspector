@@ -1,6 +1,7 @@
 // Independent local evidence store. No server uploads or background crawling.
 const DB = 'naver-intelligence-v2';
-const VERSION = 1;
+const VERSION = 2;
+const MAX_EXPERIMENTS = 50;
 const MAX_SEARCHES = 100;
 const MAX_PAGES = 60;
 
@@ -8,7 +9,7 @@ function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB, VERSION);
     request.onupgradeneeded = () => {
-      for (const name of ['searches', 'pages']) {
+      for (const name of ['searches', 'pages', 'experiments']) {
         if (!request.result.objectStoreNames.contains(name)) {
           request.result.createObjectStore(name, {keyPath: 'id'});
         }
@@ -58,3 +59,16 @@ export async function listPages() {
 }
 export async function removeSearch(id) { return action('searches', 'readwrite', s => s.delete(id)); }
 export async function removePage(id) { return action('pages', 'readwrite', s => s.delete(id)); }
+
+export async function saveExperiment(record) {
+  await action('experiments','readwrite', s=>s.put(record));
+  const all=await listExperiments();
+  for(const old of all.slice(MAX_EXPERIMENTS)) await removeExperiment(old.id);
+}
+export async function listExperiments() {
+  const data=await action('experiments','readonly', s=>s.getAll());
+  return data.sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+}
+export async function removeExperiment(id) {
+  return action('experiments','readwrite', s=>s.delete(id));
+}
