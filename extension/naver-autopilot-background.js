@@ -9,7 +9,7 @@
 import {extractOpenArticle} from './naver-article.js';
 import {collectNaverSearchDOM} from './naver-autopilot-search.js';
 import {checkPrivateRepository,uploadEvidence,updateEvidenceIndex} from './github-evidence-sync.js';
-import {JOB_LABEL,JOB_RESULT_MARKER,MAX_ARTICLES,MAX_CANDIDATES,parseNaverJob,naverSearchURL,pickNaverArticles,validNaverArticleURL} from './naver-autopilot-core.js';
+import {JOB_LABEL,JOB_RESULT_MARKER,MAX_ARTICLES,MAX_CANDIDATES,parseNaverJob,naverSearchURL,pickNaverArticles,validNaverArticleURL,naverArticleIdentity,compareNaverQueryObservations} from './naver-autopilot-core.js';
 
 const SETTINGS='serp-autopilot-settings-v1';
 const STATUS='serp-autopilot-status-v1';
@@ -159,6 +159,35 @@ async function fetchJobs(config,secret){
   if(!Array.isArray(issues))throw Error('검색 요청 목록 응답이 올바르지 않습니다.');
   return issues.filter(x=>!x.pull_request);
 }
+// Search fields are persisted through github-evidence-sync's strict whitelist.
+function searchEvidenceRows(rows){
+  return (rows||[]).slice(0,100).map((r,index)=>({
+    result_url:r.url,result_title:r.visible_title||r.title||'',
+    block_type:r.type,block_order:index+1,
+    anchor_text:r.anchor_text||'',
+    title_confidence:r.title_confidence||'unverified',
+    title_source:r.title_source||'unknown',
+    is_article_link:r.is_article_link===true,
+    document_visual_order:r.document_visual_order||null,
+    source_visual_order:r.source_visual_order||null,
+    observed_y_px:Number.isFinite(r.y)?r.y:null,
+    block_heading_hint:r.block_heading_hint||'',
+    block_heading_confidence:r.block_heading_confidence||'unverified',
+    note:'관측된 DOM 링크의 화면 순서 후보이며 실제 네이버 검색 순위가 아님'
+  }));
+}
+function searchRecord(serp,jobQuery,issueNumber,index=0){
+  return {
+    id:'issue-'+issueNumber+'-serp-'+index,
+    query:jobQuery,device:'PC',
+    sourceURL:serp.source_url,captured_at:serp.observed_at||now(),
+    status:'visual_link_observation',
+    notes:'화면 Y 순서에 따른 게시글 링크 후보. 실제 네이버 통합검색/블로그탭 순위 아님.',
+    position_basis:serp.position_basis||'unverified',
+    viewport:serp.viewport||null,
+    rows:searchEvidenceRows(serp.rows)
+  };
+}
 async function executeJob(job,config,secret){
   await ensureEnabled();
   await status('네이버 검색 중: '+job.query,{issue_number:job.issue_number,phase:'search'});
@@ -176,22 +205,12 @@ async function executeJob(job,config,secret){
   }
   let attempted=0;
   const captured_at=now();
-  const rows=serp.rows.slice(0,100).map((r,index)=>({
-    result_url:r.url,result_title:r.title,block_type:r.type,
-    block_order:index+1,headline_hint:r.headline_hint,
-    note:'DOM 후보 목록이며 실제 검색순위 아님'
-  }));
+  const rows=searchEvidenceRows(serp.rows);
   const uploaded=[],failures=[],article_summaries=[];
   if(rows.length){
     uploaded.push(await uploadEvidence({
       config,token:secret,type:'searches',
-      record:{
-        id:'issue-'+job.issue_number+'-serp',
-        query:job.query,device:'PC',
-        sourceURL:serp.source_url,captured_at,status:'candidate_links',
-        notes:'DOM 후보. 실제 검색순위 또는 전체 페이지 순위가 아님.',
-        rows
-      }
+      record:searchRecord(serp,job.query,job.issue_number,0)
     }));
   }
   for(const [index,article] of articles.entries()){
@@ -227,6 +246,13 @@ async function executeJob(job,config,secret){
         heading_candidates:(candidate.headings||[]).slice(0,8).map(h=>String(h.text||'').slice(0,130)),
         images:Number.isInteger(candidate.images)?candidate.images:0,
         completeness:'not_verified',
+        search_observation:{
+          displayed_title:article.title||'',
+          title_confidence:article.title_confidence||'unverified',
+          document_visual_order:article.document_visual_order||null,
+          source_visual_order:article.source_visual_order||null,
+          block_heading_hint:article.block_heading_hint||''
+        },
         extraction_warnings:(candidate.extraction_audit?.warnings||[]).slice(0,4)
       });
     }catch(error){
@@ -250,10 +276,119 @@ async function executeJob(job,config,secret){
       CAFE:article_summaries.filter(x=>x.source_kind==='NAVER_CAFE').length
     },
     selection_strategy:'alternate_blog_cafe_retry_on_failure',
+    position_basis:serp.position_basis||'not_verified',
     article_summaries,
     paths:uploaded.map(x=>x.path),
     failed_articles:failures,
     warning:'네이버 검색 페이지의 DOM 링크 후보에서 블로그와 카페를 번갈아 조사했습니다. 수집 순서는 네이버 노출 순위가 아니며 원문 완전성은 검증되지 않았습니다.'
+  };
+}
+// Title comparison is an explicitly authorized 2-4 query request.
+// It records cross-query presence; observed vertical order is NOT official rank.
+async function executeTitleComparison(job,config,secret){
+  await ensureEnabled();
+  const snapshots=[],uploaded=[],failures=[],article_summaries=[];
+  const captured_at=now();
+  for(const [index,query] of job.queries.entries()){
+    await ensureEnabled();
+    await status('제목 비교 검색 '+(index+1)+'/'+job.queries.length+': '+query,{
+      issue_number:job.issue_number,phase:'compare-search',
+      completed:index,total:job.queries.length
+    });
+    try{
+      const [serp]=await openAndRead(naverSearchURL(query),collectNaverSearchDOM);
+      if(!serp||!Array.isArray(serp.rows))throw Error('검색 화면을 읽지 못했습니다.');
+      snapshots.push({query,rows:serp.rows,serp});
+      const saved=await uploadEvidence({
+        config,token:secret,type:'searches',
+        record:searchRecord(serp,query,job.issue_number,index)
+      });
+      uploaded.push(saved);
+    }catch(error){failures.push({query,reason:short(error.message)});}
+  }
+  if(snapshots.length===0)throw Error('검색어 비교 결과를 수집하지 못했습니다.');
+  const comparison=compareNaverQueryObservations(snapshots);
+  const all=new Map();
+  for(const snap of snapshots){
+    for(const row of snap.rows){
+      const identity=naverArticleIdentity(row.url);
+      if(!identity)continue;
+      if(!all.has(identity))all.set(identity,{...row,identity,seen_queries:[]});
+      all.get(identity).seen_queries.push({
+        query:snap.query,displayed_title:row.visible_title||row.title||'',
+        title_confidence:row.title_confidence||'unverified',
+        document_visual_order:row.document_visual_order||null,
+        source_visual_order:row.source_visual_order||null,
+        block_heading_hint:row.block_heading_hint||''
+      });
+    }
+  }
+  // Read commonly detected articles first; retain one-query-only candidates.
+  // Source diversity and bounded retries are enforced by pickNaverArticles.
+  const candidates=[...all.values()].sort((a,b)=>b.seen_queries.length-a.seen_queries.length||
+    (a.document_visual_order||999)-(b.document_visual_order||999));
+  const selected=pickNaverArticles(candidates,
+    Math.min(MAX_CANDIDATES,Math.max(job.limit+2,job.limit*2)));
+  let attempted=0;
+  for(const [index,article] of selected.entries()){
+    if(article_summaries.length>=job.limit)break;
+    await ensureEnabled();
+    attempted++;
+    await status('제목 비교 본문 수집 '+(article_summaries.length+1)+'/'+job.limit,{
+      issue_number:job.issue_number,phase:'compare-articles',
+      attempted,total:job.limit
+    });
+    const identity=naverArticleIdentity(article.url);
+    const observations=all.get(identity)?.seen_queries||[];
+    try{
+      const frames=await openAndRead(article.url,extractOpenArticle,true);
+      const candidate=frames.filter(x=>x?.text?.length>=90)
+        .sort((a,b)=>(b.score||0)-(a.score||0))[0];
+      if(!candidate||candidate.extraction_quality!=='article')
+        throw Error('게시글 본문을 확인할 수 없습니다.');
+      delete candidate.score;
+      candidate.origin_url=article.url;
+      const saved=await uploadEvidence({
+        config,token:secret,type:'pages',
+        record:{id:'issue-'+job.issue_number+'-article-'+index,
+          captured_at:now(),...candidate}
+      });
+      uploaded.push(saved);
+      article_summaries.push({
+        title:String(candidate.title||'').slice(0,250),
+        url:String(candidate.url||article.url).slice(0,2048),
+        source_kind:candidate.source_kind||article.type,
+        path:saved.path,
+        raw_characters:candidate.text?.length||0,
+        clean_characters:candidate.clean_text?.length||0,
+        observed_queries:observations,
+        // Only a directly observed headline can support a comparison.
+        // Missing/uncertain titles must not become false mismatches.
+        title_disagreement:observations.some(x=>x.title_confidence==='high')?
+          observations.some(x=>x.title_confidence==='high'&&
+            x.displayed_title&&x.displayed_title!==candidate.title):null,
+        completeness:'not_verified'
+      });
+    }catch(error){failures.push({url:article.url,reason:short(error.message)});}
+  }
+  if(uploaded.length)await updateEvidenceIndex({config,token:secret,entries:uploaded});
+  return {
+    status:snapshots.length===job.queries.length&&article_summaries.length>=job.limit?'completed':
+      snapshots.length?'partial':'incomplete',
+    mode:'title_compare',query:job.query,queries:job.queries,
+    issue_number:job.issue_number,captured_at,
+    requested_articles:job.limit,attempted_articles:attempted,
+    captured_articles:article_summaries.length,
+    captured_sources:{
+      BLOG:article_summaries.filter(x=>x.source_kind==='NAVER_BLOG').length,
+      CAFE:article_summaries.filter(x=>x.source_kind==='NAVER_CAFE').length
+    },
+    search_candidate_counts:comparison.counts,
+    query_comparison:comparison,
+    article_summaries,
+    paths:uploaded.map(x=>x.path),
+    failed_articles:failures,
+    warning:'검색 결과의 게시글 후보 출현 여부와 화면 배치 순서만 관측했습니다. 광고·스마트블록·개인화가 혼합된 실제 순위나 알고리즘 가중치를 판정하지 않습니다. 카페 별칭 URL은 교집합을 과소 집계할 수 있습니다.'
   };
 }
 async function poll(){
@@ -306,7 +441,9 @@ async function poll(){
     }
     let result;
     try{
-      result=await executeJob(job,config,secret);
+      result=job.mode==='title_compare'?
+        await executeTitleComparison(job,config,secret):
+        await executeJob(job,config,secret);
     }catch(error){
       result={
         status:'failed',query:job.query,issue_number:job.issue_number,

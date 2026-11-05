@@ -50,10 +50,41 @@ try:
     assert '태블릿 번호' in cafe['text']
     assert cafe['title']=='LG 원칩 신규가입 안내'
 
+    # Check title provenance and the fact that observed position is only
+    # ordered among detected individual article links, not official rank.
+    page.set_content("""
+      <main id="main_pack">
+        <section class="sc_new">
+          <h2>인기글</h2>
+          <div style="margin-top:25px">
+            <a class="title_link" href="https://blog.naver.com/demo/224465859329">KT 바로유심 개통 순서</a>
+          </div>
+          <div style="margin-top:25px">
+            <h3>GS25 유심 개통 전 확인사항</h3>
+            <a href="https://cafe.naver.com/dowajo/1614530">새 창 열림</a>
+          </div>
+        </section>
+      </main>""")
+    observed=page.evaluate("""async()=>{
+      const {collectNaverSearchDOM}=await import('/extension/naver-autopilot-search.js');
+      return collectNaverSearchDOM();
+    }""")
+    articles=[r for r in observed['rows'] if r['is_article_link']]
+    assert len(articles)==2, articles
+    assert articles[0]['visible_title']=='KT 바로유심 개통 순서'
+    assert articles[0]['title_confidence']=='high'
+    assert articles[0]['document_visual_order']==1
+    # A nearby <h3> may be the cafe's name instead of the article title.
+    # Without a same-URL headline, mark title as unverified.
+    assert articles[1]['visible_title']==''
+    assert articles[1]['title_confidence']=='unverified'
+    assert articles[1]['document_visual_order']==2
+    assert observed['position_basis']=='approximate_document_y_order_of_detected_links'
+
     ctx.add_init_script("""(()=>{
       let stored={};
       window.chrome={
-        runtime:{getManifest:()=>({version:'2.3.1'}),sendMessage:async()=>({enabled:true,repository:'example/private-evidence',status:{phase:'idle',message:'새 요청 없음 · 최근 다이소 유심 본문 3/3건',last_result:{query:'다이소 유심',captured_articles:3,attempted_articles:3,issue_number:7,captured_at:'2026-11-05T08:00:00Z'}}})},
+        runtime:{getManifest:()=>({version:'2.4.1'}),sendMessage:async()=>({enabled:true,repository:'example/private-evidence',status:{phase:'idle',message:'새 요청 없음 · 최근 다이소 유심 본문 3/3건',last_result:{query:'다이소 유심',captured_articles:3,attempted_articles:3,issue_number:7,captured_at:'2026-11-05T08:00:00Z'}}})},
         storage:{
           session:{
             get:async key=>({[key]:stored[key]}),
@@ -115,6 +146,7 @@ try:
     expect(page.locator('#autopilot-state-label')).to_contain_text('자동 조사 켜짐')
     expect(page.locator('#autopilot-last-query')).to_have_text('다이소 유심')
     expect(page.locator('#autopilot-last-count')).to_have_text('3 / 3건')
+    expect(page.locator('#copy-title-example')).to_be_visible()
     expect(page.locator('#autopilot-check-now')).to_be_visible()
     expect(page.locator('#autopilot-disable')).to_be_visible()
     expect(page.locator('#autopilot-enable')).to_be_hidden()
