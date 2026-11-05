@@ -54,8 +54,15 @@ try:
         });
       }
     }""")
+    stored=page.evaluate("""async()=>{
+      const visual=await import('./visual-store.js');
+      return (await visual.listVisualAuditSummaries()).map(x=>x.id);
+    }""")
+    assert len(stored)==2,('visual store records absent',stored)
     page.locator('#run-validation').click()
+    page.wait_for_function("document.getElementById('run-validation')?.disabled===false")
     expect(page.locator('.validation-stage')).to_have_count(5)
+    assert '통합 검증 실패' not in page.locator('#validation-status').inner_text(),page.locator('#validation-status').inner_text()
     assert '5단계 중 자료 확보' in page.locator('#validation-summary').inner_text()
     audit=page.locator('.validation-stage').nth(4).inner_text()
     assert '검증자료 확보' in audit,audit
