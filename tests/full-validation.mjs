@@ -42,21 +42,21 @@ assert.equal(empty.ready,false);
 assert.equal(empty.stages.length,5);
 assert.ok(empty.stages.every(s=>s.status==='미검증'));
 const partial=buildFullValidation(searches,pages,[],[visual('PC')]);
-assert.equal(partial.stages[0].ready,true);
 assert.equal(partial.stages[1].ready,true);
-assert.equal(partial.stages[4].ready,false);
-assert.match(partial.stages[4].note,/모바일 실화면 0개/);
+assert.equal(partial.stages[2].ready,true);
+assert.equal(partial.stages[0].ready,false);
+assert.match(partial.stages[0].note,/모바일 실화면 0개/);
 const both=buildFullValidation(searches,pages,[],[visual('PC'),visual('모바일')]);
-assert.equal(both.stages[4].ready,true);
-assert.equal(both.stages[3].ready,false);
+assert.equal(both.stages[0].ready,true);
+assert.equal(both.stages[4].ready,false);
 assert.equal(both.ready,false); // experiments are still absent; no fake 5/5
 const noReview=buildFullValidation(searches,pages,[],[
  {...visual('PC'),reviews:{}},visual('모바일')
 ]);
-assert.equal(noReview.stages[4].ready,false);
+assert.equal(noReview.stages[0].ready,false);
 const fakeMobile=buildFullValidation(searches,pages,[],[
  visual('PC'),{...visual('모바일'),layout_device:'데스크톱 너비'}
 ]);
-assert.equal(fakeMobile.stages[4].ready,false);
+assert.equal(fakeMobile.stages[0].ready,false);
 assert.ok(both.limitations.some(t=>t.includes('GitHub 자동 테스트')));
 console.log('FIVE-STAGE EVIDENCE READINESS TESTS PASS');
