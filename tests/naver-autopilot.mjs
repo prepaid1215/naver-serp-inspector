@@ -41,6 +41,8 @@ let listener,alarmListener,tabId=10;
 const tabs=new Map();
 const urls=[],requests=[],files=new Map();
 const history=[];
+let retryOpen=false;
+const alarmCadences=[];
 function storage(store){return{
   get:async keys=>{
     const names=typeof keys==='string'?[keys]:Array.isArray(keys)?keys:Object.keys(keys||{});
@@ -55,7 +57,7 @@ globalThis.chrome={
     onInstalled:{addListener(){}},onStartup:{addListener(){}},
     onMessage:{addListener(fn){listener=fn;}}
   },
-  alarms:{create:async()=>{},onAlarm:{addListener(fn){alarmListener=fn;}}},
+  alarms:{create:async(name,settings)=>{alarmCadences.push({name,settings});},onAlarm:{addListener(fn){alarmListener=fn;}}},
   tabs:{
     create:async ({url,active})=>{
       assert.equal(active,false);
@@ -97,7 +99,12 @@ globalThis.fetch=async (url,opts={})=>{
   if(method==='GET'&&/\/labels\?per_page=100$/.test(url))
     return reply(200,[{name:JOB_LABEL}]);
   if(method==='GET'&&/\/issues\?/.test(url)){
-    return reply(200,history.length?[]:[issue]);
+    return reply(200,history.length&&!retryOpen?[]:[issue]);
+  }
+  if(method==='GET'&&url.includes('/issues/42/comments?')){
+    return reply(200,history.map(result=>({
+      body:JOB_RESULT_MARKER+'\n'+JSON.stringify(result)
+    })));
   }
   if(method==='GET'&&url.includes('/contents/')){
     if(!files.has(url.split('?')[0]))return reply(404,{message:'Not Found'});
@@ -116,6 +123,11 @@ globalThis.fetch=async (url,opts={})=>{
     assert.equal(p.captured_articles,2);
     assert.equal(p.search_candidates,5);
     assert.equal(p.paths.length,3);
+    assert.equal(p.article_summaries.length,2);
+    assert.equal(p.article_summaries[0].title,'396 요금제 본문 테스트');
+    assert.ok(p.article_summaries[0].path.startsWith('serp-lens/pages/'));
+    assert.equal(p.article_summaries[0].completeness,'not_verified');
+    assert.equal(p.article_summaries[0].raw_characters>60,true);
     history.push(p);
     return reply(201,{id:123});
   }
@@ -148,9 +160,22 @@ assert.ok(urls.every(u=>u.startsWith('https://search.naver.com/')||
 assert.equal(files.size,4); // 1 result list + 2 posts + 1 index
 assert.equal(history.length,1);
 assert.equal(local['serp-autopilot-processed-v1'].numbers[0],42);
+assert.equal(local['serp-autopilot-processed-v1'].repository,'demo/private-evidence');
+assert.ok(alarmCadences.some(x=>x.settings.periodInMinutes===0.5));
 r=await send('AUTOPILOT_CHECK_NOW');
 assert.equal(r.processed,0);
 assert.equal(urls.length,3);
+// Simulate extension restart or lost local processed state after a GitHub
+// result comment was written, while the issue remains open.
+retryOpen=true;
+delete local['serp-autopilot-processed-v1'];
+r=await send('AUTOPILOT_CHECK_NOW');
+assert.equal(r.ok,true);
+assert.equal(r.already_reported,true);
+assert.equal(r.processed,0);
+assert.equal(urls.length,3);
+assert.equal(history.length,1);
+retryOpen=false;
 r=await send('AUTOPILOT_DISABLE');
 assert.equal(r.ok,true);
 assert.equal((await send('AUTOPILOT_STATUS')).enabled,false);
