@@ -161,6 +161,11 @@ visualButton.addEventListener('click',async()=>{
   }catch(error){status('위치 검수 수집 실패: '+error.message,true);visualButton.disabled=false;}
 });
 
+$('open-full-validation').addEventListener('click',async()=>{
+  await chrome.tabs.create({url:chrome.runtime.getURL('extension/full-validation.html')});
+  window.close();
+});
+
 $('open-visual-audit').addEventListener('click',async()=>{
   await chrome.tabs.create({url:chrome.runtime.getURL('extension/visual-audit.html')});
   window.close();

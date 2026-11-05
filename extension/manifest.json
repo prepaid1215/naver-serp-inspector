@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "1.8.0",
-  "description": "네이버 검색 결과의 실제 화면 위치와 HTML 추정 결과를 스크린샷으로 검증하는 로컬 SERP 분석기",
+  "version": "1.9.0",
+  "description": "네이버 검색 수집, 본문 비교, 노출 패턴, 대조군 실험 및 실화면 검수를 5단계 통합 검증합니다.",
   "permissions": [
     "activeTab",
     "scripting"

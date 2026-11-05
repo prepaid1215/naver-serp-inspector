@@ -55,3 +55,16 @@
 .exp-evidence-group a{font-size:12px;color:#1f54a8}
 .exp-evidence-group small{color:#71829f;overflow-wrap:anywhere}
 @media(max-width:760px){.exp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Integrated five-stage evidence check */
+.validation-summary{margin-top:16px;background:#f5f7fb;padding:16px;border-radius:11px;border:1px solid #e2e8f3}
+.validation-summary strong{font-size:20px}
+.validation-summary p{margin:2px 0 0}
+.validation-stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px}
+.validation-stage{border:1px solid #dce5f2;border-radius:11px;padding:15px;min-width:0}
+.validation-stage>strong{display:block;font-size:14px}
+.validation-state{font-size:12px;color:#2b5396;font-weight:700}
+.validation-stage p{margin:7px 0;font-size:12px}
+.validation-stage details{font-size:12px;color:#677998}
+.validation-stage pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f6f8fd;padding:9px;border-radius:7px}
