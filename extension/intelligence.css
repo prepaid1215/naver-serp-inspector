@@ -27,3 +27,31 @@
 .source-record{padding:10px 12px;border-bottom:1px solid #e5eaf3;display:flex;flex-direction:column;gap:1px}
 .source-record strong{font-size:13px;overflow-wrap:anywhere}
 .source-record span{font-size:12px;color:#64748b}
+
+
+/* Before/after experiment ledger. This is observational, not causal proof. */
+.experiment-check{display:flex;align-items:flex-start;gap:9px;margin-top:15px;font-size:13px;font-weight:500;line-height:1.5}
+.experiment-check input{width:auto;flex:0 0 auto;margin:4px 0 0}
+#exp-form-message.error{color:#b82f39}
+.experiment-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding-bottom:1px}
+.experiment-actions button{margin-top:0}
+.experiment-divider{border-top:1px solid #dce5f0;margin:22px 0}
+.experiment-report{margin-top:18px}
+.experiment-report>h3{font-size:18px;margin:0 0 6px}
+.experiment-report .exp-interpretation{font-weight:700;color:#244f9b;font-size:14px}
+.exp-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+.exp-metric{background:#f5f8fe;border:1px solid #e0e8f5;border-radius:10px;padding:12px}
+.exp-metric strong{font-size:20px;display:block;font-variant-numeric:tabular-nums}
+.exp-metric span{font-size:11px;color:#667995;line-height:1.4}
+.exp-document-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.exp-document{display:flex;flex-direction:column;gap:4px;background:#fafbff;border:1px solid #e1e8f3;border-radius:10px;padding:12px;min-width:0}
+.exp-document strong{font-size:13px}
+.exp-document a{font-size:12px;color:#2457a3;overflow-wrap:anywhere}
+.exp-document span{font-size:12px;color:#5d6e89}
+.experiment-evidence{margin-top:20px}
+.experiment-evidence h3{font-size:15px;margin-bottom:12px}
+.exp-evidence-group{margin-bottom:13px;border:1px solid #e4eaf3;border-radius:10px;padding:10px 14px}
+.exp-evidence-group h4{font-size:13px;margin:0 0 7px}
+.exp-evidence-group a{font-size:12px;color:#1f54a8}
+.exp-evidence-group small{color:#71829f;overflow-wrap:anywhere}
+@media(max-width:760px){.exp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}

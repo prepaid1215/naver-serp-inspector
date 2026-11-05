@@ -63,6 +63,49 @@
 <div id="rank-query-groups"></div>
 <p class="muted">C-Rank·D.I.A.·RRA 공식 내부 점수와 별개입니다. 데이터가 부족하면 ‘표본 부족’으로 표시하며 어떤 수치도 상위노출 보장 점수가 아닙니다.</p>
 </section>
+<section class="panel" id="experiment-panel">
+<h2>변경 전후 실험실 <span class="hint">대조군 비교 · 관측 결과</span></h2>
+<p class="muted">검색 결과를 수집한 뒤 내가 수정한 글과 수정하지 않은 대조 문서를 비교합니다. 한 실험에서 제목·본문·내부링크 중 하나만 변경하고, 실제 수정 시각을 입력하세요. 전후 결과는 동일한 검색어·기기로 수집해야 합니다.</p>
+<form id="experiment-form">
+<div class="controls">
+<label>실험 이름<input id="exp-title" required maxlength="120" placeholder="예: 선불폰 개통 제목만 변경"></label>
+<label>실제 변경 유형<select id="exp-type" required>
+<option value="title">제목 변경</option><option value="body">본문 변경</option>
+<option value="internal_links">내부링크 변경</option><option value="other">기타 변경</option>
+</select></label>
+<label>관측할 검색어<input id="exp-query" required placeholder="예: 선불폰 개통"></label>
+<label>검색 기기<select id="exp-device"><option value="PC">PC</option><option value="모바일">모바일</option></select></label>
+<label>실제 수정 날짜·시간<input id="exp-changed-at" type="datetime-local" required></label>
+<label>전후 관측 기간<select id="exp-window-days"><option value="3">수정일 전후 3일</option><option value="7" selected>수정일 전후 7일</option><option value="14">수정일 전후 14일</option><option value="30">수정일 전후 30일</option></select></label>
+<label>실험 문서 URL<input id="exp-target-url" type="url" required placeholder="https://..."></label>
+</div>
+<label class="multi-label">수정하지 않을 대조 문서 URL (1~5개, 한 줄에 하나)
+<textarea id="exp-control-urls" rows="3" required placeholder="https://example.com/control-one&#10;https://example.com/control-two"></textarea></label>
+<div class="controls">
+<label>무엇을 수정했는지 기록<textarea id="exp-change-note" rows="3" placeholder="예: 제목의 '신규가입'을 '셀프개통'으로 교체. 본문/이미지는 유지"></textarea></label>
+<label>대조 문서를 선정한 근거<textarea id="exp-control-note" rows="3" placeholder="예: 같은 키워드에 노출된 수정하지 않은 공개 문서 2개"></textarea></label>
+</div>
+<label class="experiment-check"><input type="checkbox" id="exp-controls-unchanged" required> 대조 문서를 수정하지 않을 계획이며 동일한 검색어·기기 조건에서 수집하겠습니다.</label>
+<div class="actions"><button id="exp-save" type="submit">실험 기록 저장</button></div>
+</form>
+<p class="muted" id="exp-form-message" role="status"></p>
+<div class="experiment-divider"></div>
+<div class="controls">
+<label>저장한 실험 선택<select id="exp-select"><option value="">등록된 실험 없음</option></select></label>
+<div class="experiment-actions">
+<button id="exp-run" disabled>전후·대조군 비교</button>
+<button id="exp-delete" class="secondary" disabled>선택한 실험 삭제</button>
+</div>
+</div>
+<div class="actions">
+<button id="exp-export-txt" class="secondary" disabled>근거 보고서 TXT</button>
+<button id="exp-export-json" class="secondary" disabled>근거 JSON</button>
+<button id="exp-copy-prompt" class="secondary" disabled>AI 해석 요청문 복사</button>
+</div>
+<div id="exp-summary" class="experiment-report" aria-live="polite"></div>
+<div id="exp-evidence" class="experiment-evidence"></div>
+<p class="muted">표시 순서는 네이버 내부 순위가 아닌 수집한 HTML의 비광고 문서 순서입니다. 결과 미등장은 순위 하락이나 색인 제외로 처리하지 않습니다. 상대 변화는 인과관계가 아닙니다.</p>
+</section>
 <section class="panel">
 <h2>ChatGPT 분석용 증거 묶음</h2>
 <p class="muted">현재 선택한 검색 기록과 수집 문서를 함께 전달합니다. 본문은 문서별 최대 2,200자만 포함합니다. 계정 정보 등이 있는 페이지는 수집하지 마세요.</p>
