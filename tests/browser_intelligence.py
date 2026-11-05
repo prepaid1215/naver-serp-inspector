@@ -77,6 +77,51 @@ try:
         assert info.value.suggested_filename=='naver-intelligence-ai-prompt.txt'
         page.locator('#remove-search').click()
         page.wait_for_function("document.getElementById('search-count')?.textContent==='1'")
+
+        # Experiment ledger integration. Four captured snapshots bracket one change date.
+        page.evaluate("""async()=>{
+          const {saveSearch}=await import('./intelligence-store.js');
+          const target='https://example.org/target',control='https://example.org/control';
+          function rows(t,c){
+            const arr=Array.from({length:5},(_,i)=>({block_type:'WEB',
+              result_url:'https://example.org/other'+i,result_title:'기타 문서 '+i}));
+            arr[t-1]={block_type:'WEB',result_url:target,result_title:'실험 글'};
+            arr[c-1]={block_type:'WEB',result_url:control,result_title:'대조 글'};
+            return arr;
+          }
+          const data=[
+            ['experiment-b1','2026-11-01T00:00:00Z',3,1],
+            ['experiment-b2','2026-11-02T00:00:00Z',3,1],
+            ['experiment-a1','2026-11-04T00:00:00Z',1,2],
+            ['experiment-a2','2026-11-05T00:00:00Z',1,2]
+          ];
+          for(const [id,captured_at,t,c] of data)await saveSearch({id,captured_at,query:'실험 키워드',device:'PC',
+            sourceURL:'https://search.naver.com/search.naver?query=test',rows:rows(t,c)});
+        }""")
+        page.reload()
+        page.wait_for_function("document.getElementById('search-count')?.textContent==='5'")
+        page.locator('#exp-title').fill('제목 수정 대조군 실험')
+        page.locator('#exp-query').fill('실험 키워드')
+        page.locator('#exp-target-url').fill('https://example.org/target')
+        page.locator('#exp-control-urls').fill('https://example.org/control')
+        page.locator('#exp-changed-at').fill('2026-11-03T12:00')
+        page.locator('#exp-change-note').fill('제목만 변경하고 대조 문서는 유지')
+        page.locator('#exp-controls-unchanged').check()
+        page.locator('#exp-save').click()
+        page.wait_for_function("document.querySelector('#exp-select')?.selectedIndex>0")
+        page.locator('#exp-run').click()
+        assert page.locator('#exp-summary .exp-metric').count()==6
+        assert '대조군 대비 상대 변화' in page.locator('#exp-summary').inner_text()
+        assert '3' in page.locator('#exp-summary').inner_text()
+        assert page.locator('#exp-evidence .exp-evidence-group').count()==2
+        with page.expect_download() as exp_json:
+            page.locator('#exp-export-json').click()
+        assert exp_json.value.suggested_filename=='naver-rank-experiment-evidence.json'
+        with page.expect_download() as exp_txt:
+            page.locator('#exp-export-txt').click()
+        assert exp_txt.value.suggested_filename=='naver-rank-experiment-report.txt'
+        page.locator('#exp-delete').click()
+        page.wait_for_function("document.querySelector('#exp-select')?.options.length===1")
         assert not errors,errors
         print('INTELLIGENCE DASHBOARD SMOKE PASS')
         ctx.close()
