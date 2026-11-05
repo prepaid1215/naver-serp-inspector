@@ -72,12 +72,13 @@ export function summarizeVisualAudit(original){
   classified.sort((a,b)=>a.y-b.y||a.x-b.x);
   const visible=classified.map((c,i)=>({...c,viewport_order:i+1}));
   const nonAds=visible.filter(x=>x.actual_type!=='AD');
-  const confirmedComplete=audit.checked_complete&&counts.unreviewed===0&&counts.uncertain===0
+  const confirmedComplete=audit.checked_complete&&classified.length>=1&&counts.unreviewed===0&&counts.uncertain===0
     &&blockCounts.unreviewed===0&&blockCounts.uncertain===0
     &&!!audit.screenshot_png?.byteLength&&!audit.capture_moved&&
-    !audit.screenshot_dimension_mismatch;
+    !audit.screenshot_dimension_mismatch&&!audit.root_fallback&&!audit.truncated;
   const warnings=[
     ...(!audit.checked_complete?['화면 안의 누락 문서 점검 완료 표시가 없습니다.']:[]),
+    ...(!classified.length?['검증된 화면 제목이 없어 순서를 확정할 수 없습니다.']:[]),
     ...(counts.unreviewed?['미검수 제목 후보 '+counts.unreviewed+'개']:[]),
     ...(counts.uncertain?['불명확 제목 후보 '+counts.uncertain+'개']:[]),
     ...(blockCounts.unreviewed?['미검수 검색 블록 '+blockCounts.unreviewed+'개']:[]),
