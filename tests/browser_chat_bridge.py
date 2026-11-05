@@ -53,7 +53,7 @@ try:
     ctx.add_init_script("""(()=>{
       let stored={};
       window.chrome={
-        runtime:{getManifest:()=>({version:'2.2.0'})},
+        runtime:{getManifest:()=>({version:'2.2.1'}),sendMessage:async()=>({enabled:true,repository:'example/private-evidence',status:{phase:'idle',message:'새 요청 없음 · 최근 다이소 유심 본문 3/3건',last_result:{query:'다이소 유심',captured_articles:3,attempted_articles:3,issue_number:7,captured_at:'2026-11-05T08:00:00Z'}}})},
         storage:{session:{
           get:async key=>({[key]:stored[key]}),
           set:async obj=>{Object.assign(stored,obj);},
@@ -103,8 +103,17 @@ try:
       });
     }""")
     page.reload()
-    expect(page.locator('.bridge-choice')).to_have_count(2)
+    expect(page.locator('h1')).to_contain_text('네이버 자동 조사')
+    expect(page.locator('#autopilot-state-label')).to_contain_text('자동 조사 켜짐')
+    expect(page.locator('#autopilot-last-query')).to_have_text('다이소 유심')
+    expect(page.locator('#autopilot-last-count')).to_have_text('3 / 3건')
+    expect(page.locator('#autopilot-check-now')).to_be_visible()
+    expect(page.locator('#autopilot-disable')).to_be_visible()
+    expect(page.locator('#autopilot-enable')).to_be_hidden()
     assert not requests
+    assert page.locator('#manual-sharing').evaluate('(el)=>el.open') is False
+    page.locator('#manual-sharing > summary').click()
+    expect(page.locator('.bridge-choice')).to_have_count(2)
     page.locator('.bridge-choice input').nth(0).check()
     page.locator('.bridge-choice input').nth(1).check()
     page.locator('#preview-selection').click()
@@ -120,14 +129,18 @@ try:
     page.locator('#bridge-token').fill('secret-token')
     page.locator('#verify-repo').click()
     expect(page.locator('#repo-status')).to_contain_text('확인 완료')
+    expect(page.locator('#repo-connection-chip')).to_contain_text('비공개 연결 확인')
     page.locator('#share-confirm').check()
     page.once('dialog',lambda dialog:dialog.accept())
     page.locator('#upload-selected').click()
     expect(page.locator('#upload-result')).to_contain_text('전송 완료',timeout=30000)
     assert len([x for x in requests if x[0]=='PUT'])==3,requests
     expect(page.locator('#copy-chat-request')).to_be_enabled()
+    # Responsive layout must not introduce a horizontal page scrollbar.
+    page.set_viewport_size({'width':390,'height':844})
+    assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth + 2')
     assert not errors,errors
-    print('NAVER ARTICLE + PRIVATE CHATGPT EVIDENCE BRIDGE CHROMIUM E2E PASS')
+    print('NAVER ARTICLE + RESPONSIVE CHATGPT DASHBOARD CHROMIUM E2E PASS')
     ctx.close();browser.close()
 finally:
   server.shutdown()

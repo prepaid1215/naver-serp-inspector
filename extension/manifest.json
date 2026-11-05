@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Plus 채팅에서 GitHub 요청 → 네이버 자동 수집 → 출처별 본문·구조 결과 반환",
   "permissions": [
     "activeTab",

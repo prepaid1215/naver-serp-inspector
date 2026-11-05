@@ -1,75 +1,164 @@
 <!doctype html>
 <html lang="ko">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SERP Lens — ChatGPT 자료 연결</title>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SERP Lens — ChatGPT 네이버 조사 연결</title>
 <link rel="stylesheet" href="intelligence.css">
 <link rel="stylesheet" href="chat-bridge.css">
 <script type="module" src="chat-bridge.js"></script>
 <script type="module" src="chat-bridge-autopilot.js"></script>
 </head>
-<body>
-<header><div class="wrap">
-<div class="eyebrow">SERP LENS · EXPLICIT EVIDENCE SHARING</div>
-<h1>네이버 자료 → ChatGPT 연결</h1>
-<p id="installed-extension-version" style="font-size:14px;font-weight:700">실행 버전 확인 중…</p>
-<p>방문·수집한 검색 결과와 개별 게시글 본문 중 선택한 자료만 비공개 저장소에 공유합니다.</p>
-</div></header>
-<main class="wrap">
-<p id="bridge-status" role="status">로컬 자료를 읽는 중입니다.</p>
-<section class="panel">
-<h2>1. 공유할 로컬 자료 선택</h2>
-<p class="muted">네이버 검색 수집과 ‘현재 문서 분석용 저장’으로 확보된 자료입니다. 체크하지 않은 내용은 전송하지 않습니다. 로그인·개인정보가 포함된 문서는 공유하지 마세요.</p>
-<div class="bridge-columns">
-<div><h3>검색 결과 <span id="search-count">0</span></h3>
-<div id="search-items" class="bridge-items"></div></div>
-<div><h3>게시글 본문 <span id="page-count">0</span></h3>
-<div id="page-items" class="bridge-items"></div></div>
-</div>
-<div class="actions">
-<button id="preview-selection">선택한 자료 미리보기</button>
-<button id="download-selected" class="secondary" disabled>JSON 파일로 저장</button>
-</div>
-<div id="preview-stats" class="muted"></div>
-<details id="preview-details"><summary>전송할 본문과 검색 결과 직접 보기</summary>
-<pre id="selection-preview" class="selection-preview"></pre></details>
-</section>
-<section class="panel">
-<h2>2. 별도 비공개 GitHub 저장소 연결</h2>
-<p class="muted">첫 연결에만 설정합니다. 기존 공개 코드 저장소에 게시글 자료를 올리지 마세요. 전송에는 사용자가 발급한 해당 저장소 전용 Fine-grained PAT(Contents 읽기/쓰기)가 필요합니다.</p>
-<div class="controls">
-<label>비공개 저장소 (owner/repo)<input id="bridge-repo" placeholder="예: myaccount/naver-private-evidence" autocomplete="off" spellcheck="false"></label>
-<label>GitHub 토큰 (브라우저 세션에서만 보관)<input id="bridge-token" type="password" autocomplete="off" placeholder="github_pat_..."></label>
-</div>
-<div class="actions">
-<button id="verify-repo" class="secondary">비공개 저장소 확인</button>
-<button id="clear-token" class="secondary">세션 토큰 지우기</button>
-</div>
-<p id="repo-status" class="muted" role="status">확인을 누르기 전에는 네트워크 요청을 보내지 않습니다.</p>
-<label class="share-confirm"><input type="checkbox" id="share-confirm" disabled>
-현재 선택한 자료에 개인정보·비공개 내용이 없는지 검토했으며, 이 자료를 지정한 비공개 저장소에 전송하는 데 동의합니다.</label>
-<div class="actions"><button id="upload-selected" disabled>선택한 자료만 비공개 저장소에 전송</button></div>
-<p id="upload-result" role="status" class="muted"></p>
-</section>
-<section class="panel">
-<h2>자동 조사 · 이 채팅에서 검색 요청 실행</h2>
-<p class="muted">한 번 설정하면 이 채팅의 GitHub 연결로 전용 검색 작업을 등록할 수 있습니다. Chrome이 실행 중일 때 확장프로그램이 작업을 확인하고, 네이버 검색과 공개 블로그·카페 게시글을 최대 3개까지 직접 열어 수집합니다. 사용자가 개별 글을 열 필요는 없습니다.</p>
-<label class="share-confirm"><input type="checkbox" id="autopilot-consent">
-자동 조사를 활성화하면 나중에 이 비공개 저장소에 등록되는 정확한 형식의 요청도 별도 확인 없이 Chrome에서 실행됩니다. 검색어가 네이버로 전송되고, 로그인 중인 브라우저 환경이 검색에 반영될 수 있음을 이해합니다.</label>
-<div class="actions">
-<button id="autopilot-enable" class="secondary" disabled>네이버 자동 조사 켜기</button>
-<button id="autopilot-disable" class="quiet">자동 조사 끄기</button>
-<button id="autopilot-check-now" class="secondary">새 조사 요청 확인</button>
-</div>
-<p id="autopilot-status" class="muted" role="status">자동 조사 상태 확인 중…</p>
-<p class="muted">Chrome이 열려 있고 연결 토큰이 유효해야 합니다. 별도 비공개 저장소에 Issues 읽기/쓰기 및 Contents 읽기/쓰기 권한이 필요합니다. 요청당 최대 3개 공개 글, 하루 최대 8건이며 로그인 우회·CAPTCHA 우회는 하지 않습니다.</p>
-</section>
-<section class="panel">
-<h2>3. 이 ChatGPT 채팅에서 자료 조회하기</h2>
-<p class="muted">전송 성공 후에는 ChatGPT에 연결된 GitHub 앱에서 비공개 저장소를 읽을 권한을 부여해야 합니다. ChatGPT가 직접 수집한 자료를 읽는 것은 별도 권한이며, 전송만으로 자동 연결되지는 않습니다.</p>
-<div class="actions"><button id="copy-chat-request" class="secondary" disabled>ChatGPT 분석 요청문 복사</button>
-<a id="open-github-index" class="bridge-link" target="_blank" rel="noopener noreferrer" hidden>비공개 자료 인덱스 보기</a></div>
-<p class="muted">지금 구현된 방식은 ‘저장된 자료 다시 읽기’입니다. ChatGPT에서 새로운 검색어만 입력해 네이버를 자동으로 방문·수집하려면, 추가로 인증된 원격 검색·수집 서버가 필요합니다.</p>
-</section>
-<footer>모든 전송은 사용자 확인 후 수행됩니다. 원본 HTML, 화면 스크린샷, GitHub 토큰은 게시글 JSON에 포함하지 않습니다.</footer>
+<body class="bridge-app">
+<header class="bridge-header">
+  <div class="bridge-shell header-inner">
+    <a class="brand" href="chat-bridge.html" aria-label="SERP Lens 현재 화면">
+      <span class="brand-icon" aria-hidden="true">S</span>
+      <span class="brand-name">SERP <strong>Lens</strong><small>NAVER RESEARCH</small></span>
+    </a>
+    <span id="installed-extension-version" class="version-chip">버전 확인 중</span>
+  </div>
+</header>
+
+<main class="bridge-shell bridge-main">
+  <div class="page-intro">
+    <div>
+      <p class="section-kicker">CHATGPT CONNECTION</p>
+      <h1>네이버 자동 조사</h1>
+      <p>이 채팅에서 검색을 요청하면 SERP Lens가 공개 게시글을 수집하고, ChatGPT가 근거를 읽어 분석합니다.</p>
+    </div>
+    <span class="privacy-chip"><span aria-hidden="true">●</span> 비공개 저장소 연결</span>
+  </div>
+
+  <section id="autopilot-card" class="dashboard-card" aria-labelledby="autopilot-heading">
+    <div class="dashboard-heading">
+      <div>
+        <p class="section-kicker">AUTOMATION · 01</p>
+        <h2 id="autopilot-heading">자동 조사 실행 상태</h2>
+        <p class="card-lead">Chrome이 실행 중일 때 GitHub에 등록된 네이버 조사 요청을 자동으로 처리합니다.</p>
+      </div>
+      <span id="autopilot-state-label" class="state-chip state-loading"><span class="state-dot" aria-hidden="true"></span>확인 중</span>
+    </div>
+
+    <div class="status-panel" role="region" aria-label="최근 자동 조사 결과">
+      <p class="status-caption">최근 조사</p>
+      <div class="status-grid">
+        <div class="status-stat"><span>검색어</span><strong id="autopilot-last-query">아직 없음</strong></div>
+        <div class="status-stat"><span>본문 수집</span><strong id="autopilot-last-count">—</strong></div>
+        <div class="status-stat"><span>최종 처리</span><strong id="autopilot-last-updated">—</strong></div>
+      </div>
+      <p id="autopilot-status" class="status-note" role="status" aria-live="polite">자동 조사 상태를 확인하고 있습니다.</p>
+      <a id="autopilot-last-issue" class="small-link" target="_blank" rel="noopener noreferrer" hidden>최근 조사 기록 보기</a>
+    </div>
+
+    <div class="actions dashboard-actions">
+      <button id="autopilot-check-now" class="primary-action" type="button">새 조사 요청 확인</button>
+      <button id="autopilot-disable" class="outline-action" type="button">자동 조사 끄기</button>
+      <button id="autopilot-enable" class="outline-action" type="button" disabled>네이버 자동 조사 켜기</button>
+    </div>
+
+    <details id="autopilot-preferences" class="settings-details">
+      <summary>자동 조사 설정 및 동의 <span class="details-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="settings-inner">
+        <label class="consent-row"><input type="checkbox" id="autopilot-consent">
+          <span>이 비공개 저장소에 등록된 정해진 형식의 조사 요청을, 별도 페이지별 확인 없이 Chrome에서 실행하는 것에 동의합니다. 검색어는 네이버에 전송되며 로그인된 브라우저 환경이 결과에 반영될 수 있습니다.</span>
+        </label>
+        <p class="fine-print">요청당 공개 블로그·카페 글 최대 3개, 하루 최대 8건입니다. 로그인·CAPTCHA를 우회하지 않습니다. Chrome과 유효한 GitHub 연결이 필요합니다.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="prompt-card" aria-labelledby="prompt-heading">
+    <div>
+      <p class="section-kicker">HOW TO USE</p>
+      <h2 id="prompt-heading">이 채팅에서 이렇게 요청하세요</h2>
+      <p class="prompt-example" id="autopilot-example">네이버에서 396요금제 검색하고 블로그·카페 글 3개를 조사해 제목과 본문을 비교해 줘.</p>
+      <p class="fine-print">요청은 GitHub를 통해 전달됩니다. 완료 전에 이 채팅이 자동으로 새 답변을 보내는 방식은 아닙니다.</p>
+    </div>
+    <button id="copy-autopilot-example" type="button" class="outline-action">요청문 복사</button>
+  </section>
+
+  <section class="panel connection-card" aria-labelledby="connection-heading">
+    <div class="card-header-row">
+      <div>
+        <p class="section-kicker">CONNECTION · 02</p>
+        <h2 id="connection-heading">비공개 GitHub 저장소</h2>
+        <p class="card-lead">연결된 저장소가 조사 요청과 본문 자료를 보관합니다. 토큰은 브라우저 세션에만 저장합니다.</p>
+      </div>
+      <span id="repo-connection-chip" class="connection-chip">연결 정보</span>
+    </div>
+    <div class="controls connection-fields">
+      <label for="bridge-repo">저장소 주소 <span class="field-hint">owner/repo</span>
+        <input id="bridge-repo" placeholder="예: prepaid1215/serp-lens-private-data" autocomplete="off" spellcheck="false">
+      </label>
+      <label for="bridge-token">GitHub 토큰 <span class="field-hint">세션에만 저장</span>
+        <input id="bridge-token" type="password" autocomplete="off" placeholder="github_pat_...">
+      </label>
+    </div>
+    <div class="actions connection-actions">
+      <button id="verify-repo" type="button">비공개 저장소 확인</button>
+      <button id="clear-token" type="button" class="outline-action">세션 토큰 지우기</button>
+    </div>
+    <p id="repo-status" class="helper-message" role="status">확인 버튼을 누르기 전에는 네트워크 요청을 보내지 않습니다.</p>
+    <details class="settings-details connection-help">
+      <summary>연결 권한과 보안 안내 <span class="details-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="settings-inner fine-print">별도 비공개 저장소 하나에만 접근하는 Fine-grained GitHub 토큰을 사용하세요. 자동 조사는 Contents 및 Issues 읽기/쓰기 권한이 필요합니다. 토큰을 채팅에 공유하지 마세요.</div>
+    </details>
+  </section>
+
+  <details id="manual-sharing" class="manual-card">
+    <summary class="manual-summary">
+      <span class="manual-summary-text">
+        <span class="section-kicker">OPTIONAL · 03</span>
+        <strong>직접 수집한 자료 공유</strong>
+        <small>이미 저장된 검색 결과·게시글을 선택해서 전송하는 부가 기능입니다.</small>
+      </span>
+      <span class="details-chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="manual-content">
+      <p id="bridge-status" class="helper-message" role="status">로컬 자료를 읽는 중입니다.</p>
+      <div class="bridge-columns">
+        <div>
+          <h3>검색 결과 <span id="search-count" class="count-pill">0</span></h3>
+          <div id="search-items" class="bridge-items"></div>
+        </div>
+        <div>
+          <h3>게시글 본문 <span id="page-count" class="count-pill">0</span></h3>
+          <div id="page-items" class="bridge-items"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="preview-selection" type="button">선택한 자료 미리보기</button>
+        <button id="download-selected" type="button" class="outline-action" disabled>JSON 파일로 저장</button>
+      </div>
+      <p id="preview-stats" class="fine-print"></p>
+      <details id="preview-details" class="settings-details">
+        <summary>전송할 본문과 검색 결과 직접 보기</summary>
+        <pre id="selection-preview" class="selection-preview"></pre>
+      </details>
+      <div class="manual-share">
+        <h3>선택한 자료 전송</h3>
+        <label class="consent-row"><input type="checkbox" id="share-confirm" disabled>
+          <span>선택한 내용에 개인정보·비공개 정보가 없는지 확인했으며, 해당 내용을 위 비공개 저장소에 전송하는 데 동의합니다.</span>
+        </label>
+        <div class="actions"><button id="upload-selected" type="button" disabled>선택한 자료를 비공개 저장소에 전송</button></div>
+        <p id="upload-result" class="helper-message" role="status"></p>
+      </div>
+    </div>
+  </details>
+
+  <section class="reference-panel">
+    <div>
+      <h2>저장된 조사 자료 조회</h2>
+      <p>이 채팅은 연결된 GitHub의 비공개 조사 결과를 읽을 수 있습니다. 검색 링크 후보와 실제 네이버 화면 순위는 구분해 분석합니다.</p>
+    </div>
+    <div class="actions reference-actions">
+      <button id="copy-chat-request" type="button" class="outline-action" disabled>수동 자료 분석 요청문 복사</button>
+      <a id="open-github-index" class="bridge-link" target="_blank" rel="noopener noreferrer" hidden>비공개 자료 인덱스 보기</a>
+    </div>
+  </section>
+
+  <footer class="bridge-footer">SERP Lens는 비공식 분석 도구입니다. 원문 HTML·화면 캡처·GitHub 토큰은 본문 JSON에 포함하지 않습니다. 추출 결과의 원문 완전성과 검색 순위는 별도 확인이 필요합니다.</footer>
 </main>
-</body></html>
+</body>
+</html>
