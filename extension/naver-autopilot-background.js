@@ -112,6 +112,24 @@ async function finishJob(config,secret,number){
     method:'PATCH',body:JSON.stringify({state:'closed',state_reason:'completed'})
   });
 }
+async function ensureJobLabel(config,secret){
+  const list=await github(raw(config.name,'labels?per_page=100'),secret);
+  if(Array.isArray(list)&&list.some(x=>x.name===JOB_LABEL))return;
+  const response=await fetch(raw(config.name,'labels'),{
+    method:'POST',
+    headers:{
+      Accept:'application/vnd.github+json',
+      Authorization:'Bearer '+secret,
+      'X-GitHub-Api-Version':'2022-11-28',
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({
+      name:JOB_LABEL,color:'2b6cb0',
+      description:'Authorized SERP Lens Naver search request'
+    })
+  });
+  if(!response.ok)throw Error('GitHub 작업 라벨 생성에 실패했습니다. 토큰에 Issues 읽기/쓰기 권한이 필요합니다. HTTP '+response.status);
+}
 async function fetchJobs(config,secret){
   const url=raw(config.name,'issues')+'?state=open&labels='+encodeURIComponent(JOB_LABEL)+
     '&per_page=20&sort=created&direction=asc';
@@ -267,6 +285,7 @@ chrome.runtime.onMessage.addListener((message,_sender,respond)=>{
       const value=String(message.repository||'');
       const secret=await token();
       const config=await checkPrivateRepository({repository:value,token:secret});
+      await ensureJobLabel(config,secret);
       await chrome.storage.local.set({[SETTINGS]:{
         enabled:true,repository:config.name,enabled_at:now()
       }});
