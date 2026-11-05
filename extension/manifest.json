@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "1.7.0",
-  "description": "네이버 검색 관측, 경쟁 문서 비교 및 대조군 변경 전후 실험을 로컬에서 진행합니다.",
+  "version": "1.8.0",
+  "description": "네이버 검색 결과의 실제 화면 위치와 HTML 추정 결과를 스크린샷으로 검증하는 로컬 SERP 분석기",
   "permissions": [
     "activeTab",
     "scripting"
