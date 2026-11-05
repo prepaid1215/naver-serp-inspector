@@ -361,9 +361,10 @@ chrome.runtime.onMessage.addListener((message,_sender,respond)=>{
       const secret=await token();
       const config=await checkPrivateRepository({repository:value,token:secret});
       await ensureJobLabel(config,secret);
-      await chrome.storage.local.set({[SETTINGS]:{
-        enabled:true,repository:config.name,enabled_at:now()
-      }});
+      await chrome.storage.local.set({
+        [SETTINGS]:{enabled:true,repository:config.name,enabled_at:now()},
+        'serp-lens-private-evidence-repository':config.name
+      });
       await status('자동 조사가 켜졌습니다. 전용 GitHub 요청만 실행합니다.',{phase:'enabled'});
       return {ok:true,enabled:true,repository:config.name};
     }
