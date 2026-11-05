@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "2.2.1",
-  "description": "Plus 채팅에서 GitHub 요청 → 네이버 자동 수집 → 출처별 본문·구조 결과 반환",
+  "version": "2.3.0",
+  "description": "ChatGPT 웹검색을 보완하는 네이버 블로그·카페 자동 본문 수집(실패 시 다른 글 재시도)",
   "permissions": [
     "activeTab",
     "scripting",
