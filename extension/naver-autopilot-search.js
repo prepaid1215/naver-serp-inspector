@@ -28,39 +28,41 @@ export function collectNaverSearchDOM(){
         /^\d{1,20}$/.test(u.searchParams.get('clubid')||'')&&
         /^\d{1,20}$/.test(u.searchParams.get('articleid')||''));
   };
-  const titleFromCard=(anchor,rawTitle)=>{
+  const titleFromCard=(anchor,rawTitle,targetURL)=>{
+    // In live Naver PC DOM, the post href often belongs to an invisible
+    // "새 창 열림" link; a nearby heading may be the BLOG/CAFE name, not the
+    // actual post headline. Never treat neighbouring headings as proof.
+    const safeTitle=value=>good(value)&&
+      !/(?:^|\\s)새 창 열림$/.test(value)&&
+      !/(?:^|\\s)(?:블로그|카페)\\s*새 창 열림$/.test(value);
     const attr=String(anchor.className?.baseVal||anchor.className||'')+' '+
       String(anchor.parentElement?.className||'');
     const anchorIsHeadline=titleTerms.test(attr)||
       Boolean(anchor.querySelector('h3,h4,strong,[class*="headline"]'));
-    if(good(rawTitle)&&anchorIsHeadline)
+    if(safeTitle(rawTitle)&&anchorIsHeadline)
       return {visible_title:rawTitle,title_confidence:'high',title_source:'headline_anchor'};
-    // Some Naver cards expose only a timestamp or "새 창 열림" on the URL
-    // anchor. Find the nearest local card heading but do not infer a title
-    // from a remote, unrelated section.
+    // A sibling title is allowed only if it explicitly links to this SAME
+    // article. The shared card may contain author/cafe heading labels.
     let current=anchor.parentElement;
-    for(let level=0;level<4&&current;level++,current=current.parentElement){
+    for(let level=0;level<3&&current;level++,current=current.parentElement){
       if(current.querySelectorAll('a[href]').length>14)break;
-      for(const sel of [
-        'h3','h4','[class*="title"]','[class*="headline"]',
-        '[class*="tit_main"]','strong'
-      ]){
-        for(const node of [...current.querySelectorAll(sel)].slice(0,8)){
-          if(node.closest('nav,header,footer'))continue;
-          const value=clean(node.innerText||node.textContent);
-          if(!good(value))continue;
-          // Do not let the entire parent card, its description or navigation
-          // become a falsely "verified" search title.
-          if(node.querySelectorAll('a[href]').length>2)continue;
-          return {visible_title:value.slice(0,260),
-            title_confidence:'heuristic',title_source:'nearby_card_heading'};
-        }
+      for(const other of [...current.querySelectorAll('a[href]')].slice(0,14)){
+        let same=false;
+        try{same=new URL(other.href,location.href).href===targetURL;}catch{}
+        if(!same)continue;
+        const value=clean(other.innerText||other.textContent).slice(0,260);
+        const klass=String(other.className?.baseVal||other.className||'');
+        if(other!==anchor&&safeTitle(value)&&
+          (titleTerms.test(klass)||other.querySelector('h3,h4,strong,[class*="headline"]')))
+          return {visible_title:value,title_confidence:'high',title_source:'same_url_headline'};
       }
     }
-    if(good(rawTitle))return {visible_title:rawTitle,title_confidence:'medium',
-      title_source:'anchor_text'};
+    // An unlabelled anchor may provide a headline but can also be an author.
+    // Keep only the raw text as an explicitly uncertain anchor observation.
+    if(safeTitle(rawTitle))
+      return {visible_title:rawTitle,title_confidence:'medium',title_source:'anchor_text_unverified'};
     return {visible_title:'',title_confidence:'unverified',
-      title_source:'no_reliable_title'};
+      title_source:'no_reliable_article_title'};
   };
   const blockInfo=anchor=>{
     let node=anchor.parentElement;
@@ -97,11 +99,11 @@ export function collectNaverSearchDOM(){
     if(seen.has(key))continue;
     seen.add(key);
     const isArticle=articleURL(u,type);
-    const titleInfo=isArticle?titleFromCard(anchor,rawTitle):
+    const titleInfo=isArticle?titleFromCard(anchor,rawTitle,key):
       {visible_title:rawTitle,title_confidence:'unverified',title_source:'profile_or_context_link'};
     const block=isArticle?blockInfo(anchor):
       {block_heading_hint:'',block_heading_confidence:'unverified'};
-    rows.push({url:key,title:titleInfo.visible_title||rawTitle,
+    rows.push({url:key,title:titleInfo.visible_title||'',
       anchor_text:rawTitle,type,is_article_link:isArticle,
       ...titleInfo,...block,
       headline_hint:titleInfo.title_confidence==='high',
