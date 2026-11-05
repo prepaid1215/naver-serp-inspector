@@ -1,0 +1,15 @@
+
+.bridge-jobs{display:grid;gap:9px}.bridge-job{border:1px solid #dce5f1;border-radius:10px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.bridge-job strong{display:block;font-size:13px;overflow-wrap:anywhere}
+.bridge-job small{color:#60748f;font-size:11px}
+.bridge-job button{white-space:nowrap}
+.bridge-progress{background:#f3f7fe;padding:12px;border-radius:8px;color:#365d9e;font-size:13px;margin:10px 0}
+.bridge-preview{display:grid;gap:10px;margin-top:14px}
+.bridge-article{border:1px solid #e2e8f2;padding:12px;border-radius:9px;min-width:0}
+.bridge-article strong{font-size:14px;display:block}
+.bridge-article a{font-size:12px;color:#2d59a6;overflow-wrap:anywhere}
+.bridge-article p{font-size:12px;color:#52617a;white-space:pre-wrap}
+.bridge-check{margin-top:18px;display:flex;gap:9px;align-items:flex-start;font-size:13px;font-weight:550}
+.bridge-check input{width:auto;margin:4px 0 0}
+#bridge-token{max-width:650px}
+@media(max-width:650px){.bridge-job{grid-template-columns:1fr}}
