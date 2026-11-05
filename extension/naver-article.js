@@ -72,7 +72,7 @@ export function extractOpenArticle() {
   const headings=[],headingSeen=new Set();
   // Naver authors commonly use keycap emoji, circled digits and compact
   // numbered labels for section headings. These remain *candidates*.
-  const numericSection=/^(?:\d{1,2}[.)]\s*|[0-9]\uFE0F?\u20E3\s*|[①-⑳]\s*|▣\s+)\S.{0,130}$/u;
+  const numericSection=/^(?:\d{1,2}[.)]\s+|[0-9]\uFE0F?\u20E3\s*|[①-⑳]\s*|▣\s+)\S.{0,130}$/u;
   for(const node of headingNodes){
     if(node.closest('table,.se-table,.se-table-container,.se-table-content,'+
       '.se-module-oglink,.se-module-image,.se-module-caption'))continue;
