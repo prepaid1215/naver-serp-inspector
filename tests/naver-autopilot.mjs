@@ -16,9 +16,17 @@ for(const invalid of [
 assert.equal(validNaverArticleURL('https://example.com/a'),null);
 assert.equal(validNaverArticleURL('http://blog.naver.com/test/1'),null);
 assert.equal(validNaverArticleURL('https://blog.naver.com.evil.com/test/1'),null);
-assert.equal(validNaverArticleURL('https://blog.naver.com/test/12345'),'https://blog.naver.com/test/12345');
+assert.equal(validNaverArticleURL('https://blog.naver.com/test/12345'),null);
+assert.equal(validNaverArticleURL('https://blog.naver.com/test'),null);
+assert.equal(validNaverArticleURL('https://cafe.naver.com/example'),null);
+assert.equal(validNaverArticleURL('https://blog.naver.com/test/224465527655'),'https://blog.naver.com/test/224465527655');
+assert.equal(validNaverArticleURL('https://cafe.naver.com/example/8551'),'https://cafe.naver.com/example/8551');
+assert.equal(validNaverArticleURL('https://blog.naver.com/PostView.naver?blogId=test&logNo=224465527655'),
+  'https://blog.naver.com/PostView.naver?blogId=test&logNo=224465527655');
 const chosen=pickNaverArticles([
   {type:'WEB',url:'https://example.com/other',title:'other'},
+  {type:'BLOG',url:'https://blog.naver.com/demo',title:'블로그 프로필'},
+  {type:'CAFE',url:'https://cafe.naver.com/example',title:'카페 메인'},
   {type:'BLOG',url:'https://blog.naver.com/demo/12345',title:'post'},
   {type:'BLOG',url:'https://blog.naver.com/demo/12345',title:'duplicate'},
   {type:'CAFE',url:'https://cafe.naver.com/example/12345',title:'cafe'},
@@ -62,6 +70,8 @@ globalThis.chrome={
       const tab=tabs.get(target.tabId);
       if(func.name==='collectNaverSearchDOM')return [{result:{
         source_url:tab.url,query:'396 요금제',rows:[
+          {url:'https://blog.naver.com/demo',title:'인용 블로그 프로필',type:'BLOG',headline_hint:true},
+          {url:'https://cafe.naver.com/demo',title:'인용 카페 프로필',type:'CAFE',headline_hint:true},
           {url:'https://blog.naver.com/demo/10000000',title:'396 요금제 글',type:'BLOG',headline_hint:true},
           {url:'https://cafe.naver.com/demo/20000000',title:'396 요금제 카페',type:'CAFE',headline_hint:true},
           {url:'https://evil.example/redirect',title:'잘못된 링크',type:'BLOG'}
@@ -104,7 +114,7 @@ globalThis.fetch=async (url,opts={})=>{
     const p=JSON.parse(obj.body.split('\n').slice(1).join('\n'));
     assert.equal(p.status,'completed');
     assert.equal(p.captured_articles,2);
-    assert.equal(p.search_candidates,3);
+    assert.equal(p.search_candidates,5);
     assert.equal(p.paths.length,3);
     history.push(p);
     return reply(201,{id:123});
