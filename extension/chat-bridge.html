@@ -1,0 +1,56 @@
+<!doctype html><html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Naver Chat Bridge | SERP Lens</title>
+<link rel="stylesheet" href="intelligence.css">
+<link rel="stylesheet" href="chat-bridge.css">
+<script type="module" src="chat-bridge.js"></script>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">SERP LENS · CHAT BRIDGE</div>
+<h1>네이버 ↔ ChatGPT 연결</h1>
+<p>ChatGPT가 기록한 검색 요청을 검토한 뒤 실행하고, 결과를 비공개 저장소로 전달합니다.</p>
+</div></header>
+<main class="wrap">
+<p id="bridge-status" role="status">연결 준비 중입니다.</p>
+<section class="panel">
+<h2>1. GitHub 비공개 저장소 연결</h2>
+<p class="muted">기존 SERP Lens 소스 저장소와 별개인 <strong>비공개 저장소</strong>를 사용합니다. GitHub 토큰에는 그 저장소에 대한 Contents 읽기·쓰기 권한만 부여하세요. 토큰은 이 화면의 메모리에만 보관하며 브라우저 저장소나 보고서에 넣지 않습니다.</p>
+<div class="controls">
+<label>비공개 저장소 (소유자/이름)
+<input id="bridge-repo" placeholder="prepaid1215/naver-research-private" autocomplete="off" spellcheck="false"></label>
+<label>브랜치
+<input id="bridge-branch" value="main" autocomplete="off" spellcheck="false"></label>
+</div>
+<label>GitHub Fine-grained 개인 액세스 토큰 (메모리에만 유지)
+<input id="bridge-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_..."></label>
+<div class="actions">
+<button type="button" id="bridge-connect">비공개 저장소 확인 · 요청 불러오기</button>
+<button type="button" id="bridge-refresh" class="secondary" disabled>요청 새로고침</button>
+</div>
+<p class="muted">비공개 저장소가 아니면 연결하지 않습니다. 로그인·캡차 우회 기능은 없습니다.</p>
+</section>
+<section class="panel">
+<h2>2. ChatGPT 검색 요청 실행</h2>
+<p class="muted">요청은 GitHub의 <code>bridge/requests/&lt;요청ID&gt;.json</code>에 저장됩니다. 요청마다 <strong>실행</strong> 버튼을 눌러야 새 검색 탭과 최대 10개 글을 방문합니다. 현재 버전은 PC 네이버 블로그·카페만 지원합니다.</p>
+<div id="bridge-jobs" class="bridge-jobs">연결 후 요청 목록이 표시됩니다.</div>
+</section>
+<section class="panel">
+<h2>3. 본문 확인 후 ChatGPT로 전달</h2>
+<p class="muted">수집할 때 네이버 검색 탭과 게시글 탭이 임시로 열리고, 처리가 끝나면 닫힙니다. 수집한 내용은 자동으로 업로드하지 않습니다.</p>
+<div id="bridge-progress" class="bridge-progress" role="status">아직 실행한 요청이 없습니다.</div>
+<div id="bridge-preview" class="bridge-preview"></div>
+<label class="bridge-check">
+<input id="bridge-approve" type="checkbox" disabled>
+수집 결과를 검토했으며, 제목·본문·주소가 비공개 GitHub 저장소로 전송되는 것에 동의합니다.
+</label>
+<div class="actions">
+<button id="bridge-upload" disabled>검토한 결과를 GitHub에 전송</button>
+<button id="bridge-export" class="secondary" disabled>전송 전 JSON 직접 저장</button>
+</div>
+</section>
+<section class="panel">
+<h2>현재 버전의 한계</h2>
+<p class="muted">이것은 ChatGPT 자체 검색 엔진에 네이버를 추가하는 기능이 아닙니다. 사용자의 GitHub 연결을 통한 요청·응답 방식입니다. 새 요청마다 사용자가 확장프로그램에서 실행을 승인해야 하며, 본문이 없는 글이나 지원되지 않는 페이지는 누락 사유를 남깁니다. 공개 저장소 업로드, 계정정보 수집, 백그라운드 무제한 크롤링은 지원하지 않습니다.</p>
+</section>
+<footer>검색 결과는 참고용 · 네이버 공식 순위 아님 · 외부 사이트 및 로그인 제한 글은 수집하지 않음</footer>
+</main></body></html>
