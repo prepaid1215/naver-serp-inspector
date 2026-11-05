@@ -2,10 +2,12 @@ import {listSearches,listPages,removeSearch,removePage} from './intelligence-sto
 import {compareSearches,buildAIPrompt,pageStats} from './intelligence-analysis.js';
 import {compareCapturedContent,gapReportText} from './content-gap.js';
 import {analyzeRankingEvidence,rankLabPrompt} from './rank-lab.js';
+import {makeExperiment,analyzeExperiment,experimentReportText,CHANGE_TYPES} from './experiment-lab.js';
+import {saveExperiment,listExperiments,removeExperiment} from './intelligence-store.js';
 const $=id=>document.getElementById(id);
 const text=(node,value)=>{node.textContent=String(value??'');return node;};
 const node=(tag,klass,value)=>{const e=document.createElement(tag);if(klass)e.className=klass;if(value!==undefined)text(e,value);return e;};
-let searches=[],pages=[],contentComparison=null,rankReport=null;
+let searches=[],pages=[],contentComparison=null,rankReport=null,experiments=[],experimentReport=null;
 function showMessage(value){text($('message'),value);}
 function option(id,label){const e=node('option',null,label);e.value=id;return e;}
 function selected(){return searches.find(s=>s.id===$('newer').value);}
@@ -210,6 +212,153 @@ $('download-rank-lab').addEventListener('click',()=>{
   download('naver-rank-lab-evidence.json',JSON.stringify(rankReport,null,2),'application/json;charset=utf-8');
 });
 
+
+function selectedExperiment(){return experiments.find(e=>e.id===$('exp-select').value);}
+function renderExperimentOptions(){
+  const chosen=$('exp-select').value;
+  $('exp-select').replaceChildren(option('','실험을 선택하세요'),...experiments.map(e=>
+    option(e.id,e.title+' · '+e.query+' · '+e.device+' · '+new Date(e.changed_at).toLocaleString('ko-KR'))));
+  if(experiments.some(e=>e.id===chosen))$('exp-select').value=chosen;
+  $('exp-run').disabled=!selectedExperiment();
+  $('exp-delete').disabled=!selectedExperiment();
+}
+function showExperimentMessage(msg,error=false){
+  const el=$('exp-form-message');
+  text(el,msg);el.classList.toggle('error',error);
+}
+function expText(value){return value===null||value===undefined?'계산 불가':String(value);}
+function exportAvailable(enabled){
+  for(const id of ['exp-export-txt','exp-export-json','exp-copy-prompt'])$(id).disabled=!enabled;
+}
+function renderExperimentReport(){
+  const root=$('exp-summary'),evidence=$('exp-evidence');
+  root.replaceChildren();evidence.replaceChildren();
+  const report=experimentReport;
+  exportAvailable(!!report);
+  if(!report)return;
+  const experiment=report.experiment;
+  root.append(node('h3',null,experiment.title));
+  root.append(node('p','muted',
+    '변경 유형: '+(CHANGE_TYPES[experiment.change_type]||experiment.change_type)+
+    ' · 수정 시각: '+new Date(experiment.changed_at).toLocaleString('ko-KR')));
+  root.append(node('p','muted','대조 문서 미수정 여부: 사용자 계획에 따른 입력 · 자동 검증하지 않음'));
+  const metrics=node('div','exp-metrics');
+  const entries=[
+    ['변경 전 수집',report.counts.before+'회'],
+    ['변경 후 수집',report.counts.after+'회'],
+    ['비교 가능한 대조 문서',report.counts.eligible_controls+'개'],
+    ['실험 문서 변화',expText(report.target.delta)],
+    ['대조 문서 변화 중앙값',expText(report.control_median_delta)],
+    ['대조군 대비 상대 변화',expText(report.relative_delta)]
+  ];
+  for(const [label,value] of entries){
+    const card=node('div','exp-metric');
+    card.append(node('strong',null,value),node('span',null,label));
+    metrics.append(card);
+  }
+  root.append(metrics);
+  root.append(node('p','exp-interpretation',report.interpretation));
+  if(!report.enough_repeated_observations)root.append(node('p','muted',
+    '반복 수집 기준 미달: 전후 각각 2회 이상과 비교 가능한 대조 문서 1개 이상이 필요합니다. 이 기준은 통계적 유의성을 보장하지 않습니다.'));
+  const rows=node('div','exp-document-list');
+  for(const item of [report.target,...report.controls]){
+    const card=node('div','exp-document');
+    card.append(node('strong',null,item.role==='target'?'실험 문서':'대조 문서'));
+    const a=node('a',null,item.url);a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';
+    card.append(a,node('span',null,
+      '전: '+expText(item.before.median_position)+' (발견 '+item.before.found+'/'+item.before.observations+') · '+
+      '후: '+expText(item.after.median_position)+' (발견 '+item.after.found+'/'+item.after.observations+') · '+
+      '변화: '+expText(item.delta)));
+    rows.append(card);
+  }
+  root.append(rows);
+  evidence.append(node('h3',null,'원본 검색 화면 근거'));
+  for(const part of ['before','after']){
+    const wrap=node('div','exp-evidence-group');
+    wrap.append(node('h4',null,part==='before'?'변경 전 수집 기록':'변경 후 수집 기록'));
+    const observations=report.evidence[part];
+    if(!observations.length)wrap.append(node('p','empty','수집 기록 없음'));
+    for(const snap of observations){
+      const entry=node('div','source-record');
+      entry.append(node('strong',null,new Date(snap.captured_at).toLocaleString('ko-KR')+
+        ' · 문서 후보 '+snap.document_count+'건'));
+      const positions=Object.entries(snap.positions).map(([key,pos])=>
+        (key===report.target.key?'실험':'대조')+' '+(pos===null?'미등장':pos+'번째')).join(' · ');
+      entry.append(node('span',null,positions));
+      if(/^https?:\/\//.test(snap.source_url)){
+        const link=node('a',null,'검색 화면 출처 URL');
+        link.href=snap.source_url;link.target='_blank';link.rel='noopener noreferrer';entry.append(link);
+      }
+      if(snap.evidence_sha256)entry.append(node('small',null,'SHA-256 '+snap.evidence_sha256));
+      wrap.append(entry);
+    }
+    evidence.append(wrap);
+  }
+  evidence.append(node('p','muted',report.limitations.join(' ')));
+}
+function resetExperimentReport(){
+  experimentReport=null;
+  renderExperimentReport();
+}
+$('experiment-form').addEventListener('submit',async event=>{
+  event.preventDefault();
+  try{
+    const record=makeExperiment({
+      title:$('exp-title').value,query:$('exp-query').value,device:$('exp-device').value,
+      change_type:$('exp-type').value,changed_at:$('exp-changed-at').value,
+      target_url:$('exp-target-url').value,
+      control_urls:$('exp-control-urls').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean),
+      change_note:$('exp-change-note').value,control_note:$('exp-control-note').value,
+      controls_unchanged_asserted:$('exp-controls-unchanged').checked
+    });
+    await saveExperiment(record);
+    experiments=await listExperiments();
+    renderExperimentOptions();
+    $('exp-select').value=record.id;
+    renderExperimentOptions();
+    $('exp-run').disabled=false;$('exp-delete').disabled=false;
+    $('experiment-form').reset();
+    resetExperimentReport();
+    showExperimentMessage('실험을 저장했습니다. 변경 전후에 수집한 같은 키워드·기기 기록이 있으면 비교할 수 있습니다.');
+  }catch(error){showExperimentMessage('실험 저장 실패: '+error.message,true);}
+});
+$('exp-select').addEventListener('change',()=>{
+  $('exp-run').disabled=!selectedExperiment();
+  $('exp-delete').disabled=!selectedExperiment();
+  resetExperimentReport();
+});
+$('exp-run').addEventListener('click',()=>{
+  const selected=selectedExperiment();if(!selected)return;
+  try{experimentReport=analyzeExperiment(selected,searches);renderExperimentReport();
+    showExperimentMessage('검색 기록을 이용해 전후 관측과 대조군 변화를 계산했습니다. 원본 기록을 확인하세요.');
+  }catch(error){resetExperimentReport();showExperimentMessage('비교 실패: '+error.message,true);}
+});
+$('exp-delete').addEventListener('click',async()=>{
+  const selected=selectedExperiment();if(!selected)return;
+  await removeExperiment(selected.id);
+  experiments=await listExperiments();
+  renderExperimentOptions();resetExperimentReport();
+  showExperimentMessage('선택한 실험 기록을 삭제했습니다. 검색 이력은 유지됩니다.');
+});
+$('exp-export-txt').addEventListener('click',()=>{
+  if(experimentReport)download('naver-rank-experiment-report.txt',experimentReportText(experimentReport),'text/plain;charset=utf-8');
+});
+$('exp-export-json').addEventListener('click',()=>{
+  if(experimentReport)download('naver-rank-experiment-evidence.json',JSON.stringify(experimentReport,null,2),'application/json;charset=utf-8');
+});
+$('exp-copy-prompt').addEventListener('click',async()=>{
+  if(!experimentReport)return;
+  const txt=[
+    '네이버 검색 로직 실험 분석 요청',
+    '다음 결과는 내가 직접 수집한 검색화면의 DOM 순서와 대조 문서 변화에서 계산한 관측값이다.',
+    '관측된 사실, 반례, 가능한 교란 요인을 구분하고 순위 변화와 수정 작업 사이의 인과관계를 단정하지 마라.',
+    '다음 반복 실험에서 고정할 키워드·기기·검색 시점·대조 문서 및 검증 기준을 제안해 줘.',
+    experimentReportText(experimentReport)
+  ].join('\n\n');
+  try{await navigator.clipboard.writeText(txt);showExperimentMessage('ChatGPT 분석용 요청문을 복사했습니다.');}
+  catch{showExperimentMessage('클립보드 접근 실패: TXT 보고서를 저장해 활용하세요.',true);}
+});
+
 function createPrompt(){
   const s=selected();
   const diff=s&&older()?compareSearches(s,older()):null;
@@ -227,7 +376,7 @@ $('older').addEventListener('change',renderComparison);
 $('own-domains').addEventListener('input',updatePrompt);
 $('remove-search').addEventListener('click',async()=>{
   const s=selected();if(!s)return;
-  await removeSearch(s.id);searches=searches.filter(x=>x.id!==s.id);clearRankLab();renderOptions();
+  await removeSearch(s.id);searches=searches.filter(x=>x.id!==s.id);clearRankLab();resetExperimentReport();renderOptions();
 });
 $('copy').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(createPrompt());showMessage('분석 요청문을 클립보드에 복사했습니다. ChatGPT 대화에 붙여넣으세요.');}
@@ -244,8 +393,8 @@ $('export-json').addEventListener('click',()=>{
 });
 async function init(){
   try{
-    [searches,pages]=await Promise.all([listSearches(),listPages()]);
-    renderOptions();renderPages();renderGapControls();
+    [searches,pages,experiments]=await Promise.all([listSearches(),listPages(),listExperiments()]);
+    renderOptions();renderPages();renderGapControls();renderExperimentOptions();
     showMessage('검색 기록 '+searches.length+'개, 방문 문서 '+pages.length+'개를 이 브라우저에서 불러왔습니다.');
   }catch(error){showMessage('로컬 분석 자료 로드 실패: '+error.message);}
 }
