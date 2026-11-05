@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const text=(el,value)=>{el.textContent=String(value??'');return el;};
 const el=(tag,klass,value)=>{const x=document.createElement(tag);if(klass)x.className=klass;if(value!==undefined)text(x,value);return x;};
 const labelFor={AD:'광고',BLOG:'블로그',CAFE:'카페',WEB:'웹문서',NEWS:'뉴스',KIN:'지식iN',
- CLIP:'클립',VIDEO:'동영상',UNCLASSIFIED:'미분류',OTHER:'기타·블록'};
+ CLIP:'클립',VIDEO:'동영상',UNCLASSIFIED:'미분류',AI:'AI 요약',MIXED:'혼합',OTHER:'기타·블록'};
 let audits=[],audit=null,screenshotURL=null,picking=false,picked=null,activeCandidate=null;
 const params=new URL(location.href).searchParams;
 function message(msg,warning=false){text($('message'),msg);$('message').style.color=warning?'#9e4250':'#3d65a5';}
@@ -26,9 +26,9 @@ function controls(enabled){
 function clearAudit(){
  if(screenshotURL){URL.revokeObjectURL(screenshotURL);screenshotURL=null;}
  audit=null;controls(false);$('screenshot').removeAttribute('src');
- for(const id of ['screenshot-overlays','candidate-list','manual-list','parser-report','audit-status'])$(id).replaceChildren();
+ for(const id of ['screenshot-overlays','candidate-list','block-list','manual-list','parser-report','audit-status'])$(id).replaceChildren();
  text($('metadata'),'수집한 네이버 검색 화면이 없습니다. 실제 검색 결과 화면에서 위치 검수 캡처를 시작하세요.');
- $('audit-complete').checked=false;setPickMode(false);
+ $('audit-complete').checked=false;$('show-blocks').checked=false;setPickMode(false);
 }
 async function reloadOptions(wanted){
  audits=await listVisualAuditSummaries();
@@ -67,6 +67,18 @@ function drawOverlay(){
  if(!audit)return;
  const vw=audit.viewport.width,vh=audit.viewport.height;
  if(!vw||!vh)return;
+ if($('show-blocks').checked){
+   for(const block of audit.blocks||[]){
+     const verdict=audit.block_reviews?.[block.id]?.verdict||'unreviewed';
+     const rect=el('div','block-rect '+verdict);
+     rect.style.left=100*Math.max(0,block.x)/vw+'%';
+     rect.style.top=100*Math.max(0,block.y)/vh+'%';
+     rect.style.width=100*Math.max(0,Math.min(block.width,vw-Math.max(0,block.x)))/vw+'%';
+     rect.style.height=100*Math.max(0,Math.min(block.height,vh-Math.max(0,block.y)))/vh+'%';
+     rect.title='블록 '+block.id+' · '+(block.type_hints||[]).join('/');
+     board.append(rect);
+   }
+ }
  for(const [i,c] of audit.candidates.entries()){
   const review=audit.reviews?.[c.id]||{},state=review.verdict||'unreviewed';
   const box=el('div','candidate-rect '+state);
@@ -115,6 +127,36 @@ function editReview(c,field,value){
  $('audit-complete').checked=false;
  renderAll();void persist('검수 변경사항을 저장했습니다.');
 }
+function editBlock(block,field,value){
+  const original=audit.block_reviews?.[block.id]||{};
+  audit.block_reviews={...(audit.block_reviews||{}),[block.id]:{...original,[field]:value}};
+  if(field==='correct_type'&&!original.verdict)audit.block_reviews[block.id].verdict='confirmed';
+  if(field==='verdict'&&value==='unreviewed')delete audit.block_reviews[block.id];
+  audit.checked_complete=false;
+  $('audit-complete').checked=false;
+  renderAll();void persist('검색 블록 검수 변경사항을 저장했습니다.');
+}
+function renderBlocks(){
+  const root=$('block-list');
+  root.replaceChildren();
+  text($('count-blocks'),(audit.blocks||[]).length+'개 블록');
+  if(!(audit.blocks||[]).length)root.append(el('p','muted','자동 추출한 블록 경계가 없습니다. 제목 후보는 따로 검수하세요.'));
+  for(const block of audit.blocks||[]){
+    const r=audit.block_reviews?.[block.id]||{},item=el('div','block-item');
+    const suggested=block.type_hints?.length===1?block.type_hints[0]:'MIXED';
+    const meta=el('div','block-meta');
+    meta.append(el('strong',null,block.id+' · 화면 Y='+Math.round(block.y)+'px'),
+      el('span',null,'후보 '+(block.candidates||0)+'개 · 자동 유형 '+(block.type_hints||[]).join(' / ')));
+    const verdict=el('label',null,'화면에 보이는 블록?');
+    verdict.append(makeSelect([
+      ['unreviewed','미검수'],['confirmed','화면에 보임'],['rejected','잘못 감지'],['uncertain','불명확']
+    ],r.verdict||'unreviewed',v=>editBlock(block,'verdict',v)));
+    const kind=el('label',null,'블록 유형');
+    kind.append(makeSelect(TYPES.map(t=>[t,labelFor[t]||t]),
+      r.correct_type||suggested,v=>editBlock(block,'correct_type',v)));
+    item.append(meta,verdict,kind);root.append(item);
+  }
+}
 function renderCandidates(){
  const list=$('candidate-list');const oldScroll=list.scrollTop;
  list.replaceChildren();
@@ -137,7 +179,7 @@ function renderCandidates(){
   typeLabel.append(makeSelect(TYPES.map(t=>[t,labelFor[t]||t]),
     review.correct_type||c.type_hint||'OTHER',v=>editReview(c,'correct_type',v)));
   editor.append(verdictLabel,typeLabel);card.append(editor);
-  card.append(el('small',null,'화면 위치 Y='+Math.round(c.y)+'px · 자동 유형 '+(labelFor[c.type_hint]||c.type_hint)));
+  card.append(el('small',null,'화면 위치 Y='+Math.round(c.y)+'px · 블록 '+(c.block_id||'미확인')+' · 자동 유형 '+(labelFor[c.type_hint]||c.type_hint)));
   list.append(card);
  }
  list.scrollTop=oldScroll;
@@ -160,6 +202,7 @@ function renderSummary(){
  text($('count-confirmed'),result.counts.confirmed);
  text($('count-unreviewed'),result.counts.unreviewed+result.counts.uncertain);
  text($('count-missed'),result.counts.manual);
+ text($('count-blocks'),(audit.blocks||[]).length+'개 블록 · 미검수 '+result.block_counts.unreviewed+'개');
  const parser=$('parser-report');parser.replaceChildren();
  parser.append(el('div','report-row',
    '화면에서 확인한 제목 후보 '+result.counts.confirmed+'개 중 HTML 파서와 주소가 일치한 항목 '+
@@ -171,7 +214,7 @@ function renderSummary(){
    '이 캡처에서 사용자가 검수한 제목 후보의 화면 순서를 확정했습니다. 검색 결과 전체 순위는 아닙니다.':
    '검수 미완료 · '+result.warnings.filter(w=>!w.startsWith('순서는')).join(' / '));
 }
-function renderAll(){if(!audit)return;drawOverlay();renderCandidates();renderManual();renderSummary();}
+function renderAll(){if(!audit)return;drawOverlay();renderBlocks();renderCandidates();renderManual();renderSummary();}
 function setPickMode(enabled){
  picking=enabled;$('screenshot-board').classList.toggle('pick-mode',enabled);
  text($('pick-location'),enabled?'위치 선택 중 · 취소':'화면에서 위치 선택');
@@ -187,6 +230,7 @@ $('screenshot-board').addEventListener('click',event=>{
  setPickMode(false);
 });
 $('pick-location').addEventListener('click',()=>{if(audit)setPickMode(!picking);});
+$('show-blocks').addEventListener('change',drawOverlay);
 $('add-missing').addEventListener('click',()=>{
  if(!audit||!picked){message('먼저 스크린샷에서 누락된 항목의 위치를 선택하세요.',true);return;}
  const title=$('missing-title').value.trim(),type=$('missing-type').value,url=$('missing-url').value.trim();
