@@ -64,7 +64,7 @@ try:
     expect(page.locator('.validation-stage')).to_have_count(5)
     assert '통합 검증 실패' not in page.locator('#validation-status').inner_text(),page.locator('#validation-status').inner_text()
     assert '5단계 중 자료 확보' in page.locator('#validation-summary').inner_text()
-    audit=page.locator('.validation-stage').nth(4).inner_text()
+    audit=page.locator('.validation-stage').nth(0).inner_text()
     assert '검증자료 확보' in audit,audit
     assert 'PC 실화면 1개' in audit
     assert '모바일 실화면 1개' in audit
@@ -74,8 +74,8 @@ try:
       page.locator('#download-validation').click()
     data=json.loads(Path(dl.value.path()).read_text('utf-8'))
     assert data['schema']=='naver-serp-full-validation-v1'
-    assert data['stages'][4]['ready'] is True
-    assert data['stages'][3]['ready'] is False
+    assert data['stages'][0]['ready'] is True
+    assert data['stages'][4]['ready'] is False
     assert data['ready'] is False
     assert not errs,errs
     print('FULL VALIDATION DASHBOARD BROWSER E2E PASS')
