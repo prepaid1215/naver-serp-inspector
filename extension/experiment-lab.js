@@ -59,6 +59,7 @@ export function makeExperiment(fields,now=new Date()){
     title:title.slice(0,120),query:query.slice(0,120),device,change_type,
     changed_at:new Date(fields.changed_at).toISOString(),
     target_url,control_urls,
+    window_days:[3,7,14,30].includes(Number(fields.window_days))?Number(fields.window_days):7,
     change_note:clean(fields.change_note).slice(0,1200),
     control_note:clean(fields.control_note).slice(0,500),
     // User affirmation is a plan statement; actual lack of change is not verified.
@@ -80,8 +81,9 @@ function snapshotPositions(snapshot,targets){
 function periodMetric(records,key){
   const positions=records.map(r=>r.positions[key]??null);
   const visible=positions.filter(x=>x!==null);
+  const types=[...new Set(records.map(r=>r.types?.[key]).filter(Boolean))];
   return {observations:records.length,found:visible.length,missing:records.length-visible.length,
-    median_position:round(median(visible)),positions};
+    median_position:round(median(visible)),positions,types};
 }
 function phase(records,keys){
   return keys.map(key=>periodMetric(records,key));
@@ -97,11 +99,16 @@ export function analyzeExperiment(experiment,searches){
     &&Array.isArray(s.rows)&&s.rows.length>0&&!String(s.status||'').startsWith('수집 실패'))
     .sort((a,b)=>time(a.captured_at)-time(b.captured_at));
   const before=[],after=[];
+  const windowDays=[3,7,14,30].includes(Number(experiment.window_days))?Number(experiment.window_days):7;
+  const windowMs=windowDays*86400000;
   for(const s of relevant){
+    const gap=time(s.captured_at)-changedAt;
+    if(gap < -windowMs || gap >= windowMs)continue;
     const pos=snapshotPositions(s,targets);
     const record={id:s.id,captured_at:s.captured_at,source_url:s.sourceURL||'',
       evidence_sha256:s.evidence_sha256||'',document_count:(s.rows||[]).filter(r=>r.block_type!=='AD').length,
-      positions:Object.fromEntries(keys.map(k=>[k,pos.get(k)?.position??null]))};
+      positions:Object.fromEntries(keys.map(k=>[k,pos.get(k)?.position??null])),
+      types:Object.fromEntries(keys.map(k=>[k,pos.get(k)?.block_type??null]))};
     if(time(s.captured_at)<changedAt)before.push(record);else after.push(record);
   }
   const beforeMetrics=phase(before,keys),afterMetrics=phase(after,keys);
@@ -115,7 +122,13 @@ export function analyzeExperiment(experiment,searches){
         '미등장/수집 부족: 해당 기간에서 위치 변화 계산 불가'};
   });
   const target=docResults[0],controls=docResults.slice(1);
-  const eligibleControls=controls.filter(c=>c.comparison_available);
+  const targetTypes=[...new Set([...target.before.types,...target.after.types])];
+  for(const c of controls){
+    const types=[...new Set([...c.before.types,...c.after.types])];
+    c.same_document_type=targetTypes.length===1&&types.length===1&&targetTypes[0]===types[0];
+    if(!c.same_document_type)c.note='문서 유형이 다르거나 불확실해 대조군 변화 계산에서 제외';
+  }
+  const eligibleControls=controls.filter(c=>c.comparison_available&&c.same_document_type);
   const controlMedian=round(median(eligibleControls.map(c=>c.delta)));
   const relative=target.delta!==null&&controlMedian!==null?
     round(target.delta-controlMedian):null;
@@ -130,7 +143,9 @@ export function analyzeExperiment(experiment,searches){
   return {
     experiment:{...experiment},analyzed_at:new Date().toISOString(),
     query:experiment.query,device:experiment.device,
-    counts:{before:before.length,after:after.length,eligible_controls:eligibleControls.length},
+    window_days:windowDays,
+    counts:{before:before.length,after:after.length,eligible_controls:eligibleControls.length,
+      excluded_controls:controls.length-eligibleControls.length},
     target,controls,
     control_median_delta:controlMedian,relative_delta:relative,
     enough_repeated_observations:enough,
@@ -141,6 +156,8 @@ export function analyzeExperiment(experiment,searches){
       '수집되지 않은 결과는 미등장으로 기록합니다. 검색 순위 하락이나 색인 제외를 뜻하지 않습니다.',
       '이 비교는 인과 추정이 아닙니다. 검색 시스템 변화, 개인화, 의도 변화, 문서 수정 등 통제하지 못한 요인이 존재합니다.',
       '대조 문서가 실제로 변경되지 않았는지는 자동 검증하지 못합니다.',
+      '실험 문서와 동일 문서 유형으로 확인된 대조 문서만 상대 변화에 사용합니다.',
+      '수정 시각 기준 ±'+windowDays+'일 관측창을 사용하며 모든 수집 시각을 대조해야 합니다.',
       '실험 전후 수집 시각, 기기, 검색어를 일치시켜야 하고, 한 번에 한 변수만 바꾸는 것이 좋습니다.',
       '사용자가 브라우저에서 직접 수집한 결과만 사용합니다. 자동 검색 및 비공개 점수 추출 기능은 없습니다.'
     ]
@@ -153,6 +170,7 @@ export function experimentReportText(report){
     '실험: '+r.experiment.title,
     '검색어: '+r.query+' / '+r.device,
     '수정 시각: '+r.experiment.changed_at,
+    '관측 기간: 수정일 기준 전후 '+r.window_days+'일,
     '변경 유형: '+(CHANGE_TYPES[r.experiment.change_type]||r.experiment.change_type),
     '실험 문서: '+r.target.url,
     '변경 내용: '+(r.experiment.change_note||'미기재'),
@@ -163,7 +181,7 @@ export function experimentReportText(report){
     '해석: '+r.interpretation,'',
     '대조 문서 관측 기록:'
   ];
-  for(const c of r.controls)lines.push(' - '+c.url+' (전 '+percent(c.before.median_position)+' / 후 '+percent(c.after.median_position)+' / 변화 '+percent(c.delta)+')');
+  for(const c of r.controls)lines.push(' - '+c.url+' (전 '+percent(c.before.median_position)+' / 후 '+percent(c.after.median_position)+' / 변화 '+percent(c.delta)+' / 동일 유형 '+(c.same_document_type?'예':'아니오')+')');
   lines.push('','원본 수집 근거:');
   for(const side of ['before','after']){
     for(const row of r.evidence[side])lines.push(' - '+side+' '+row.captured_at+' '+row.source_url+' SHA-256 '+row.evidence_sha256);
