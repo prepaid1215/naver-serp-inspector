@@ -15,7 +15,7 @@ assert.equal(resultPath(id),'bridge/results/'+id+'.json');
 assert.equal(parseRepository('prepaid1215/naver-private'),'prepaid1215/naver-private');
 assert.equal(parseBranch('main'),'main');
 assert.throws(()=>parseRepository('evil/../../secrets'),/형식/);
-assert.throws(()=>requestPath('../../private'),/형식/);
+assert.throws(()=>requestPath('../../private'),/올바르지/);
 assert.throws(()=>validateJob({...job,device:'모바일'}),/PC/);
 assert.throws(()=>validateJob({...job,max_articles:11}),/1~10/);
 assert.throws(()=>validateJob({...job,requested_at:'2020-01-01T00:00:00Z'}),/7일/);
