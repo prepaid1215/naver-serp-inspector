@@ -43,31 +43,31 @@ export function buildFullValidation(searches=[],pages=[],experiments=[],audits=[
   const eligibleSignals=ranked.factors.filter(f=>fields.includes(f.key)&&f.qualified);
   const experimentReady=experimentReports.filter(e=>!e.error&&e.analysis?.enough_repeated_observations&&e.analysis.relative_delta!==null);
   const stages=[
-    {key:'search_capture',name:'1. 검색 결과 수집·이력',
+    {key:'search_capture',name:'2. 검색 결과 수집·이력',
       ...fmt(withEvidence.length>=2&&queries.length>=2,
         records.length>0,
         records.length===0?'검색 결과를 수집한 기록이 없습니다.':
         '총 '+records.length+'건 · 해시 증거 '+withEvidence.length+'건 · 검색 조건 '+queries.length+'개 · 기기 '+(sources.join('/')||'미확인'),
         {searches:records.length,hash_provenance:withEvidence.length,query_device_groups:queries.length,
          pc_snapshots:pc.length,mobile_snapshots:mobile.length})},
-    {key:'content',name:'2. 실제 문서 본문 수집',
+    {key:'content',name:'3. 경쟁 문서 본문 수집',
       ...fmt(capturedPages.length>=3,
         pages.length>0,
         '문서 수집 '+pages.length+'건 중 제목·본문이 있는 자료 '+capturedPages.length+'건 (기본 기준 3건)',
         {captured_pages:pages.length,usable_pages:capturedPages.length})},
-    {key:'pattern',name:'3. 노출 패턴 관측',
+    {key:'pattern',name:'4. 반복 노출 패턴 관측',
       ...fmt(eligibleSignals.length>=1&&ranked.keyword_count>=3,
         ranked.keyword_count>0,
         '검색어·기기 그룹 '+ranked.keyword_count+'개 · 본문 연결 결과 '+ranked.matched_page_count+
          '건 · 비교쌍 '+ranked.pair_comparisons+'개 · 표본 기준 충족 특성 '+eligibleSignals.length+'개',
         {keyword_device_groups:ranked.keyword_count,matched_pages:ranked.matched_page_count,
          feature_pairs:ranked.pair_comparisons,eligible_signals:eligibleSignals.length})},
-    {key:'experiments',name:'4. 변경 전후 대조군 실험',
+    {key:'experiments',name:'5. 변경 전후 대조군 실험',
       ...fmt(experimentReady.length>=1,
         experiments.length>0,
         '등록 실험 '+experiments.length+'개 · 동일 조건·전후 반복·대조군 근거가 있는 실험 '+experimentReady.length+'개',
         {registered:experiments.length,comparable:experimentReady.length})},
-    {key:'visual',name:'5. 검색 화면 위치·블록 검수',
+    {key:'visual',name:'1. 실제 검색 화면 위치·블록 검수',
       ...fmt(validPC.length>=1&&validMobile.length>=1,
         audits.length>0,
         '화면 캡처 '+audits.length+'개 · 사용자 검수 완료 '+verified.length+
@@ -76,6 +76,7 @@ export function buildFullValidation(searches=[],pages=[],experiments=[],audits=[
         {audits:audits.length,confirmed:verified.length,
          pc:validPC.length,mobile:validMobile.length,parser_unmatched:mismatches})}
   ];
+  stages.sort((a,b)=>Number(a.name[0])-Number(b.name[0]));
   // A "full confirmation" is a readiness claim about reviewed evidence, never ranking causes.
   const ready=stages.every(x=>x.ready);
   return {
