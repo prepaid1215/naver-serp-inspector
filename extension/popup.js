@@ -4,6 +4,7 @@ import {saveSearch,savePage} from './intelligence-store.js';
 import {deviceFromSearchURL} from './capture-meta.js';
 import {inspectVisibleSearch} from './visual-viewport.js';
 import {saveVisualAudit} from './visual-store.js';
+import {extractOpenArticle} from './naver-article.js';
 
 const $ = id => document.getElementById(id);
 const captureButton = $('capture');
@@ -171,60 +172,17 @@ $('open-visual-audit').addEventListener('click',async()=>{
   window.close();
 });
 
+$('open-chat-bridge').addEventListener('click',async()=>{
+  await chrome.tabs.create({url:chrome.runtime.getURL('extension/chat-bridge.html')});
+  window.close();
+});
+
 dashboardButton.addEventListener('click',async()=>{
   await chrome.tabs.create({url:chrome.runtime.getURL('extension/intelligence.html')});
   window.close();
 });
 
-// Runs only after an explicit user click. No remote fetch or background crawling.
-function inspectOpenArticle() {
-  const norm=s=>String(s||'').replace(/\s+/g,' ').trim();
-  const meta=(key)=>document.querySelector('meta[property="'+key+'"],meta[name="'+key+'"]')?.getAttribute('content')||'';
-  const selectors=['.se-main-container','#postViewArea','.se_component_wrap',
-    '[itemprop="articleBody"]','article','.article_viewer','main'];
-  let root=null;
-  for (const selector of selectors) {
-    const candidates=[...document.querySelectorAll(selector)];
-    const best=candidates.sort((a,b)=>(b.innerText||'').length-(a.innerText||'').length)[0];
-    if (best && (best.innerText||'').length>=120) {root=best;break;}
-  }
-  root=root||document.body;
-  if(!root)return null;
-  const allText=String(root.innerText||root.textContent||'').trim();
-  const headingNodes=[...root.querySelectorAll('h1,h2,h3,.se-title-text,.se-documentTitle')].slice(0,90);
-  const headings=headingNodes.map(h=>({level:/^H[123]$/.test(h.tagName)?h.tagName:'TITLE',text:norm(h.innerText||h.textContent).slice(0,200)})).filter(h=>h.text);
-  const links=[...root.querySelectorAll('a[href]')].slice(0,300);
-  let internal=0,external=0;
-  for (const a of links) {
-    try {
-      const u=new URL(a.getAttribute('href'),location.href);
-      if(!/^https?:$/.test(u.protocol))continue;
-      if(u.hostname===location.hostname)internal++;else external++;
-    }catch{}
-  }
-  const canonical=document.querySelector('link[rel="canonical"]')?.href||'';
-  // Publication time must come from a document-declared field, not capture time.
-  let publishedAt=meta('article:published_time')||meta('datePublished')||meta('pubdate')
-    ||document.querySelector('time[datetime]')?.getAttribute('datetime')||'';
-  if(!publishedAt) {
-    for(const script of [...document.querySelectorAll('script[type="application/ld+json"]')].slice(0,12)) {
-      try {
-        const parsed=JSON.parse(script.textContent||'{}');
-        const candidates=Array.isArray(parsed)?parsed:[parsed];
-        const items=candidates.flatMap(obj=>obj?.['@graph']||[obj]);
-        const result=items.find(obj=>obj?.datePublished);
-        if(result){publishedAt=String(result.datePublished);break;}
-      }catch{}
-    }
-  }
-  if(publishedAt && Number.isNaN(Date.parse(publishedAt)))publishedAt='';
-  return {url:location.href,source_frame:location.href,title:norm(meta('og:title')||document.title).slice(0,300),
-    description:norm(meta('description')||meta('og:description')).slice(0,500),robots:meta('robots'),canonical,published_at:publishedAt,
-    text:allText.slice(0,18000),truncated:allText.length>18000,
-    headings,images:root.querySelectorAll('img').length,
-    internal_links:internal,external_links:external,
-    score:allText.length+(root===document.body?0:10000)};
-}
+// The user must explicitly open a page and click capture. No remote crawling.
 pageButton.addEventListener('click',async()=>{
   pageButton.disabled=true;
   status('현재 방문한 문서의 구조와 본문을 읽는 중…');
@@ -233,11 +191,12 @@ pageButton.addEventListener('click',async()=>{
     if(!tab?.id||!/^https?:\/\//i.test(tab.url||'')||isNaverSearchURL(tab.url))
       throw Error('분석할 블로그·카페·웹문서 페이지를 열어 주세요.');
     let executed;
-    try {executed=await chrome.scripting.executeScript({target:{tabId:tab.id,allFrames:true},func:inspectOpenArticle});}
-    catch {executed=await chrome.scripting.executeScript({target:{tabId:tab.id},func:inspectOpenArticle});}
+    try {executed=await chrome.scripting.executeScript({target:{tabId:tab.id,allFrames:true},func:extractOpenArticle});}
+    catch {executed=await chrome.scripting.executeScript({target:{tabId:tab.id},func:extractOpenArticle});}
     const candidate=executed.map(e=>e.result).filter(Boolean).sort((a,b)=>b.score-a.score)[0];
     if(!candidate || candidate.text.length<60)throw Error('본문 추출 결과가 부족합니다. 실제 게시글 화면에서 다시 실행해 주세요.');
     delete candidate.score;
+    candidate.origin_url=tab.url;
     await savePage({id:crypto.randomUUID(),captured_at:new Date().toISOString(),...candidate});
     await chrome.tabs.create({url:chrome.runtime.getURL('extension/intelligence.html')});
     window.close();

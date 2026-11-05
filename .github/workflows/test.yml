@@ -34,3 +34,4 @@ jobs:
           python tests/browser_intelligence.py
           python tests/browser_visual_audit.py
           python tests/browser_full_validation.py
+          python tests/browser_chat_bridge.py

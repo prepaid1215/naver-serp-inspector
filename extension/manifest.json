@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "1.9.0",
-  "description": "네이버 검색 수집, 본문 비교, 노출 패턴, 대조군 실험 및 실화면 검수를 5단계 통합 검증합니다.",
+  "version": "2.0.0",
+  "description": "네이버 검색 결과·게시글 본문을 사용자 동의로 수집해 별도 비공개 GitHub 저장소를 통해 ChatGPT에서 조회합니다.",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "action": {
     "default_title": "현재 네이버 검색결과 분석",
@@ -16,5 +17,8 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
-  }
+  },
+  "host_permissions": [
+    "https://api.github.com/*"
+  ]
 }
