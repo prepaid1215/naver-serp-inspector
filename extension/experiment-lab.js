@@ -170,7 +170,7 @@ export function experimentReportText(report){
     '실험: '+r.experiment.title,
     '검색어: '+r.query+' / '+r.device,
     '수정 시각: '+r.experiment.changed_at,
-    '관측 기간: 수정일 기준 전후 '+r.window_days+'일,
+    '관측 기간: 수정일 기준 전후 '+r.window_days+'일',
     '변경 유형: '+(CHANGE_TYPES[r.experiment.change_type]||r.experiment.change_type),
     '실험 문서: '+r.target.url,
     '변경 내용: '+(r.experiment.change_note||'미기재'),
