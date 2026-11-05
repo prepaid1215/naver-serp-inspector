@@ -58,6 +58,11 @@ try:
         for i in range(3):
             page.locator('.candidate-card').nth(i).locator('select').first.select_option('confirmed')
         expect(page.locator('#count-confirmed')).to_have_text('3')
+        expect(page.locator('.block-item')).to_have_count(3)
+        page.locator('#show-blocks').check()
+        expect(page.locator('.block-rect')).to_have_count(3)
+        for i in range(3):
+            page.locator('.block-item').nth(i).locator('select').first.select_option('confirmed')
         page.locator('#audit-complete').check()
         expect(page.locator('#audit-status')).to_contain_text('확정했습니다')
         with page.expect_download() as json_download:
