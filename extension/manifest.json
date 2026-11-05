@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "ChatGPT 웹검색을 보완하는 네이버 블로그·카페 자동 본문 수집(실패 시 다른 글 재시도)",
   "permissions": [
     "activeTab",
