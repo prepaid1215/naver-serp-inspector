@@ -69,6 +69,8 @@ export function createGithubBridge({repository,branch='main',token},fetcher=fetc
   async function uploadResult(job,result){
     const id=validateJob(job).job_id;
     if(result.job_id!==id)throw Error('요청 ID와 결과 ID가 다릅니다.');
+    // Refuse uploads if a repo changed from private to public after connection.
+    await verifyPrivate();
     // Avoid unexpected overwrites, even if stale client tries to duplicate a job.
     if(await resultExists(id))throw Error('이미 결과가 존재합니다. 덮어쓰지 않습니다.');
     const content=base64Encode(JSON.stringify(result,null,2));
