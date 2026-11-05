@@ -14,7 +14,7 @@ export function inspectVisibleSearch() {
     vv_scale:visualViewport?.scale||1
   };
   const roots=[
-    '#main_pack','#main_pack_m','.api_search','#content .api_subject_bx',
+    '#main_pack','#main_pack_m','.api_search',
     '#content','main','.search_result','#container'
   ];
   let root=null;
