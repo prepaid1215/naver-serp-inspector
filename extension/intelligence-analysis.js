@@ -32,7 +32,7 @@ export function pageStats(page) {
   const text = String(page.text || '');
   return {
     title:page.title, url:page.url, captured_at:page.captured_at,
-    description:page.description || '', canonical:page.canonical || '',
+    description:page.description || '', robots:page.robots || '', canonical:page.canonical || '',
     headings:page.headings || [], images:page.images || 0,
     internal_links:page.internal_links || 0, external_links:page.external_links || 0,
     text_length:text.length, text_excerpt:text.slice(0, 2200),
