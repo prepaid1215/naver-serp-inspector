@@ -1,6 +1,11 @@
 name: Package Chrome and Edge extension
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'extension/**'
+      - 'web/**'
+      - '.github/workflows/extension.yml'
   push:
     branches: [main]
     paths:
@@ -24,7 +29,7 @@ jobs:
         run: |
           mkdir -p dist/serp-lens-extension/extension dist/serp-lens-extension/web
           cp extension/manifest.json dist/serp-lens-extension/manifest.json
-          cp extension/{popup.html,popup.css,popup.js,capture-meta.js,capture-store.js,icon128.png} dist/serp-lens-extension/extension/
+          cp extension/{popup.html,popup.css,popup.js,capture-meta.js,capture-store.js,intelligence.html,intelligence.css,intelligence.js,intelligence-store.js,intelligence-analysis.js,content-gap.js,icon128.png} dist/serp-lens-extension/extension/
           cp web/{index.html,style.css,icon.svg,app.js,desktop-ui.js,engine.js,zip.js} dist/serp-lens-extension/web/
       - name: Upload Chrome/Edge extension ZIP
         uses: actions/upload-artifact@v4
