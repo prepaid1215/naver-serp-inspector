@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>네이버 검색 화면 검수 | SERP Lens</title>
+<link rel="stylesheet" href="visual-audit.css">
+<script type="module" src="visual-audit.js"></script>
+</head>
+<body>
+<header>
+  <div class="wrap"><div class="eyebrow">SERP LENS · 화면 기준 검증</div>
+  <h1>네이버 검색 화면 위치 검수</h1>
+  <p>스크린샷에서 실제 보이는 결과를 확인합니다. DOM 추정 순위를 그대로 믿지 않습니다.</p></div>
+</header>
+<main class="wrap">
+<p id="message" role="status">저장된 검수 화면을 읽는 중입니다.</p>
+<section class="panel">
+ <div class="controls">
+  <label>검수할 검색 화면<select id="audit-picker"><option value="">자료 없음</option></select></label>
+  <div class="action-top">
+   <button id="download-image" class="secondary" disabled>스크린샷 PNG</button>
+   <button id="download-json" class="secondary" disabled>검수 근거 JSON</button>
+   <button id="remove-audit" class="quiet" disabled>선택 기록 삭제</button>
+  </div>
+ </div>
+ <div id="metadata" class="metadata">아직 수집한 화면이 없습니다. 네이버 검색 탭에서 확장프로그램을 열고 ‘현재 화면 위치 검수용 캡처’를 눌러주세요.</div>
+</section>
+<section class="panel">
+ <h2>화면 위치 대조 <small>현재 스크롤 구간만</small></h2>
+ <p class="muted">화면의 숫자 표시를 눌러 해당 제목 후보를 찾으세요. 광고·블로그·카페 등 유형을 직접 수정하고, 잘못 잡힌 링크는 ‘잘못 감지’로 표시하세요. 스크린샷에 있지만 탐지하지 못한 결과는 아래에서 직접 추가합니다.</p>
+ <div class="visual-grid">
+  <div class="screenshot-column">
+   <div class="screenshot-shell">
+    <div id="screenshot-board" class="screenshot-board">
+     <img id="screenshot" alt="사용자가 수집한 네이버 검색 결과의 실제 화면" />
+     <div id="screenshot-overlays" class="screenshot-overlays" aria-label="검출한 문서 후보 위치"></div>
+    </div>
+   </div>
+   <div class="legend"><span>번호: 화면의 제목 후보</span><span>실선: 확인됨</span><span>점선: 미검수</span></div>
+  </div>
+  <div class="review-column">
+   <div class="mini-metrics">
+    <div><strong id="count-candidates">0</strong><span>추출 후보</span></div>
+    <div><strong id="count-confirmed">0</strong><span>확인됨</span></div>
+    <div><strong id="count-unreviewed">0</strong><span>미검수·불명확</span></div>
+    <div><strong id="count-missed">0</strong><span>직접 추가</span></div>
+   </div>
+   <div id="candidate-list" class="candidate-list"><p>수집 자료 없음</p></div>
+  </div>
+ </div>
+</section>
+<section class="panel">
+ <h2>스크린샷에 있지만 자동 탐지하지 못한 항목 추가</h2>
+ <p class="muted">① ‘화면에서 위치 선택’을 누르고 ② 위 스크린샷에서 누락 항목을 누른 뒤 ③ 제목과 유형을 입력해 저장합니다. 화면 밖 항목을 여기에 추가하면 안 됩니다.</p>
+ <div class="actions"><button id="pick-location" class="secondary" disabled>화면에서 위치 선택</button><strong id="picked-coordinate">위치를 아직 선택하지 않았습니다.</strong></div>
+ <div class="controls">
+  <label>항목 제목<input id="missing-title" maxlength="180" placeholder="화면에 표시된 제목 그대로"></label>
+  <label>항목 유형<select id="missing-type">
+   <option value="BLOG">블로그</option><option value="CAFE">카페</option>
+   <option value="WEB">웹문서</option><option value="AD">광고</option>
+   <option value="KIN">지식iN</option><option value="NEWS">뉴스</option>
+   <option value="VIDEO">동영상</option><option value="CLIP">클립</option>
+   <option value="OTHER">기타/블록</option>
+  </select></label>
+  <label>원본 주소 (알면 입력)<input id="missing-url" type="url" placeholder="https://..."></label>
+ </div>
+ <div class="actions"><button id="add-missing" disabled>누락 항목 추가</button></div>
+ <div id="manual-list"></div>
+</section>
+<section class="panel">
+ <h2>화면 검수 결과</h2>
+ <div id="parser-report" class="muted">자동 파서와 실제 보이는 제목의 일치 여부를 확인할 수 있습니다.</div>
+ <label class="completeness"><input type="checkbox" id="audit-complete" disabled> 스크린샷 전체를 눈으로 확인했고, 누락된 결과를 모두 추가했습니다.</label>
+ <div id="audit-status" role="status" class="audit-status"></div>
+ <p class="muted">이 검수는 **한 번 촬영된 화면 안**의 제목 후보를 기준으로 합니다. 스크롤 아래쪽 문서는 순위·존재 여부를 판단할 수 없습니다. 화면의 노출 블록과 파서의 문서 순서가 일치하는지는 실제 네이버 화면에서 계속 검증해야 합니다.</p>
+ <div class="actions"><button id="save-review" disabled>검수 내용 저장</button><button id="download-json-bottom" class="secondary" disabled>검수 결과 JSON 내려받기</button></div>
+</section>
+<footer>브라우저 로컬 저장 · 사용자 클릭으로만 수집 · 자동 검색 없음 · 저장 용량 때문에 최신 검수 화면 24개만 보관</footer>
+</main>
+</body></html>
