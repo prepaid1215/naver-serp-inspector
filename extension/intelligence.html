@@ -37,6 +37,32 @@
 <div id="gap-message" class="muted" role="status">내 문서와 경쟁 문서를 수집하면 비교할 수 있습니다.</div>
 <div id="gap-results" class="gap-results" aria-live="polite"></div>
 </section>
+<section class="panel" id="rank-lab-panel">
+<h2>NAVER Rank Lab <span class="hint">검색 로직 관측 실험 · 알고리즘 복원 아님</span></h2>
+<p class="muted">검색 결과를 여러 키워드에서 수집하고 해당 결과 문서의 본문도 방문·저장하면, 같은 키워드와 콘텐츠 유형에서 더 위에 등장한 문서의 특성이 반복되는지 계산합니다. 비교에는 각 키워드·기기별 최신 수집 1건만 사용합니다.</p>
+<div class="controls">
+<label>키워드 포함 필터<input id="rank-filter" placeholder="빈칸이면 모든 수집 키워드"></label>
+<label>기기 유형<select id="rank-device"><option value="ALL">전체 (기기별 별도 비교)</option><option value="PC">PC</option><option value="모바일">모바일</option></select></label>
+</div>
+<div class="actions">
+<button id="run-rank-lab">상위노출 패턴 관측 분석</button>
+<button id="copy-rank-lab" class="secondary" disabled>AI 가설 분석 요청문 복사</button>
+<button id="download-rank-lab" class="secondary" disabled>관측 근거 JSON 저장</button>
+</div>
+<div id="rank-message" class="muted" role="status">실제 수집 자료를 선택해 분석해 주세요.</div>
+<div class="metrics">
+<div><strong id="rank-keywords">—</strong><span>서로 다른 검색 조건</span></div>
+<div><strong id="rank-matched">—</strong><span>본문 연결 결과 수</span></div>
+<div><strong id="rank-pairs">—</strong><span>유형별 문서 비교쌍</span></div>
+</div>
+<h3 class="rank-subtitle">특성별 관측 결과</h3>
+<div id="rank-factors" class="factor-grid"></div>
+<h3 class="rank-subtitle">여러 검색어에 반복 등장한 출처</h3>
+<div id="rank-sources"></div>
+<h3 class="rank-subtitle">수집한 검색어·유형 분포</h3>
+<div id="rank-query-groups"></div>
+<p class="muted">C-Rank·D.I.A.·RRA 공식 내부 점수와 별개입니다. 데이터가 부족하면 ‘표본 부족’으로 표시하며 어떤 수치도 상위노출 보장 점수가 아닙니다.</p>
+</section>
 <section class="panel">
 <h2>ChatGPT 분석용 증거 묶음</h2>
 <p class="muted">현재 선택한 검색 기록과 수집 문서를 함께 전달합니다. 본문은 문서별 최대 2,200자만 포함합니다. 계정 정보 등이 있는 페이지는 수집하지 마세요.</p>
