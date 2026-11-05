@@ -14,6 +14,7 @@ import {JOB_LABEL,JOB_RESULT_MARKER,parseNaverJob,naverSearchURL,pickNaverArticl
 const SETTINGS='serp-autopilot-settings-v1';
 const STATUS='serp-autopilot-status-v1';
 const SEEN='serp-autopilot-processed-v1';
+const LAST_RESULT='serp-autopilot-last-result-v1';
 const TOKEN='serp-lens-chat-bridge-token';
 const ALARM='serp-autopilot-poll-v1';
 const MAX_JOBS_PER_DAY=8;
@@ -221,7 +222,11 @@ async function poll(){
     const issues=await fetchJobs(config,secret);
     const item=issues.find(x=>!progress.numbers.includes(x.number));
     if(!item){
-      await status('새 네이버 검색 요청이 없습니다.',{phase:'idle'});
+      const last=(await chrome.storage.local.get(LAST_RESULT))[LAST_RESULT];
+      const label=last?'새 요청 없음 · 최근 '+last.query+' 본문 '+
+        last.captured_articles+'/'+last.attempted_articles+'건 ('+last.status+')':
+        '새 네이버 검색 요청이 없습니다.';
+      await status(label,{phase:'idle',last_result:last||null});
       return {ok:true,processed:0};
     }
     let job;
@@ -243,6 +248,7 @@ async function poll(){
     }
     await status('네이버 조사 '+(result.status==='completed'?'완료':result.status==='partial'?'일부 수집':'본문 수집 실패')+
       ': '+job.query,{issue_number:job.issue_number,phase:result.status,result});
+    await chrome.storage.local.set({[LAST_RESULT]:result});
     try{await postJobComment(config,secret,job.issue_number,result);}
     catch(error){
       await status('조사 결과 댓글 등록 실패: '+short(error.message),{phase:'report-error'});
