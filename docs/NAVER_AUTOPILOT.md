@@ -24,6 +24,23 @@ The extension does not connect directly to ChatGPT, and it cannot guarantee a re
 - Chrome 확장프로그램을 삭제하거나 브라우저 프로필을 초기화하면 저장된 자격 증명도 사라집니다. 자동 조사는 Chrome이 실행되고 확장프로그램이 활성화돼 있을 때만 수행됩니다.
 - GitHub 이슈로 조사 요청을 보내는 구조는 그대로이며, 조사 완료가 이 채팅에 실시간 응답을 푸시하는 기능은 아닙니다.
 
+## 네이버 경험·후기형 UGC 블록 관측 (v2.4.3 베타)
+
+SERP Lens는 검색 결과 DOM에서 확인되는 **섹션 제목, 블로그/카페 링크, 카드 요약 문구**를 함께 기록합니다.
+각 검색 결과의 비공개 자료 JSON에는 `blocks`, `ugc_observation`, 그리고 게시글 행별
+`block_id`, `block_kind`, `block_label`, `snippet_text`, `snippet_basis`가 포함됩니다.
+
+- `EXPERIENCE_REVIEW_CANDIDATE`: 게시글 **제목이 아니라 검색 블록 제목**에 경험·후기·리뷰 표현이 보였을 때에만 표기하는 후보. 네이버 공식 블록 유형 판정이 아닙니다.
+- `GENERAL_UGC_CANDIDATE`: 블로그·카페 등 출처를 나타내는 블록 제목이 표시된 경우.
+- `OTHER_LABELED_BLOCK`: 다른 섹션 제목이 있지만 경험형으로 분류할 근거는 없는 경우.
+- `UNCLASSIFIED`: 제목이나 섹션 경계를 확실히 확인하지 못한 경우.
+- `ugc_observation.state=not_determined`: **UGC 블록이 없다는 뜻이 아닙니다.** 캡처 화면과 실제 DOM을 대조해야 합니다.
+
+`snippet_text`는 검색 화면에서 직접 보이는 카드 문구 일부이며 원문 게시글 본문은 아닙니다.
+UI 변경·광고·개인화로 누락 가능성이 있고, 순위나 네이버 알고리즘을 판정하지 않습니다.
+수집 결과의 실제 블록 배치는 화면 캡처로 수동 검증하세요.
+동시 자동 조사 중 `serp-lens/index.json`에 GitHub HTTP 409가 발생하면 최신 인덱스를 다시 읽고 병합을 재시도합니다.
+
 ## How to request research in this chat
 
 Ask the assistant to create a GitHub issue in the private evidence repository. Use label **serp-lens-request** and body EXACTLY two lines:
