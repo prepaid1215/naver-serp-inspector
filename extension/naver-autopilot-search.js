@@ -136,7 +136,7 @@ export function collectNaverSearchDOM(){
     const rest=best.replace(title,'').replace(/새 창 열림/g,'').trim();
     return rest.slice(0,220);
   };
-  const rows=[],seen=new Set();
+  const rows=[],seen=new Set(),articleAnchors=new Map();
   for(const [index,anchor] of anchors.entries()){
     let u;try{u=new URL(anchor.href,location.href);}catch{continue;}
     if(u.protocol!=='https:')continue;
@@ -156,6 +156,7 @@ export function collectNaverSearchDOM(){
     if(seen.has(key))continue;
     seen.add(key);
     const isArticle=articleURL(u,type);
+    if(isArticle)articleAnchors.set(key,anchor);
     const titleInfo=isArticle?titleFromCard(anchor,rawTitle,key):
       {visible_title:rawTitle,title_confidence:'unverified',title_source:'profile_or_context_link'};
     const block=isArticle?blockInfo(anchor):
@@ -237,12 +238,115 @@ export function collectNaverSearchDOM(){
     return {more_control_visible:more,comment_control_visible:comments,
       reaction_control_visible:reactions,topic_tags:tags.slice(0,8)};
   };
+  // Detect only a *visible, compact* badge adjacent to the block heading.
+  // The words "AI 생성" elsewhere in a post, snippet, or search result do
+  // NOT constitute evidence that the search engine generated this section.
+  const aiBadgeFor=node=>{
+    if(!node)return {visible:false,text:'',basis:'not_observed'};
+    const heading=groupHeading(node)?.heading;
+    if(!heading)return {visible:false,text:'',basis:'heading_not_observed'};
+    const h=heading.getBoundingClientRect();
+    const selectors='span,small,em,strong,b,button,[role="status"],[class*="badge"],[class*="label"]';
+    let elements=[];
+    try{elements=[...node.querySelectorAll(selectors)].slice(0,180);}catch{}
+    for(const el of elements){
+      if(!visible(el)||el.closest('a[href]'))continue;
+      const label=clean(el.innerText||el.textContent).slice(0,45);
+      if(!/^AI\s*생성(?:\s*[ⓘℹi])?$/i.test(label))continue;
+      const r=el.getBoundingClientRect();
+      if(r.width<6||r.height<6||r.height>54)continue;
+      if(Math.abs(r.top-h.top)>80||r.left+8<h.left)continue;
+      return {visible:true,text:'AI 생성',basis:'visible_label_adjacent_to_heading'};
+    }
+    return {visible:false,text:'',basis:'not_observed'};
+  };
+  const cardNodeFor=(anchor,section)=>{
+    let node=anchor?.parentElement,selected=node;
+    for(let n=0;n<7&&node&&node!==section&&node!==root;n++,node=node.parentElement){
+      const content=clean(node.innerText||node.textContent);
+      if(content.length>1450)break;
+      let urls=[];
+      try{urls=[...node.querySelectorAll('a[href]')].slice(0,25)
+        .map(a=>a.href).filter(Boolean).filter(url=>{
+          try{const u=new URL(url,location.href);return /^(?:m\.)?(?:blog|cafe)\.naver\.com$/.test(u.hostname)&&
+            /\/\d{6,20}(?:\/|[?#]|$)|\/(?:PostView|ArticleRead)\./.test(u.pathname)}catch{return false;}
+        });}catch{}
+      const unique=new Set(urls.map(url=>url.split('?')[0]));
+      if(unique.size>1)break;
+      if(content.length>=30)selected=node;
+    }
+    return selected;
+  };
+  const cardMetaFor=(row,section)=>{
+    const anchor=articleAnchors.get(row.url);
+    if(!anchor)return null;
+    const node=cardNodeFor(anchor,section);
+    if(!node)return null;
+    const text=clean(node.innerText||node.textContent).slice(0,1600);
+    let candidates=[];
+    try{candidates=[...node.querySelectorAll(
+      '[class*="source"],[class*="profile"],[class*="writer"],[class*="nick"],[class*="user"],[class*="author"]'
+    )].slice(0,24);}catch{}
+    const source=candidates.map(el=>visible(el)?clean(el.innerText||el.textContent):'')
+      .find(x=>x.length>=2&&x.length<=65&&x!==row.title&&!/새 창 열림/.test(x))||
+      (text.match(/[\w가-힣._-]{2,40}님의\s*블로그/)||[])[0]||'';
+    const time=(text.match(/(?:방금 전|\d{1,3}\s*(?:초|분|시간|일|주|개월|년)\s*전|\d{4}[.-]\d{1,2}[.-]\d{1,2})/)||[])[0]||'';
+    let imgs=[];
+    try{imgs=[...node.querySelectorAll('img')].slice(0,14);}catch{}
+    const thumb=imgs.find(im=>{
+      if(!visible(im))return false;
+      const rect=im.getBoundingClientRect();
+      return rect.width>=60&&rect.height>=48;
+    });
+    let tagElements=[];
+    try{tagElements=[...node.querySelectorAll(
+      '[class*="chip"],[class*="tag"],[class*="keyword"],[class*="hashtag"],span,em'
+    )].slice(0,100);}catch{}
+    const tags=[],seenTags=new Set();
+    for(const el of tagElements){
+      if(!visible(el)||el.closest('a[href]'))continue;
+      const t=clean(el.innerText||el.textContent);
+      if(t.length<2||t.length>35||/새 창 열림|로그인|더보기|님의 블로그/.test(t))continue;
+      const cls=String(el.className?.baseVal||el.className||'');
+      if(!/chip|tag|keyword|hashtag/i.test(cls)&&
+         !/(?:시식|체험|리뷰|후기|사용|맛|향|설치|배송)$/.test(t))continue;
+      if(!seenTags.has(t)){seenTags.add(t);tags.push(t.slice(0,35));}
+      if(tags.length>=8)break;
+    }
+    let description='';
+    try{
+      const list=[...node.querySelectorAll(
+        '[class*="desc"],[class*="summary"],[class*="snippet"],[class*="description"]'
+      )].slice(0,20);
+      description=list.map(el=>visible(el)?clean(el.innerText||el.textContent):'')
+        .find(x=>x.length>=28&&x.length<=500&&x!==row.title)||'';
+    }catch{}
+    description=(description||row.snippet_text||'').slice(0,250);
+    return {
+      url:row.url,
+      source_type:row.type,
+      source_name:source.slice(0,65),
+      time_text:time.slice(0,35),
+      title:(row.title||'').replace(/\s*새 창 열림$/,'').slice(0,250),
+      snippet:description,
+      tags,
+      has_thumbnail:Boolean(thumb),
+      thumbnail_alt:thumb?clean(thumb.getAttribute?.('alt')||'').slice(0,100):'',
+      observation_basis:'visible_search_card'
+    };
+  };
   const blocks=[...groups.values()].slice(0,30);
   for(const block of blocks){
     const matching=chosen.filter(r=>r.is_article_link&&r.block_id===block.id);
     const excerpts=matching.filter(r=>(r.snippet_text||'').length>=35);
     const firstHand=excerpts.filter(r=>firstPerson.test(r.snippet_text));
     const linkedNode=[...groupNodes].find(([node,id])=>id===block.id)?.[0];
+    const badge=aiBadgeFor(linkedNode);
+    const cards=matching.slice(0,8).map(row=>cardMetaFor(row,linkedNode))
+      .filter(Boolean);
+    block.ai_generated_badge=badge.visible;
+    block.ai_badge_evidence=badge;
+    block.cards=cards;
     const controls=linkedNode?controlsFor(linkedNode):{
       more_control_visible:false,comment_control_visible:false,
       reaction_control_visible:false,topic_tags:[]
@@ -253,6 +357,13 @@ export function collectNaverSearchDOM(){
       excerpt_count:excerpts.length,
       firsthand_excerpt_count:firstHand.length,
       source_diversity:block.source_types.length,
+      ai_generated_badge:badge.visible,
+      card_count:cards.length,
+      cards_with_title:cards.filter(c=>c.title.length>=7).length,
+      cards_with_snippet:cards.filter(c=>c.snippet.length>=25).length,
+      cards_with_thumbnail:cards.filter(c=>c.has_thumbnail).length,
+      cards_with_time:cards.filter(c=>c.time_text).length,
+      cards_with_tags:cards.filter(c=>c.tags.length>0).length,
       ...controls
     };
     // Topic grouping only: at least 2 distinct linked article cards, an
@@ -266,20 +377,41 @@ export function collectNaverSearchDOM(){
       'heading_word_candidate':
       block.kind==='TOPIC_CLUSTER_CANDIDATE'&&firstHand.length>=2?
       'multiple_firsthand_excerpts':'not_established';
+    // Strong structural candidate only: the official Naver UGC product type
+    // still requires human review of the actual rendered search block.
+    if(badge.visible&&block.label&&
+       cards.length>=2&&block.signals.cards_with_title>=2&&
+       block.signals.cards_with_snippet>=2){
+      const experience=/후기|경험|내돈내산|리뷰|사용기|시식|체험/.test(block.label)||
+        firstHand.length>=2||
+        block.signals.cards_with_tags>=2;
+      block.kind=experience?'AI_REVIEW_CLUSTER_CANDIDATE':
+        'AI_TOPIC_CLUSTER_CANDIDATE';
+      block.confidence='ai_badge_and_repeated_card_evidence';
+      block.experience_evidence=experience?'ai_review_card_candidate':'not_established';
+      matching.forEach(row=>{
+        row.block_kind=block.kind;
+        row.block_confidence=block.confidence;
+      });
+    }
   }
   const reviewHeadingBlocks=blocks.filter(b=>b.kind==='EXPERIENCE_REVIEW_CANDIDATE');
+  const aiReviewBlocks=blocks.filter(b=>b.kind==='AI_REVIEW_CLUSTER_CANDIDATE');
+  const aiTopicBlocks=blocks.filter(b=>b.kind==='AI_TOPIC_CLUSTER_CANDIDATE');
   const topicGroups=blocks.filter(b=>b.kind==='TOPIC_CLUSTER_CANDIDATE');
   const experienceSignals=blocks.filter(b=>b.experience_evidence==='multiple_firsthand_excerpts');
   const ugcObservation={
     // Preserve the conservative legacy state: platform UGC type remains
     // unverified even when a topical cluster and first-person text appear.
-    state:reviewHeadingBlocks.length?'candidate_observed':'not_determined',
-    candidate_block_count:reviewHeadingBlocks.length,
+    state:reviewHeadingBlocks.length||aiReviewBlocks.length?'candidate_observed':'not_determined',
+    candidate_block_count:reviewHeadingBlocks.length+aiReviewBlocks.length,
+    ai_review_candidate_count:aiReviewBlocks.length,
+    ai_topic_candidate_count:aiTopicBlocks.length,
     observed_block_count:blocks.length,
     topic_cluster_candidate_count:topicGroups.length,
     experience_evidence_candidate_count:experienceSignals.length,
     topic_group_state:topicGroups.length?'topic_cluster_observed':'not_determined',
-    note:'주제 묶음은 검색 섹션 제목·게시글 2개 이상·화면 발췌 2개 이상으로 분류합니다. 경험 표현은 별도 근거이며 네이버 공식 UGC 블록 여부는 미확정입니다.'
+    note:'AI 생성 배지가 섹션 제목 옆에서 발견되고 카드 2개 이상이 확인된 경우에만 AI 묶음 후보로 기록합니다. 경험 후기 여부는 별도 추정이며 공식 네이버 UGC 블록 판정은 미확정입니다.'
   };
   return {
     source_url:location.href,query:new URL(location.href).searchParams.get('query')||'',
