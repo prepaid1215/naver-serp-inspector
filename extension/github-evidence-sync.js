@@ -8,11 +8,13 @@ const PAGE_FIELDS=['url','source_frame','origin_url','title','description','cano
   'internal_links','external_links','extraction_selector','extraction_quality','source_kind',
   'captured_at'];
 const SEARCH_FIELDS=['query','device','sourceURL','captured_at','status','notes',
-  'evidence_sha256','position_basis','viewport','rows'];
+  'evidence_sha256','position_basis','viewport','rows','blocks','ugc_observation'];
 const ROW_FIELDS=['block_order','block_type','rank_in_block','organic_rank',
   'result_title','result_url','domain','confidence','anchor_text','title_confidence',
   'title_source','is_article_link','document_visual_order','source_visual_order',
-  'observed_y_px','block_heading_hint','block_heading_confidence','note'];
+  'observed_y_px','block_heading_hint','block_heading_confidence',
+  'block_id','block_label','block_kind','block_confidence',
+  'snippet_text','snippet_basis','note'];
 const toString=(v,max=500)=>String(v??'').trim().slice(0,max);
 export function validateRepository(value){
   const repo=toString(value,200);
@@ -65,6 +67,26 @@ export function prepareSharedRecord(type,raw) {
       entry.rows=(Array.isArray(raw.rows)?raw.rows:[]).slice(0,200)
         .map(row=>Object.fromEntries(ROW_FIELDS.filter(k=>Object.hasOwn(row,k))
           .map(k=>[k,typeof row[k]==='string'?toString(row[k],1200):row[k]])));
+    else if(field==='blocks')
+      entry.blocks=(Array.isArray(raw.blocks)?raw.blocks:[]).slice(0,30).map(block=>({
+        id:toString(block.id,60),label:toString(block.label,100),
+        kind:toString(block.kind,45),confidence:toString(block.confidence,45),
+        article_links:Number.isInteger(block.article_links)?Math.min(200,Math.max(0,block.article_links)):0,
+        source_types:(Array.isArray(block.source_types)?block.source_types:[]).slice(0,3)
+          .map(v=>toString(v,16)),
+        sample_links:(Array.isArray(block.sample_links)?block.sample_links:[]).slice(0,5)
+          .map(v=>({url:toString(v.url,2048),title:toString(v.title,250),
+            snippet:toString(v.snippet,220)}))
+      }));
+    else if(field==='ugc_observation'){
+      const v=raw.ugc_observation||{};
+      entry.ugc_observation={
+        state:['candidate_observed','not_determined'].includes(v.state)?v.state:'not_determined',
+        candidate_block_count:Number.isInteger(v.candidate_block_count)?Math.max(0,v.candidate_block_count):0,
+        observed_block_count:Number.isInteger(v.observed_block_count)?Math.max(0,v.observed_block_count):0,
+        note:toString(v.note,300)
+      };
+    }
     else if(typeof raw[field]==='string')entry[field]=toString(raw[field],1000);
     else if(typeof raw[field]==='number'||typeof raw[field]==='boolean')entry[field]=raw[field];
   }
@@ -165,27 +187,48 @@ export async function uploadEvidence({config,token,type,record,fetcher=fetch}){
     github_url:'https://github.com/'+config.name+'/blob/'+encodeURIComponent(config.branch)+'/'+path
   };
 }
+// Concurrency-safe optimistic retry: different Chrome tabs/jobs may update
+// the same private index. A 409 means the remote index changed since our GET.
+// Reload the latest content on each retry and merge, never overwrite blindly.
 export async function updateEvidenceIndex({config,token,entries,fetcher=fetch}){
   if(!Array.isArray(entries)||entries.length===0)return;
   const path='serp-lens/index.json';
-  const old=await readFileMeta(config,token,path,fetcher);
-  let previous=[];
-  if(old?.content){
-    try{
-      const encoded=old.content.replace(/\s/g,'');
-      const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
-      previous=JSON.parse(new TextDecoder().decode(bytes)).records||[];
-    }catch{throw Error('기존 인덱스를 읽을 수 없습니다. 업로드한 개별 기록은 유지됩니다.');}
+  for(let attempt=0;attempt<4;attempt++){
+    const old=await readFileMeta(config,token,path,fetcher);
+    let previous=[];
+    if(old?.content){
+      try{
+        const encoded=old.content.replace(/\\s/g,'');
+        const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
+        previous=JSON.parse(new TextDecoder().decode(bytes)).records||[];
+        if(!Array.isArray(previous))throw Error('records must be array');
+      }catch{throw Error('기존 인덱스를 읽을 수 없습니다. 업로드한 개별 기록은 유지됩니다.');}
+    }
+    const combined=[...entries,...previous.filter(x=>!entries.some(y=>y.path===x.path))].slice(0,500);
+    const body={
+      message:'Update SERP Lens private evidence index',
+      content:encodeBase64(JSON.stringify({
+        schema:'serp-lens-evidence-index-v1',
+        updated_at:new Date().toISOString(),records:combined
+      },null,2)),
+      branch:config.branch,
+      ...(old?.sha?{sha:old.sha}:{})
+    };
+    const response=await fetcher(baseUrl(config.name)+'/contents/'+path,{
+      method:'PUT',headers:{
+        Accept:'application/vnd.github+json',
+        Authorization:'Bearer '+token,
+        'X-GitHub-Api-Version':'2022-11-28',
+        'Content-Type':'application/json'
+      },body:JSON.stringify(body)
+    });
+    if(response.ok)return;
+    if(response.status!==409 || attempt===3){
+      if(response.status===409)
+        throw Error('인덱스 동시 갱신 충돌이 반복됩니다. 개별 검색 자료는 저장되었습니다.');
+      const payload=await response.json().catch(()=>({}));
+      throw Error('GitHub 인덱스 저장 실패 HTTP '+response.status+': '+toString(payload.message,150));
+    }
+    await new Promise(resolve=>setTimeout(resolve,150*(attempt+1)));
   }
-  const combined=[...entries,...previous.filter(x=>!entries.some(y=>y.path===x.path))].slice(0,500);
-  const body={
-    message:'Update SERP Lens private evidence index',
-    content:encodeBase64(JSON.stringify({
-      schema:'serp-lens-evidence-index-v1',
-      updated_at:new Date().toISOString(),records:combined
-    },null,2)),
-    branch:config.branch,
-    ...(old?.sha?{sha:old.sha}:{})
-  };
-  await api(fetcher,baseUrl(config.name)+'/contents/'+path,token,{method:'PUT',body:JSON.stringify(body)});
 }
