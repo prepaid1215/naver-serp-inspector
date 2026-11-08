@@ -203,13 +203,83 @@ export function collectNaverSearchDOM(){
       url:row.url,title:row.title||'',snippet:row.snippet_text||''
     });
   }
+  // Record observable signals independently from any hypothesis about a
+  // Naver product name. Neither terms in post titles nor comments imply a
+  // platform-defined UGC block.
+  const firstPerson=/제가|저는|나는|직접|해봤|써봤|다녀왔|다녀온|가봤|사용했|구매했|방문했|느꼈|좋았|아쉬웠|솔직|체험|실사용|경험했/i;
+  const visible=node=>{
+    if(!node)return false;
+    const style=getComputedStyle(node);
+    return style.display!=='none'&&style.visibility!=='hidden';
+  };
+  const controlsFor=node=>{
+    let nodes=[];
+    try{
+      nodes=[...node.querySelectorAll(
+        'button,a,[role="button"],[role="tab"],[class*="chip"],[class*="tag"],[class*="filter"]'
+      )].slice(0,100);
+    }catch{}
+    let more=false,comments=false,reactions=false;
+    const tags=[],seen=new Set();
+    for(const el of nodes){
+      if(!visible(el))continue;
+      const label=clean(el.innerText||el.textContent).slice(0,65);
+      if(!label)continue;
+      if(/^(?:더보기|전체보기|모두보기|더 보기|전체 보기|결과 더보기)$/.test(label))more=true;
+      if(/^(?:댓글|답글)\s*[0-9,]*$/.test(label))comments=true;
+      if(/^(?:공감|좋아요|추천)\s*[0-9,]*$/.test(label))reactions=true;
+      const cls=String(el.className?.baseVal||el.className||'');
+      if(/chip|tag|filter|hashtag/i.test(cls)&&label.length>=2&&label.length<=35&&
+         !/새 창 열림|더보기|로그인|인용|블로그|카페/.test(label)&&!seen.has(label)){
+        seen.add(label);tags.push(label.slice(0,35));
+      }
+    }
+    return {more_control_visible:more,comment_control_visible:comments,
+      reaction_control_visible:reactions,topic_tags:tags.slice(0,8)};
+  };
   const blocks=[...groups.values()].slice(0,30);
-  const candidateBlocks=blocks.filter(b=>b.kind==='EXPERIENCE_REVIEW_CANDIDATE');
+  for(const block of blocks){
+    const matching=chosen.filter(r=>r.is_article_link&&r.block_id===block.id);
+    const excerpts=matching.filter(r=>(r.snippet_text||'').length>=35);
+    const firstHand=excerpts.filter(r=>firstPerson.test(r.snippet_text));
+    const linkedNode=[...groupNodes].find(([node,id])=>id===block.id)?.[0];
+    const controls=linkedNode?controlsFor(linkedNode):{
+      more_control_visible:false,comment_control_visible:false,
+      reaction_control_visible:false,topic_tags:[]
+    };
+    block.signals={
+      visible_heading:Boolean(block.label),
+      article_count:block.article_links,
+      excerpt_count:excerpts.length,
+      firsthand_excerpt_count:firstHand.length,
+      source_diversity:block.source_types.length,
+      ...controls
+    };
+    // Topic grouping only: at least 2 distinct linked article cards, an
+    // observed section heading, and 2 visible excerpts (not mere profiles).
+    if(block.kind==='OTHER_LABELED_BLOCK'&&block.article_links>=2&&excerpts.length>=2){
+      block.kind='TOPIC_CLUSTER_CANDIDATE';
+      block.confidence='structural_topic_group_candidate';
+      matching.forEach(r=>{r.block_kind=block.kind;r.block_confidence=block.confidence;});
+    }
+    block.experience_evidence=block.kind==='EXPERIENCE_REVIEW_CANDIDATE'?
+      'heading_word_candidate':
+      block.kind==='TOPIC_CLUSTER_CANDIDATE'&&firstHand.length>=2?
+      'multiple_firsthand_excerpts':'not_established';
+  }
+  const reviewHeadingBlocks=blocks.filter(b=>b.kind==='EXPERIENCE_REVIEW_CANDIDATE');
+  const topicGroups=blocks.filter(b=>b.kind==='TOPIC_CLUSTER_CANDIDATE');
+  const experienceSignals=blocks.filter(b=>b.experience_evidence==='multiple_firsthand_excerpts');
   const ugcObservation={
-    state:candidateBlocks.length?'candidate_observed':'not_determined',
-    candidate_block_count:candidateBlocks.length,
+    // Preserve the conservative legacy state: platform UGC type remains
+    // unverified even when a topical cluster and first-person text appear.
+    state:reviewHeadingBlocks.length?'candidate_observed':'not_determined',
+    candidate_block_count:reviewHeadingBlocks.length,
     observed_block_count:blocks.length,
-    note:'섹션 제목에 후기/경험 관련 표현이 직접 표시된 후보만 기록합니다. 후보가 없더라도 네이버 UGC 블록 부재를 뜻하지 않습니다.'
+    topic_cluster_candidate_count:topicGroups.length,
+    experience_evidence_candidate_count:experienceSignals.length,
+    topic_group_state:topicGroups.length?'topic_cluster_observed':'not_determined',
+    note:'주제 묶음은 검색 섹션 제목·게시글 2개 이상·화면 발췌 2개 이상으로 분류합니다. 경험 표현은 별도 근거이며 네이버 공식 UGC 블록 여부는 미확정입니다.'
   };
   return {
     source_url:location.href,query:new URL(location.href).searchParams.get('query')||'',
