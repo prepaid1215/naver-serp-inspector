@@ -122,7 +122,7 @@ function baseUrl(repository){
 }
 export async function checkPrivateRepository({repository,token,fetcher=fetch}){
   const name=validateRepository(repository);
-  if(!token||!token.trim())throw Error('이번 브라우저 세션용 GitHub 토큰을 입력하세요.');
+  if(!token||!token.trim())throw Error('GitHub 연결 토큰을 입력하세요.');
   const info=await api(fetcher,baseUrl(name),token.trim());
   if(info.private!==true)
     throw Error('공개 GitHub 저장소에는 본문을 전송할 수 없습니다. 별도 비공개 저장소를 사용하세요.');

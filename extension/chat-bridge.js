@@ -1,4 +1,5 @@
 import {listSearches,listPages} from './intelligence-store.js';
+import {readGitHubToken,saveGitHubToken,clearGitHubToken,hasRememberedGitHubToken} from './github-token-store.js';
 import {
   validateRepository,prepareSharedRecord,checkPrivateRepository,
   uploadEvidence,updateEvidenceIndex
@@ -12,7 +13,6 @@ const node=(tag,klass,txt)=>{
   return out;
 };
 let searches=[],pages=[],verified=null,selected=[],uploadBusy=false,readyToShare=false;
-const STATUS='serp-lens-chat-bridge-token';
 const REPO_KEY='serp-lens-private-evidence-repository';
 const AUTOPILOT_KEY='serp-autopilot-settings-v1';
 const DEFAULT_REPO='prepaid1215/serp-lens-private-data';
@@ -92,10 +92,15 @@ async function loadRecords(){
       pagesView.map(item=>makeChoice(item,'pages')):
       [node('p','bridge-empty','저장한 게시글 본문이 없습니다.')]));
     await restoreRepository();
-    const session=await chrome.storage.session.get(STATUS);
-    if(session?.[STATUS]){
-      $('bridge-token').placeholder='세션 토큰 저장됨 · 변경 시 다시 입력';
-      repoStatus('세션 토큰이 저장돼 있습니다. 수동 전송 전에는 저장소 연결을 확인해 주세요.');
+    const repository=$('bridge-repo').value.trim();
+    const remembered=await hasRememberedGitHubToken(repository);
+    $('remember-token').checked=remembered;
+    const token=await readGitHubToken(repository);
+    if(token){
+      $('bridge-token').placeholder=remembered?'이 기기에 연결 정보 보관 중':'현재 세션에 토큰 보관 중';
+      repoStatus(remembered?
+        '이 기기에 연결 정보가 저장되어 있습니다. 필요하면 저장소 확인을 다시 진행하세요.':
+        '현재 Chrome 세션에 연결 정보가 있습니다.');
     }
     setStatus('로컬 검색 '+searches.length+'건 · 게시글 '+pages.length+'건을 불러왔습니다. 선택 전에는 자료가 전송되지 않습니다.');
   }catch(error){setStatus('로컬 자료 읽기 실패: '+error.message,true);}
@@ -130,8 +135,7 @@ $('download-selected').addEventListener('click',()=>{
 async function getToken(){
   const entered=$('bridge-token').value.trim();
   if(entered)return entered;
-  const session=await chrome.storage.session.get(STATUS);
-  return String(session?.[STATUS]||'');
+  return readGitHubToken($('bridge-repo').value.trim());
 }
 $('bridge-repo').addEventListener('input',()=>{
   verified=null;readyToShare=false;$('share-confirm').checked=false;actionState();
@@ -149,11 +153,13 @@ $('verify-repo').addEventListener('click',async()=>{
     const token=await getToken();
     const config=await checkPrivateRepository({repository,token});
     verified=config;
-    await chrome.storage.session.set({[STATUS]:token});
-    $('bridge-token').value='';$('bridge-token').placeholder='이 세션에만 토큰 보관 중';
+    const remember=$('remember-token').checked;
+    await saveGitHubToken({repository:config.name,token,remember});
+    $('bridge-token').value='';
+    $('bridge-token').placeholder=remember?'이 기기에 연결 정보 보관 중':'현재 세션에 토큰 보관 중';
     await chrome.storage.local.set({[REPO_KEY]:config.name});
     localStorage.setItem(REPO_KEY,config.name);
-    repoStatus('확인 완료: '+repository+' (비공개 저장소 / 기본 브랜치 '+config.branch+')','ok');
+    repoStatus('확인 완료: '+repository+' · '+(remember?'Chrome 재시작 후에도 유지':'현재 세션만 유지'),'ok');
     setStatus('비공개 저장소 연결을 확인했습니다. 선택한 자료를 미리 보고 공유 동의 후 전송하세요.');
   }catch(error){
     repoStatus('연결 실패: '+error.message,'error');
@@ -161,10 +167,11 @@ $('verify-repo').addEventListener('click',async()=>{
   }finally{$('verify-repo').disabled=false;actionState();}
 });
 $('clear-token').addEventListener('click',async()=>{
-  await chrome.storage.session.remove(STATUS);
+  await clearGitHubToken();
+  $('remember-token').checked=false;
   $('bridge-token').value='';$('bridge-token').placeholder='github_pat_...';
   verified=null;readyToShare=false;$('share-confirm').checked=false;
-  repoStatus('세션 토큰을 지웠습니다. 다시 연결하려면 토큰을 입력하세요.');
+  repoStatus('임시·기기 저장 토큰을 지웠습니다. 다시 연결하려면 토큰을 입력하세요.');
   actionState();
 });
 $('share-confirm').addEventListener('change',actionState);
