@@ -85,7 +85,7 @@
       <div>
         <p class="section-kicker">CONNECTION · 02</p>
         <h2 id="connection-heading">비공개 GitHub 저장소</h2>
-        <p class="card-lead">연결된 저장소가 조사 요청과 본문 자료를 보관합니다. 토큰은 브라우저 세션에만 저장합니다.</p>
+        <p class="card-lead">연결된 저장소가 조사 요청과 본문 자료를 보관합니다. 유지 옵션 선택 시에만 연결 토큰을 이 기기에 보관합니다.</p>
       </div>
       <span id="repo-connection-chip" class="connection-chip">연결 정보</span>
     </div>
@@ -93,18 +93,22 @@
       <label for="bridge-repo">저장소 주소 <span class="field-hint">owner/repo</span>
         <input id="bridge-repo" value="prepaid1215/serp-lens-private-data" placeholder="owner/repo" autocomplete="off" spellcheck="false">
       </label>
-      <label for="bridge-token">GitHub 토큰 <span class="field-hint">세션에만 저장</span>
+      <label for="bridge-token">GitHub 토큰 <span class="field-hint">선택한 방식으로 보관</span>
         <input id="bridge-token" type="password" autocomplete="off" placeholder="github_pat_...">
       </label>
     </div>
+    <label class="consent-row"><input id="remember-token" type="checkbox">
+      <span><strong>이 기기에서 연결 유지</strong> — Chrome을 종료해도 자동 조사를 계속 사용할 수 있습니다. 개인 PC에서만 선택하세요.</span>
+    </label>
+    <p class="fine-print">선택하면 토큰을 Chrome 확장프로그램 로컬 저장소에 보관합니다. Chrome 동기화는 사용하지 않지만 저장 토큰이 암호화되는 것은 아닙니다.</p>
     <div class="actions connection-actions">
       <button id="verify-repo" type="button">비공개 저장소 확인</button>
-      <button id="clear-token" type="button" class="outline-action">세션 토큰 지우기</button>
+      <button id="clear-token" type="button" class="outline-action">저장된 연결 지우기</button>
     </div>
     <p id="repo-status" class="helper-message" role="status">확인 버튼을 누르기 전에는 네트워크 요청을 보내지 않습니다.</p>
     <details class="settings-details connection-help">
       <summary>연결 권한과 보안 안내 <span class="details-chevron" aria-hidden="true">⌄</span></summary>
-      <div class="settings-inner fine-print">별도 비공개 저장소 하나에만 접근하는 Fine-grained GitHub 토큰을 사용하세요. 자동 조사는 Contents 및 Issues 읽기/쓰기 권한이 필요합니다. 토큰을 채팅에 공유하지 마세요.</div>
+      <div class="settings-inner fine-print">별도 비공개 저장소 하나에만 접근하는 유효기간이 정해진 Fine-grained GitHub 토큰을 사용하세요. 자동 조사는 Contents 및 Issues 읽기/쓰기 권한이 필요합니다. 이 기기에 저장하는 토큰은 암호화되지 않습니다. 공용 PC에서는 유지 기능을 사용하지 마세요. 토큰을 채팅에 공유하지 마세요.</div>
     </details>
   </section>
 
