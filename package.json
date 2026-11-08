@@ -5,10 +5,10 @@
   "type": "module",
   "description": "Offline Naver SERP inspector (GitHub Pages + Windows + opt-in Chrome/Edge extension capture)",
   "scripts": {
-    "check": "node --check web/engine.js && node --check web/zip.js && node --check web/app.js && node --check web/desktop-ui.js && node --check extension/popup.js && node --check extension/capture-store.js && node --check extension/capture-meta.js && node --check extension/intelligence-store.js && node --check extension/intelligence-analysis.js && node --check extension/intelligence.js && node --check extension/content-gap.js && node --check extension/rank-lab.js && node --check extension/experiment-lab.js && node --check extension/visual-viewport.js && node --check extension/visual-store.js && node --check extension/visual-audit-core.js && node --check extension/visual-audit.js && node --check extension/full-validation.js && node --check extension/full-validation-ui.js && node --check extension/naver-article.js && node --check extension/github-evidence-sync.js && node --check extension/chat-bridge.js && node --check extension/naver-autopilot-core.js && node --check extension/naver-autopilot-search.js && node --check extension/naver-autopilot-background.js && node --check extension/chat-bridge-autopilot.js",
+    "check": "node --check web/engine.js && node --check web/zip.js && node --check web/app.js && node --check web/desktop-ui.js && node --check extension/popup.js && node --check extension/capture-store.js && node --check extension/capture-meta.js && node --check extension/intelligence-store.js && node --check extension/intelligence-analysis.js && node --check extension/intelligence.js && node --check extension/content-gap.js && node --check extension/rank-lab.js && node --check extension/experiment-lab.js && node --check extension/visual-viewport.js && node --check extension/visual-store.js && node --check extension/visual-audit-core.js && node --check extension/visual-audit.js && node --check extension/full-validation.js && node --check extension/full-validation-ui.js && node --check extension/naver-article.js && node --check extension/github-evidence-sync.js && node --check extension/chat-bridge.js && node --check extension/github-token-store.js && node --check extension/naver-autopilot-core.js && node --check extension/naver-autopilot-search.js && node --check extension/naver-autopilot-background.js && node --check extension/chat-bridge-autopilot.js",
     "test:zip": "node tests/zip_reader.mjs",
     "test:blocks": "node tests/blocks.mjs",
-    "test": "npm run check && npm run test:zip && npm run test:blocks && npm run test:extension && npm run test:intelligence && npm run test:content-gap && npm run test:rank-lab && npm run test:experiments && npm run test:visual-audit && npm run test:full-validation && npm run test:github-bridge && npm run test:autopilot && npm run test:titles",
+    "test": "npm run check && npm run test:zip && npm run test:blocks && npm run test:extension && npm run test:intelligence && npm run test:content-gap && npm run test:rank-lab && npm run test:experiments && npm run test:visual-audit && npm run test:full-validation && npm run test:github-bridge && npm run test:credentials && npm run test:autopilot && npm run test:titles",
     "test:extension": "node tests/extension-meta.mjs",
     "test:intelligence": "node tests/intelligence.mjs",
     "test:content-gap": "node tests/content-gap.mjs",
@@ -18,6 +18,7 @@
     "test:full-validation": "node tests/full-validation.mjs",
     "test:github-bridge": "node tests/github-bridge.mjs",
     "test:autopilot": "node tests/naver-autopilot.mjs",
+    "test:credentials": "node tests/github-token-store.mjs",
     "test:titles": "node tests/naver-title-observation.mjs && node tests/naver-title-bridge.mjs"
   },
   "license": "MIT"
