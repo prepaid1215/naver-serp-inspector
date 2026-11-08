@@ -94,7 +94,9 @@ try:
           local:{
             get:async keys=>Object.fromEntries(
               (Array.isArray(keys)?keys:[keys]).map(key=>[key,stored[key]])),
-            set:async obj=>{Object.assign(stored,obj);}
+            set:async obj=>{Object.assign(stored,obj);},
+            remove:async key=>{for(const name of (Array.isArray(key)?key:[key]))delete stored[name];},
+            setAccessLevel:async()=>{}
           }
         }
       };
