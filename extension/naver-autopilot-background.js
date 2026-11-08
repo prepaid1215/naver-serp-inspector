@@ -279,7 +279,14 @@ async function executeJob(job,config,secret){
     observed_blocks:(serp.blocks||[]).slice(0,20).map(b=>({
       label:b.label,kind:b.kind,article_links:b.article_links,
       experience_evidence:b.experience_evidence,
-      signals:b.signals||{}
+      ai_generated_badge:b.ai_generated_badge===true,
+      signals:b.signals||{},
+      cards:(b.cards||[]).slice(0,3).map(c=>({
+        source_name:c.source_name,title:c.title,time_text:c.time_text,
+        snippet:(c.snippet||'').slice(0,120),
+        tags:(c.tags||[]).slice(0,5),
+        has_thumbnail:c.has_thumbnail===true
+      }))
     })),
     // These are visible DOM link candidates, never a measured Naver ranking.
     search_article_links:discovered,
@@ -405,7 +412,14 @@ async function executeTitleComparison(job,config,secret){
       blocks:(s.serp.blocks||[]).slice(0,20).map(b=>({
         label:b.label,kind:b.kind,article_links:b.article_links,
         experience_evidence:b.experience_evidence,
-        signals:b.signals||{}
+        ai_generated_badge:b.ai_generated_badge===true,
+        signals:b.signals||{},
+        cards:(b.cards||[]).slice(0,3).map(c=>({
+          source_name:c.source_name,title:c.title,time_text:c.time_text,
+          snippet:(c.snippet||'').slice(0,120),
+          tags:(c.tags||[]).slice(0,5),
+          has_thumbnail:c.has_thumbnail===true
+        }))
       }))
     })),
     query_comparison:comparison,
