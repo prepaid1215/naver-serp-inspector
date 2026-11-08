@@ -382,9 +382,9 @@ export function collectNaverSearchDOM(){
     if(badge.visible&&block.label&&
        cards.length>=2&&block.signals.cards_with_title>=2&&
        block.signals.cards_with_snippet>=2){
+      // Tags alone are not proof of firsthand reviews (e.g. topics or filters).
       const experience=/후기|경험|내돈내산|리뷰|사용기|시식|체험/.test(block.label)||
-        firstHand.length>=2||
-        block.signals.cards_with_tags>=2;
+        firstHand.length>=2;
       block.kind=experience?'AI_REVIEW_CLUSTER_CANDIDATE':
         'AI_TOPIC_CLUSTER_CANDIDATE';
       block.confidence='ai_badge_and_repeated_card_evidence';
