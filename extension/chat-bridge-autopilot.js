@@ -118,4 +118,13 @@ $('copy-autopilot-example').addEventListener('click',async()=>{
     button.textContent='직접 문장을 선택해 복사하세요';
   }
 });
+$('copy-title-example').addEventListener('click',async()=>{
+  const button=$('copy-title-example');
+  try{
+    await navigator.clipboard.writeText($('autopilot-title-example').textContent.trim());
+    button.textContent='복사 완료';
+  }catch{
+    button.textContent='문장을 선택해 복사하세요';
+  }
+});
 void refresh();

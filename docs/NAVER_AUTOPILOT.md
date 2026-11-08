@@ -15,6 +15,15 @@ The extension does not connect directly to ChatGPT, and it cannot guarantee a re
 5. In the new '자동 조사' section, review the permission notice and check its opt-in box. Click '네이버 자동 조사 켜기'. This creates the request label (if needed) and enables polling.
 6. Ensure ChatGPT's connected GitHub app is allowed to access the same private repository.
 
+## Chrome 재시작 후 연결 유지 (선택 사항)
+
+- 연결 화면의 **이 기기에서 연결 유지**를 직접 선택하고 비공개 저장소를 확인하면 토큰을 `chrome.storage.local`에 보관합니다. 이후 Chrome을 다시 열었을 때 백그라운드 작업이 같은 저장소에 대해 토큰을 읽습니다. 토큰을 다시 입력할 필요는 없지만 **만료되거나 GitHub에서 취소된 경우에는 재연결**해야 합니다.
+- 체크하지 않으면 기존처럼 `chrome.storage.session`만 사용하며 Chrome 종료 시 재연결이 필요합니다.
+- **보안 주의:** 확장프로그램의 로컬 저장소는 Chrome 동기화 대상이 아니지만, 토큰 자체를 디스크에서 암호화하지 않습니다. 로그인 프로필 또는 기기에 접근 가능한 공격자는 토큰을 읽을 수 있습니다. 개인 PC에서만 사용하고, GitHub Fine-grained PAT를 비공개 자료 저장소 하나로 제한하며 유효기간을 설정하세요.
+- 사용 중지 시 **저장된 연결 지우기**를 눌러 임시 저장소와 기기 저장소의 토큰을 함께 삭제합니다. GitHub에서 토큰을 취소하면 다른 곳에 유출된 토큰도 무효화할 수 있습니다.
+- Chrome 확장프로그램을 삭제하거나 브라우저 프로필을 초기화하면 저장된 자격 증명도 사라집니다. 자동 조사는 Chrome이 실행되고 확장프로그램이 활성화돼 있을 때만 수행됩니다.
+- GitHub 이슈로 조사 요청을 보내는 구조는 그대로이며, 조사 완료가 이 채팅에 실시간 응답을 푸시하는 기능은 아닙니다.
+
 ## How to request research in this chat
 
 Ask the assistant to create a GitHub issue in the private evidence repository. Use label **serp-lens-request** and body EXACTLY two lines:

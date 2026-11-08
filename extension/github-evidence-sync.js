@@ -8,9 +8,11 @@ const PAGE_FIELDS=['url','source_frame','origin_url','title','description','cano
   'internal_links','external_links','extraction_selector','extraction_quality','source_kind',
   'captured_at'];
 const SEARCH_FIELDS=['query','device','sourceURL','captured_at','status','notes',
-  'evidence_sha256','rows'];
+  'evidence_sha256','position_basis','viewport','rows'];
 const ROW_FIELDS=['block_order','block_type','rank_in_block','organic_rank',
-  'result_title','result_url','domain','confidence'];
+  'result_title','result_url','domain','confidence','anchor_text','title_confidence',
+  'title_source','is_article_link','document_visual_order','source_visual_order',
+  'observed_y_px','block_heading_hint','block_heading_confidence','note'];
 const toString=(v,max=500)=>String(v??'').trim().slice(0,max);
 export function validateRepository(value){
   const repo=toString(value,200);
@@ -49,6 +51,14 @@ export function prepareSharedRecord(type,raw) {
           audit.numbered_section_candidates:0,
         warnings:(Array.isArray(audit.warnings)?audit.warnings:[]).slice(0,5)
           .map(w=>toString(w,220))
+      };
+    }
+    else if(field==='viewport'){
+      const v=raw.viewport||{};
+      entry.viewport={
+        width:Number.isFinite(v.width)?v.width:null,
+        height:Number.isFinite(v.height)?v.height:null,
+        scroll_y:Number.isFinite(v.scroll_y)?v.scroll_y:null
       };
     }
     else if(field==='rows')
@@ -112,7 +122,7 @@ function baseUrl(repository){
 }
 export async function checkPrivateRepository({repository,token,fetcher=fetch}){
   const name=validateRepository(repository);
-  if(!token||!token.trim())throw Error('이번 브라우저 세션용 GitHub 토큰을 입력하세요.');
+  if(!token||!token.trim())throw Error('GitHub 연결 토큰을 입력하세요.');
   const info=await api(fetcher,baseUrl(name),token.trim());
   if(info.private!==true)
     throw Error('공개 GitHub 저장소에는 본문을 전송할 수 없습니다. 별도 비공개 저장소를 사용하세요.');
