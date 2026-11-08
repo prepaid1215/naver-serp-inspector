@@ -172,6 +172,12 @@ function searchEvidenceRows(rows){
     observed_y_px:Number.isFinite(r.y)?r.y:null,
     block_heading_hint:r.block_heading_hint||'',
     block_heading_confidence:r.block_heading_confidence||'unverified',
+    block_id:r.block_id||'unclassified',
+    block_label:r.block_label||'',
+    block_kind:r.block_kind||'UNCLASSIFIED',
+    block_confidence:r.block_confidence||'unverified',
+    snippet_text:r.snippet_text||'',
+    snippet_basis:r.snippet_basis||'not_observed',
     note:'관측된 DOM 링크의 화면 순서 후보이며 실제 네이버 검색 순위가 아님'
   }));
 }
@@ -184,6 +190,11 @@ function searchRecord(serp,jobQuery,issueNumber,index=0){
     notes:'화면 Y 순서에 따른 게시글 링크 후보. 실제 네이버 통합검색/블로그탭 순위 아님.',
     position_basis:serp.position_basis||'unverified',
     viewport:serp.viewport||null,
+    blocks:serp.blocks||[],
+    ugc_observation:serp.ugc_observation||{
+      state:'not_determined',candidate_block_count:0,observed_block_count:0,
+      note:'검색 결과에서 블록 구조를 판별할 수 없었습니다.'
+    },
     rows:searchEvidenceRows(serp.rows)
   };
 }
@@ -264,6 +275,10 @@ async function executeJob(job,config,secret){
     status:captured>=job.limit?'completed':captured?'partial':'incomplete',
     query:job.query,limit:job.limit,issue_number:job.issue_number,
     captured_at,search_candidates:serp.rows.length,
+    ugc_observation:serp.ugc_observation||{state:'not_determined'},
+    observed_blocks:(serp.blocks||[]).slice(0,20).map(b=>({
+      label:b.label,kind:b.kind,article_links:b.article_links
+    })),
     // These are visible DOM link candidates, never a measured Naver ranking.
     search_article_links:discovered,
     candidate_articles:articles.length,
@@ -383,6 +398,12 @@ async function executeTitleComparison(job,config,secret){
       CAFE:article_summaries.filter(x=>x.source_kind==='NAVER_CAFE').length
     },
     search_candidate_counts:comparison.counts,
+    ugc_observations:snapshots.map(s=>({
+      query:s.query,...(s.serp.ugc_observation||{state:'not_determined'}),
+      blocks:(s.serp.blocks||[]).slice(0,20).map(b=>({
+        label:b.label,kind:b.kind,article_links:b.article_links
+      }))
+    })),
     query_comparison:comparison,
     article_summaries,
     paths:uploaded.map(x=>x.path),
