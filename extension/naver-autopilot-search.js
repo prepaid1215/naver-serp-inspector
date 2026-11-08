@@ -64,20 +64,77 @@ export function collectNaverSearchDOM(){
     return {visible_title:'',title_confidence:'unverified',
       title_source:'no_reliable_article_title'};
   };
+  // A block is a visible group heading plus links observed beneath it.
+  // Classify only the *group label*, never an article headline or snippet.
+  // Without an observed heading, UGC presence remains undetermined.
+  const groupNodes=new Map();
+  const blockKind=label=>{
+    if(!label)return 'UNCLASSIFIED';
+    if(/사용자 경험|실사용|사용 후기|이용 후기|경험담|직접 써본|리뷰|후기|경험/i.test(label))
+      return 'EXPERIENCE_REVIEW_CANDIDATE';
+    if(/블로그|카페|지식iN|인기글|게시글|커뮤니티|콘텐츠/i.test(label))
+      return 'GENERAL_UGC_CANDIDATE';
+    return 'OTHER_LABELED_BLOCK';
+  };
+  const groupHeading=node=>{
+    const els=[...node.querySelectorAll(
+      'h2,h3,[class*="api_title"],[class*="group_title"],[class*="section_title"],'+
+      '[class*="sds-comps-text-type-headline"],[class*="fds-comps-text-type-headline"]'
+    )].slice(0,25);
+    for(const heading of els){
+      if(heading.closest('a[href]'))continue;
+      const klass=String(heading.className?.baseVal||heading.className||'');
+      // Plain H3s are often individual post titles, not section headings.
+      if(heading.tagName==='H3'&&!/group|section|api_title|headline/i.test(klass))continue;
+      const style=getComputedStyle(heading);
+      if(style.display==='none'||style.visibility==='hidden')continue;
+      const label=clean(heading.innerText||heading.textContent).slice(0,100);
+      if(label.length<2||label.length>95||meaningless.test(label))continue;
+      return {heading,label};
+    }
+    return null;
+  };
   const blockInfo=anchor=>{
     let node=anchor.parentElement;
-    for(let n=0;n<8&&node;n++,node=node.parentElement){
+    for(let n=0;n<11&&node&&node!==root;n++,node=node.parentElement){
       const klass=String(node.className?.baseVal||node.className||'');
-      if(!/api_subject_bx|sc_new|section|sds-comps-group|fds-comps|_content_root/i.test(klass) &&
-        node.tagName!=='SECTION')continue;
-      const headings=[...node.querySelectorAll('h2,h3,[class*="api_title"],[class*="group_title"]')].slice(0,12);
-      for(const heading of headings){
-        const label=clean(heading.innerText||heading.textContent).slice(0,90);
-        if(label.length>=2&&label.length<=90&&!meaningless.test(label))
-          return {block_heading_hint:label,block_heading_confidence:'heuristic'};
-      }
+      if(!/api_subject_bx|sc_new|section|sds-comps-group|fds-comps|_content_root|_search_block/i.test(klass)&&
+         node.tagName!=='SECTION')continue;
+      // A huge search root is not a section. Avoid attributing its heading
+      // to unrelated articles further down the search results.
+      if(node.querySelectorAll('a[href]').length>100)continue;
+      const picked=groupHeading(node);
+      if(!picked)continue;
+      const headRect=picked.heading.getBoundingClientRect();
+      const linkRect=anchor.getBoundingClientRect();
+      if(headRect.top>linkRect.top+10)continue;
+      if(!groupNodes.has(node))groupNodes.set(node,'group-'+(groupNodes.size+1));
+      return {
+        block_id:groupNodes.get(node),block_label:picked.label,
+        block_kind:blockKind(picked.label),
+        block_confidence:'heuristic_heading',
+        block_heading_hint:picked.label,
+        block_heading_confidence:'heuristic'
+      };
     }
-    return {block_heading_hint:'',block_heading_confidence:'unverified'};
+    return {
+      block_id:'unclassified',block_label:'',block_kind:'UNCLASSIFIED',
+      block_confidence:'unverified',
+      block_heading_hint:'',block_heading_confidence:'unverified'
+    };
+  };
+  const cardSnippet=(anchor,title)=>{
+    let node=anchor.parentElement,best='';
+    for(let n=0;n<5&&node&&node!==root;n++,node=node.parentElement){
+      if(node.querySelectorAll('a[href]').length>7)break;
+      const sample=clean(node.innerText||node.textContent);
+      if(sample.length>Math.max(30,title.length+12)&&sample.length<=850)
+        best=sample;
+    }
+    if(!best)return '';
+    // The source is visible card text, not the fetched article body.
+    const rest=best.replace(title,'').replace(/새 창 열림/g,'').trim();
+    return rest.slice(0,220);
   };
   const rows=[],seen=new Set();
   for(const [index,anchor] of anchors.entries()){
@@ -102,10 +159,14 @@ export function collectNaverSearchDOM(){
     const titleInfo=isArticle?titleFromCard(anchor,rawTitle,key):
       {visible_title:rawTitle,title_confidence:'unverified',title_source:'profile_or_context_link'};
     const block=isArticle?blockInfo(anchor):
-      {block_heading_hint:'',block_heading_confidence:'unverified'};
+      {block_id:'unclassified',block_label:'',block_kind:'UNCLASSIFIED',
+        block_confidence:'unverified',block_heading_hint:'',
+        block_heading_confidence:'unverified'};
+    const snippet=isArticle?cardSnippet(anchor,rawTitle):'';
     rows.push({url:key,title:titleInfo.visible_title||'',
       anchor_text:rawTitle,type,is_article_link:isArticle,
       ...titleInfo,...block,
+      snippet_text:snippet,snippet_basis:snippet?'visible_card_text':'not_observed',
       headline_hint:titleInfo.title_confidence==='high',
       y:Math.round(rect.top+scrollY),x:Math.round(rect.left+scrollX),
       dom_index:index+1});
@@ -126,11 +187,35 @@ export function collectNaverSearchDOM(){
     row.document_visual_order=articleSeen.size;
     row.source_visual_order=counts[row.type];
   }
-  const chosen=rows.slice(0,100);
+  const chosen=rows.slice(0,100),groups=new Map();
+  for(const row of chosen){
+    if(!row.is_article_link)continue;
+    const id=row.block_id||'unclassified';
+    if(!groups.has(id))groups.set(id,{
+      id,label:row.block_label,kind:row.block_kind,
+      confidence:row.block_confidence,article_links:0,
+      source_types:[],sample_links:[]
+    });
+    const group=groups.get(id);
+    group.article_links++;
+    if(!group.source_types.includes(row.type))group.source_types.push(row.type);
+    if(group.sample_links.length<5)group.sample_links.push({
+      url:row.url,title:row.title||'',snippet:row.snippet_text||''
+    });
+  }
+  const blocks=[...groups.values()].slice(0,30);
+  const candidateBlocks=blocks.filter(b=>b.kind==='EXPERIENCE_REVIEW_CANDIDATE');
+  const ugcObservation={
+    state:candidateBlocks.length?'candidate_observed':'not_determined',
+    candidate_block_count:candidateBlocks.length,
+    observed_block_count:blocks.length,
+    note:'섹션 제목에 후기/경험 관련 표현이 직접 표시된 후보만 기록합니다. 후보가 없더라도 네이버 UGC 블록 부재를 뜻하지 않습니다.'
+  };
   return {
     source_url:location.href,query:new URL(location.href).searchParams.get('query')||'',
     page_title:document.title,document_ready:document.readyState,
     viewport:{width:innerWidth,height:innerHeight,scroll_y:scrollY},
+    blocks,ugc_observation:ugcObservation,
     rows:chosen,observed_at:new Date().toISOString(),
     capture_scope:'rendered_dom_visible_article_link_candidates',
     position_basis:'approximate_document_y_order_of_detected_links',
