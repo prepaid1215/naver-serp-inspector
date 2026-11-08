@@ -76,7 +76,19 @@ export function prepareSharedRecord(type,raw) {
           .map(v=>toString(v,16)),
         sample_links:(Array.isArray(block.sample_links)?block.sample_links:[]).slice(0,5)
           .map(v=>({url:toString(v.url,2048),title:toString(v.title,250),
-            snippet:toString(v.snippet,220)}))
+            snippet:toString(v.snippet,220)})),
+        experience_evidence:toString(block.experience_evidence,45),
+        signals:{
+          visible_heading:block.signals?.visible_heading===true,
+          article_count:Number.isInteger(block.signals?.article_count)?Math.max(0,block.signals.article_count):0,
+          excerpt_count:Number.isInteger(block.signals?.excerpt_count)?Math.max(0,block.signals.excerpt_count):0,
+          firsthand_excerpt_count:Number.isInteger(block.signals?.firsthand_excerpt_count)?Math.max(0,block.signals.firsthand_excerpt_count):0,
+          source_diversity:Number.isInteger(block.signals?.source_diversity)?Math.max(0,block.signals.source_diversity):0,
+          more_control_visible:block.signals?.more_control_visible===true,
+          comment_control_visible:block.signals?.comment_control_visible===true,
+          reaction_control_visible:block.signals?.reaction_control_visible===true,
+          topic_tags:(Array.isArray(block.signals?.topic_tags)?block.signals.topic_tags:[]).slice(0,8).map(x=>toString(x,35))
+        }
       }));
     else if(field==='ugc_observation'){
       const v=raw.ugc_observation||{};
@@ -84,6 +96,9 @@ export function prepareSharedRecord(type,raw) {
         state:['candidate_observed','not_determined'].includes(v.state)?v.state:'not_determined',
         candidate_block_count:Number.isInteger(v.candidate_block_count)?Math.max(0,v.candidate_block_count):0,
         observed_block_count:Number.isInteger(v.observed_block_count)?Math.max(0,v.observed_block_count):0,
+        topic_cluster_candidate_count:Number.isInteger(v.topic_cluster_candidate_count)?Math.max(0,v.topic_cluster_candidate_count):0,
+        experience_evidence_candidate_count:Number.isInteger(v.experience_evidence_candidate_count)?Math.max(0,v.experience_evidence_candidate_count):0,
+        topic_group_state:v.topic_group_state==='topic_cluster_observed'?'topic_cluster_observed':'not_determined',
         note:toString(v.note,300)
       };
     }
