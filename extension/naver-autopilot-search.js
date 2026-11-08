@@ -206,7 +206,7 @@ export function collectNaverSearchDOM(){
   // Record observable signals independently from any hypothesis about a
   // Naver product name. Neither terms in post titles nor comments imply a
   // platform-defined UGC block.
-  const firstPerson=/제가|저는|나는|직접|해봤|써봤|다녀왔|가봤|사용했|구매했|방문했|느꼈|좋았|아쉬웠|솔직|체험|실사용/i;
+  const firstPerson=/제가|저는|나는|직접|해봤|써봤|다녀왔|다녀온|가봤|사용했|구매했|방문했|느꼈|좋았|아쉬웠|솔직|체험|실사용|경험했/i;
   const visible=node=>{
     if(!node)return false;
     const style=getComputedStyle(node);
