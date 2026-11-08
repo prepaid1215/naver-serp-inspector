@@ -277,7 +277,9 @@ async function executeJob(job,config,secret){
     captured_at,search_candidates:serp.rows.length,
     ugc_observation:serp.ugc_observation||{state:'not_determined'},
     observed_blocks:(serp.blocks||[]).slice(0,20).map(b=>({
-      label:b.label,kind:b.kind,article_links:b.article_links
+      label:b.label,kind:b.kind,article_links:b.article_links,
+      experience_evidence:b.experience_evidence,
+      signals:b.signals||{}
     })),
     // These are visible DOM link candidates, never a measured Naver ranking.
     search_article_links:discovered,
@@ -401,7 +403,9 @@ async function executeTitleComparison(job,config,secret){
     ugc_observations:snapshots.map(s=>({
       query:s.query,...(s.serp.ugc_observation||{state:'not_determined'}),
       blocks:(s.serp.blocks||[]).slice(0,20).map(b=>({
-        label:b.label,kind:b.kind,article_links:b.article_links
+        label:b.label,kind:b.kind,article_links:b.article_links,
+        experience_evidence:b.experience_evidence,
+        signals:b.signals||{}
       }))
     })),
     query_comparison:comparison,
