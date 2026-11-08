@@ -9,13 +9,13 @@
 import {extractOpenArticle} from './naver-article.js';
 import {collectNaverSearchDOM} from './naver-autopilot-search.js';
 import {checkPrivateRepository,uploadEvidence,updateEvidenceIndex} from './github-evidence-sync.js';
+import {readGitHubToken} from './github-token-store.js';
 import {JOB_LABEL,JOB_RESULT_MARKER,MAX_ARTICLES,MAX_CANDIDATES,parseNaverJob,naverSearchURL,pickNaverArticles,validNaverArticleURL,naverArticleIdentity,compareNaverQueryObservations} from './naver-autopilot-core.js';
 
 const SETTINGS='serp-autopilot-settings-v1';
 const STATUS='serp-autopilot-status-v1';
 const SEEN='serp-autopilot-processed-v1';
 const LAST_RESULT='serp-autopilot-last-result-v1';
-const TOKEN='serp-lens-chat-bridge-token';
 const ALARM='serp-autopilot-poll-v1';
 const MAX_JOBS_PER_DAY=8;
 let running=false;
@@ -41,9 +41,8 @@ async function status(message,details={}){
     [STATUS]:{updated_at:now(),message:short(message),...details}
   });
 }
-async function token(){
-  const values=await chrome.storage.session.get(TOKEN);
-  return values?.[TOKEN]||'';
+async function token(repository){
+  return readGitHubToken(repository);
 }
 async function enabled(){
   const values=await chrome.storage.local.get(SETTINGS);
@@ -397,9 +396,9 @@ async function poll(){
   try{
     const settings=await enabled();
     if(!settings.enabled)return {ok:false,message:'자동 조사가 비활성화돼 있습니다.'};
-    const secret=await token();
+    const secret=await token(settings.repository);
     if(!secret){
-      await status('비공개 저장소 토큰이 없습니다. 연결 화면에서 다시 확인하세요.',{phase:'paused'});
+      await status('GitHub 연결이 필요합니다. 연결 화면에서 토큰을 확인하세요.',{phase:'paused'});
       return {ok:false,message:'토큰이 없습니다.'};
     }
     const config=await checkPrivateRepository({
@@ -495,7 +494,7 @@ chrome.runtime.onMessage.addListener((message,_sender,respond)=>{
     }
     if(message.type==='AUTOPILOT_ENABLE'){
       const value=String(message.repository||'');
-      const secret=await token();
+      const secret=await token(value);
       const config=await checkPrivateRepository({repository:value,token:secret});
       await ensureJobLabel(config,secret);
       await chrome.storage.local.set({
