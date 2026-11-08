@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SERP Lens · NAVER Rank Lab",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "ChatGPT 웹검색 보완 및 네이버 제목·검색어 비교 관측(공식 순위 아님)",
   "permissions": [
     "activeTab",
