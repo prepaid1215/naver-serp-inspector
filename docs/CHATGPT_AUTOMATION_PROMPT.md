@@ -6,10 +6,12 @@
 - GitHub의 main/web/ops-data/latest.json을 직접 읽는다.
 - schema naver-blog-ops-v2, 수집 및 관측 시각(45분 이내), 각 키워드 변형 검색어 3개의 INTEGRATED_FEED_BLOG_CARDS_TOP10 상태를 검사한다.
 - 이 지표는 네이버 공식 순위가 아닌 모바일 통합검색의 블로그 카드 관측 순번이다.
-- recommendation.assignments의 people, titles, owner_reasons를 확인해 **건호·영은·하루·수진 각각 1개** 발행 제목과 이유를 보여준다.
+- recommendation.assignments의 people, titles, owner_reasons를 확인해 **서로 다른 두 키워드에 2명씩 묶은 2개 팀**을 표시한다. 각 팀 내부에서 2명의 제목과 선택 근거는 서로 다르게 보여준다.
 - 우선순위는 미노출 → 8~10번째 노출 보강 → 일부 변형 미노출/하위권 보강 → 4~7번째 순위 보강 → 상위권 다른 검색 의도 확장이다.
 - 검증 실패 또는 오래된 결과라면 발행을 확정하지 않는다. 부족한 담당자만 보류한다.
 - 작성자별 중복되지 않는 자연스러운 제목을 추천하되 확인되지 않은 상품 조건이나 혜택은 만들지 않는다.
 - 운영자에게는 4명 명단, 각 키워드·제목·추천 이유를 간결하게 출력한다. 실제 네이버에 자동 게시하지 않는다.
 
 - **발행할 블로그 ID를 반드시 함께 표시한다.** 각 `assignments[].titles[]`에서 `owner`, `blog_id`, `blog_reason` 및 `blog_url`을 읽는다. 동일한 담당자에게 등록 블로그가 여러 개면 최신 추천에 지정된 ID 하나만 안내하며, 다른 ID로 임의 변경하지 않는다. 이전 데이터에 `blog_id`가 없으면 '블로그 미지정(새 수집 필요)'이라고 쓴다. 블로그 주소를 열 수 있는 형태로 제공한다.
+
+- 팀 규칙: `recommendation.assignment_mode == TWO_PERSON_KEYWORD_TEAMS`, `assignments` 최대 2개, 각 `people` 정확히 2명, 팀 간 중복 담당자 없음, 팀 간 서로 다른 `keyword`인지 확인한다. 2팀이 준비되면 4명 모두 안내한다. 1팀이면 나머지 2명은 근거 부족으로 보류한다. 이전 1인 배정 데이터는 새 수집 전까지 사용하지 않는다.

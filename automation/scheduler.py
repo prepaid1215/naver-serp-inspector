@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from itertools import combinations
 
 from automation.models import DECISION_SURFACE, GROUPS, KST, effective_status, now_kst
 from automation.owners import PEOPLE, owner_matches
@@ -280,92 +281,121 @@ def _choose_blog_id(
     return blog_id, reason
 
 
+def _team_points(owner: str, keyword: str, group: dict) -> int:
+    """Score a candidate without conflating team membership with observed rank."""
+    tier, rank, _ = _owner_priority(owner, keyword, group)
+    return {0: 1000, 1: 350, 2: 135, 3: 45, 4: 5}[tier] + (rank if tier else 0)
+
+
 def recommend(
     groups: dict[str, dict],
     *,
     history: object = None,
     at: datetime | None = None,
 ) -> dict:
-    """Recommend one supported keyword and distinct title for EACH of four owners.
+    """Allocate two DIFFERENT verified keywords to two disjoint two-person teams.
 
-    No fresh verified keyword group => no invented assignment. A single
-    eligible keyword can support all four people with distinct article intent.
+    Evaluate all keyword pairings and owner partitions, not just the first two
+    people who are absent. This keeps all four authors in the operation even
+    when one is already visible on the proposed keyword.
     """
-    order = {keyword: index for index, keyword in enumerate(GROUPS)}
     eligible = [(keyword, group) for keyword, group in groups.items()
-                if group.get("complete") is True and group.get("status") == "VERIFIED"]
-    used_titles = _used_titles(history)
+                if keyword in GROUPS and group.get("complete") is True
+                and group.get("status") == "VERIFIED"]
+    available_owners = tuple(PEOPLE)
     recent = _recent_keyword_counts(history)
     recent_blogs = _recent_blog_recommendations(history)
-    assigned: dict[str, dict] = {}
-    keyword_usage: dict[str, int] = {}
+    used_titles = _used_titles(history)
 
-    for owner in PEOPLE:
-        candidates = []
-        for keyword, group in eligible:
-            tier, rank, reason = _owner_priority(owner, keyword, group)
-            # Missing owners are the highest priority. In a tie, prefer
-            # keywords where multiple coworkers are missing too.
-            missing_group_size = len(group.get("missing", [])) if tier == 0 else 0
-            score = (
-                tier,
-                -missing_group_size,
-                recent.get((owner, keyword), 0),
-                keyword_usage.get(keyword, 0),
-                -rank,
-                order.get(keyword, 999),
-            )
-            candidates.append((score, keyword, tier, reason))
-        if not candidates:
-            continue
-        _, keyword, tier, reason = min(candidates, key=lambda row: row[0])
-        assigned[owner] = {"keyword": keyword, "tier": tier, "reason": reason}
-        keyword_usage[keyword] = keyword_usage.get(keyword, 0) + 1
+    def pairing_score(keyword_a: str, team_a: tuple[str, ...],
+                      keyword_b: str | None = None, team_b: tuple[str, ...] = ()) -> tuple:
+        pairs = [(keyword_a, team_a)]
+        if keyword_b:
+            pairs.append((keyword_b, team_b))
+        priority_sum = sum(_team_points(owner, keyword, groups[keyword])
+                           for keyword, team in pairs for owner in team)
+        never_visible = sum(
+            _owner_priority(owner, keyword, groups[keyword])[0] == 0
+            for keyword, team in pairs for owner in team
+        )
+        weak = sum(
+            _owner_priority(owner, keyword, groups[keyword])[0] == 1
+            for keyword, team in pairs for owner in team
+        )
+        repeated = sum(recent.get((owner, keyword), 0)
+                       for keyword, team in pairs for owner in team)
+        # On an equal score, prefer balanced verified absences, fewer repeat
+        # suggestions, and original configured keyword order for stability.
+        indexes = tuple(sorted(list(GROUPS).index(key) for key, _ in pairs))
+        return (priority_sum, never_visible, weak, -repeated,
+                tuple(-idx for idx in indexes))
 
+    choice: list[tuple[str, tuple[str, str]]] = []
+    if len(eligible) >= 2:
+        best = None
+        # Four people, two unique keywords, exactly two authors on each keyword.
+        for (keyword_a, _), (keyword_b, _) in combinations(eligible, 2):
+            for team_a in combinations(available_owners, 2):
+                team_b = tuple(owner for owner in available_owners if owner not in team_a)
+                score = pairing_score(keyword_a, team_a, keyword_b, team_b)
+                if best is None or score > best:
+                    best = score
+                    choice = [(keyword_a, team_a), (keyword_b, team_b)]
+    elif len(eligible) == 1:
+        keyword, _ = eligible[0]
+        team = max(combinations(available_owners, 2),
+                   key=lambda members: pairing_score(keyword, members))
+        choice = [(keyword, team)]
+
+    # Put the keyword with the greatest team-wide need first.
+    choice.sort(key=lambda row: (-sum(_team_points(owner, row[0], groups[row[0]])
+                                       for owner in row[1]), list(GROUPS).index(row[0])))
     assignments: list[dict] = []
-    for keyword in GROUPS:
-        people = [owner for owner in PEOPLE
-                  if owner in assigned and assigned[owner]["keyword"] == keyword]
-        if not people:
-            continue
-        reasons = {owner: assigned[owner]["reason"] for owner in people}
+    used_people: set[str] = set()
+    for team_number, (keyword, people) in enumerate(choice, start=1):
+        assert len(people) == 2 and not (set(people) & used_people)
+        used_people.update(people)
         blog_choices = {
             owner: _choose_blog_id(owner, keyword, groups, recent_blogs)
             for owner in people
         }
-        title_rows = _title_rows(keyword, people, used_titles)
-        for row in title_rows:
-            blog_id, blog_reason = blog_choices[row["owner"]]
-            row["blog_id"] = blog_id
-            row["blog_url"] = f"https://blog.naver.com/{blog_id}"
-            row["blog_reason"] = blog_reason
+        titles = _title_rows(keyword, list(people), used_titles)
+        for title in titles:
+            blog_id, blog_reason = blog_choices[title["owner"]]
+            title["blog_id"] = blog_id
+            title["blog_url"] = f"https://blog.naver.com/{blog_id}"
+            title["blog_reason"] = blog_reason
         assignments.append({
+            "team_number": team_number,
             "keyword": keyword,
-            "people": people,
-            "titles": title_rows,
+            "people": list(people),
+            "titles": titles,
             "blog_ids": {owner: blog_choices[owner][0] for owner in people},
             "blog_reasons": {owner: blog_choices[owner][1] for owner in people},
-            "reason": "담당자별 노출 여부·관측 순번과 검색 의도에 따라 배정",
-            "owner_reasons": reasons,
-            "owner_priorities": {owner: assigned[owner]["tier"] for owner in people},
+            "owner_reasons": {owner: _owner_priority(owner, keyword, groups[keyword])[2]
+                              for owner in people},
+            "owner_priorities": {owner: _owner_priority(owner, keyword, groups[keyword])[0]
+                                 for owner in people},
+            "reason": "동일 핵심 키워드를 두 사람이 서로 다른 글과 각자 지정된 블로그에 발행",
             "evidence_status": "VERIFIED",
         })
 
-    assigned_count = len(assigned)
-    if assigned_count == len(PEOPLE):
-        status, note = "READY", "4명 모두 최신 검증 결과에 따라 각자 한 가지 발행 주제를 추천"
-    elif assigned_count:
-        status, note = "PARTIAL", f"{assigned_count}명만 배정 가능하며 나머지는 최신 검증 자료 부족으로 보류"
-    else:
-        status, note = "PENDING", "3개 변형 검색어가 모두 최신 검증된 키워드가 없어 발행 배정 보류"
-
+    teams_count = len(assignments)
+    status = "READY" if teams_count == 2 else ("PARTIAL" if teams_count else "PENDING")
+    note = (
+        "2개 키워드에 2명씩, 총 4명 배정 완료" if teams_count == 2
+        else "검증된 서로 다른 키워드가 한 개뿐이어서 1팀만 추천하고 나머지 2명은 보류"
+        if teams_count == 1 else "검증된 검색 자료가 없어 2인 팀 배정을 보류"
+    )
     return {
+        "assignment_mode": "TWO_PERSON_KEYWORD_TEAMS",
+        "target_teams": 2,
         "status": status,
-        "ready": bool(assigned),
-        "complete": assigned_count == len(PEOPLE),
+        "ready": bool(assignments),
+        "complete": teams_count == 2,
         "slot_at_kst": next_publish_slot(at),
         "assignments": assignments,
-        "unassigned": [owner for owner in PEOPLE if owner not in assigned],
+        "unassigned": [owner for owner in PEOPLE if owner not in used_people],
         "note": note,
-        "title_policy": "규칙 기반 초안; GPT/API 연결이 없으므로 사실 추가 없이 운영자가 수정",
+        "title_policy": "같은 키워드에 두 사람이 각기 다른 제목·구성으로 발행하는 규칙 기반 초안",
     }

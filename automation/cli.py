@@ -58,38 +58,36 @@ def command_validate(args) -> int:
 
 
 def build_report(run: dict) -> str:
-    """Just what each person should publish and why, without raw SERP dumps."""
-    from automation.owners import PEOPLE
-
-    recommendation = run.get("recommendation") or {}
-    assignments = recommendation.get("assignments") or []
+    """Report two keyword-based, two-author teams with exact blog IDs."""
+    rec = run.get("recommendation") or {}
     lines = [
         f"수집 {run.get('captured_at_kst')} · {run.get('collector', {}).get('kind', '')}",
-        "※ 네이버 공식 순위가 아닌 모바일 통합검색 피드 블로그 카드 관측 기준",
-        f"다음 발행 {recommendation.get('slot_at_kst', '')}",
+        "※ 네이버 모바일 피드 블로그 카드 관측 기준(공식 순위 아님)",
+        f"다음 발행 {rec.get('slot_at_kst', '')}",
         "",
     ]
-    decisions = {}
-    for item in assignments:
-        titles = {row.get("owner"): row for row in item.get("titles", [])}
-        for owner in item.get("people", []):
-            decisions[owner] = (item, titles.get(owner, {}))
-    for owner in PEOPLE:
-        if owner not in decisions:
-            lines.append(f"{owner}: 발행 보류 — 최신 검증된 키워드가 부족합니다.")
+    if rec.get("assignment_mode") != "TWO_PERSON_KEYWORD_TEAMS":
+        lines.append("이전 1인 배정 데이터입니다. 새 검색 후 2인 팀 추천을 확인하세요.")
+        return "\n".join(lines)
+
+    for index, group in enumerate(rec.get("assignments") or [], 1):
+        owners = group.get("people") or []
+        if len(owners) != 2:
             continue
-        item, title = decisions[owner]
-        lines.append(f"{owner}: {item['keyword']}")
-        blog_id = title.get("blog_id") or (item.get("blog_ids") or {}).get(owner)
-        if blog_id:
-            lines.append(f"  발행 블로그: {blog_id} (https://blog.naver.com/{blog_id})")
-            lines.append("  블로그 선정 이유: " + (title.get("blog_reason") or (item.get("blog_reasons") or {}).get(owner, "해당 블로그 노출 보강 추천")))
-        else:
-            lines.append("  발행 블로그: 미지정 — 최신 수집 후 다시 확인")
-        lines.append("  제목: " + title.get("title", "제목 추천 대기"))
-        lines.append("  이유: " + (item.get("owner_reasons") or {}).get(owner, item.get("reason", "검증 자료 기준 추천")))
-    if not assignments:
-        lines.append(recommendation.get("note", "현재 발행 추천을 보류합니다."))
+        lines.append(f"{index}팀 · {group['keyword']} — {' + '.join(owners)}")
+        title_by_owner = {row.get("owner"): row for row in group.get("titles", [])}
+        for owner in owners:
+            row = title_by_owner.get(owner) or {}
+            blog_id = row.get("blog_id") or (group.get("blog_ids") or {}).get(owner)
+            lines.append(f"  {owner} | 발행 블로그: {blog_id or '미지정'}")
+            if blog_id:
+                lines.append(f"    https://blog.naver.com/{blog_id}")
+            lines.append(f"    제목: {row.get('title') or '제목 추천 대기'}")
+            lines.append(f"    키워드 선정: {(group.get('owner_reasons') or {}).get(owner, '')}")
+            lines.append(f"    블로그 선정: {row.get('blog_reason') or (group.get('blog_reasons') or {}).get(owner, '')}")
+        lines.append("")
+    if len(rec.get("assignments") or []) != 2:
+        lines.append(rec.get("note") or "두 팀을 배정할 수 없습니다.")
     return "\n".join(lines)
 
 
