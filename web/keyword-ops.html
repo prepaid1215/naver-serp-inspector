@@ -79,6 +79,15 @@ function render(data,history){
  const list=$('queries');empty(list);
  for(const g of Object.values(groups)){for(const word of g.queries||[]){const o=queries[word],li=el('li',list,word+': '+status(o?.status));
  if(o?.reason)el('span',li,' · '+o.reason,'muted');
+ if(o?.candidate_urls?.length){
+   const map={'carrotmobile_':'건호','lifeon5g_':'건호','esim99_':'영은','esim99':'영은','esim87_':'영은','ntelecom59':'하루','jjuny1253':'수진'};
+   const found=[];
+   o.candidate_urls.forEach((url,i)=>{
+     const hit=url.match(/^https:\/\/blog\.naver\.com\/([\w-]+)\/\d+$/i);
+     if(hit&&map[hit[1].toLowerCase()])found.push(map[hit[1].toLowerCase()]+' 후보 '+(i+1)+'번째');
+   });
+   el('span',li,' · 블로그 게시글 후보 '+o.candidate_urls.length+'개'+(found.length?' · '+found.join(', '):' · 등록 블로그 발견 없음 (미노출 확정 아님)'),'orange');
+ }
  if(o?.url){const a=el('a',li,' · 검색 페이지');a.href=o.url;a.target='_blank';a.rel='noopener'}}}
  if(!list.childNodes.length)el('li',list,'첫 자동 조사 전');
  const recent=$('history');empty(recent);
