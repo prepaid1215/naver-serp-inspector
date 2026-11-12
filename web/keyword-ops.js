@@ -8,6 +8,7 @@
   const FEED = 'INTEGRATED_FEED_BLOG_CARDS_TOP10';
   const ARTICLES = 'INTEGRATED_BLOG_ARTICLES_TOP10';
   const OWNERS = ['건호', '영은', '하루', '수진'];
+  const TEAM_PUBLISH_KEYWORDS = ['KT바로유심', 'LG모두의 원칩', '태블릿소유자회원번호', '다이소 유심'];
   const BASE_GROUP_NAMES = ['KT바로유심', 'LG모두의 원칩', '태블릿소유자회원번호',
     '다이소 유심', '선불폰 개통', '요금미납 선불폰', '편의점 선불유심', '앤텔레콤 396'];
   const OWNER_BY_ID = {
@@ -62,7 +63,8 @@
     const verified = statuses.filter(status => status === 'VERIFIED').length;
     const stale = statuses.filter(status => status === 'STALE').length;
     const freshGroups = Object.values(data.groups || {}).filter(groupIsFresh).length;
-    const assignments = (data.recommendation?.assignments || []).filter(row => groupIsFresh(data.groups?.[row.keyword]));
+    const assignments = (data.recommendation?.assignments || [])
+      .filter(row => TEAM_PUBLISH_KEYWORDS.includes(row.keyword) && groupIsFresh(data.groups?.[row.keyword]));
     const total = records.length;
     const groupTotal = Object.keys(data.groups || {}).length;
     $('verified-count').textContent = verified + '/' + total;
@@ -83,7 +85,8 @@
     const all = decision.assignments || [];
     const flatOwners = all.flatMap(row => row.people || []);
     const properPairs = decision.assignment_mode === 'TWO_PERSON_KEYWORD_TEAMS'
-      && all.length <= 2 && all.every(row => (row.people || []).length === 2
+      && all.length <= 2 && all.every(row => TEAM_PUBLISH_KEYWORDS.includes(row.keyword)
+        && (row.people || []).length === 2
         && (row.titles || []).length === 2)
       && new Set(flatOwners).size === flatOwners.length
       && new Set(all.map(row => row.keyword)).size === all.length;
@@ -102,8 +105,11 @@
     }
     if (!properPairs) {
       const warning = element('div', root, undefined, 'simple-alert');
-      element('b', warning, '이전 1인 배정 자료입니다. 2인 팀으로 재계산이 필요합니다.');
-      element('p', warning, '다음 자동 검색 결과부터 키워드별 2인 팀과 발행 블로그가 표시됩니다.');
+      const wrongKeywords = all.some(row => !TEAM_PUBLISH_KEYWORDS.includes(row.keyword));
+      element('b', warning, wrongKeywords
+        ? '현재 저장 자료는 이전 발행 기준으로 추천됐습니다.'
+        : '이전 배정 자료입니다. 2인 팀으로 재계산이 필요합니다.');
+      element('p', warning, '팀 발행은 KT바로유심·모두의원칩·태블릿소유자회원번호·다이소 유심만 허용합니다. 새 검색 후 추천을 다시 확인하세요.');
       return;
     }
     const shown = isCurrent ? current : all;

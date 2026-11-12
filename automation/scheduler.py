@@ -59,6 +59,10 @@ INTENTS: dict[str, tuple[tuple[str, str], ...]] = {
     ),
 }
 
+# Only these core product keywords may be assigned to the two publishing teams.
+# Other tracked queries are research evidence, never team publishing targets.
+PUBLISH_GROUPS = ("KT바로유심", "LG모두의 원칩", "태블릿소유자회원번호", "다이소 유심")
+
 SLOTS = ((9, 0), (11, 0), (14, 0))
 
 
@@ -317,14 +321,14 @@ def recommend(
     history: object = None,
     at: datetime | None = None,
 ) -> dict:
-    """Allocate two DIFFERENT verified keywords to two disjoint two-person teams.
+    """Allocate two DIFFERENT core verified keywords to disjoint two-person teams.
 
     Evaluate all keyword pairings and owner partitions, not just the first two
     people who are absent. This keeps all four authors in the operation even
     when one is already visible on the proposed keyword.
     """
     eligible = [(keyword, group) for keyword, group in groups.items()
-                if keyword in GROUPS and group.get("complete") is True
+                if keyword in PUBLISH_GROUPS and group.get("complete") is True
                 and group.get("status") == "VERIFIED"]
     available_owners = tuple(PEOPLE)
     recent = _recent_keyword_counts(history)
@@ -409,11 +413,12 @@ def recommend(
     note = (
         "2개 키워드에 2명씩, 총 4명 배정 완료" if teams_count == 2
         else "검증된 서로 다른 키워드가 한 개뿐이어서 1팀만 추천하고 나머지 2명은 보류"
-        if teams_count == 1 else "검증된 검색 자료가 없어 2인 팀 배정을 보류"
+        if teams_count == 1 else "발행 대상 4개 핵심 키워드에서 검증된 자료가 없어 2인 팀 배정을 보류"
     )
     return {
         "assignment_mode": "TWO_PERSON_KEYWORD_TEAMS",
         "target_teams": 2,
+        "publish_keywords": list(PUBLISH_GROUPS),
         "status": status,
         "ready": bool(assignments),
         "complete": teams_count == 2,

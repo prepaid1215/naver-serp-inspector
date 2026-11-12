@@ -106,6 +106,20 @@ try:
         expect(page.locator("#keyword-request-input")).to_have_value("새 선불폰 검색어")
         assert page.evaluate("() => (document.querySelector('.quick-keyword').compareDocumentPosition(document.querySelector('.simple-hero')) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0")
 
+        expect(page.locator(".simple-publish-scope")).to_contain_text("다이소 유심")
+        # Even a verified old recommendation must not show a non-core keyword.
+        old_fixture = deepcopy(fixture)
+        old_fixture["recommendation"]["assignments"][0]["keyword"] = "요금미납 선불폰"
+        page.route(raw_latest, lambda route: route.fulfill(
+            status=200, content_type="application/json",
+            body=json.dumps(old_fixture, ensure_ascii=False)))
+        page.reload()
+        expect(page.locator("#recommendations")).to_contain_text("이전 발행 기준")
+        expect(page.locator("#recommendations .team-publish-card")).to_have_count(0)
+        page.route(raw_latest, lambda route: route.fulfill(
+            status=200, content_type="application/json",
+            body=json.dumps(fixture, ensure_ascii=False)))
+        page.reload()
         expect(page.locator("#recommendations .team-publish-card")).to_have_count(2)
         expect(page.locator("#recommendations .team-member")).to_have_count(4)
         expect(page.locator("#team-count")).to_have_text("2/2")
