@@ -8,6 +8,7 @@ from automation.models import (
     GROUPS,
     KST,
     SURFACE_ARTICLES,
+    LOCAL_AUDIT_FLAGS,
     SURFACE_FEED,
     SURFACE_SECTION,
     effective_status,
@@ -181,6 +182,43 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(observations_from_browser(unknown, **kwargs)[SURFACE_FEED]["status"], "UNKNOWN")
         no_shot = observations_from_browser(raw, observed_at=NOW.isoformat(), source_url="x", evidence={})
         self.assertEqual(no_shot[SURFACE_FEED]["status"], "CANDIDATE")
+
+    def test_local_headed_verification_requires_every_screen_flag(self):
+        cards = [
+            {"feed_rank": 1 + index, "kind": "blog", "post_url": url, "title": f"title {index}"}
+            for index, url in enumerate(ten())
+        ]
+        audit = {flag: True for flag in ("order_consistent", "non_overlapping", "no_excluded_cards", "post_unique")}
+        raw = {
+            "blocked": False, "article_rows": cards, "article_total": 10, "section": None,
+            "feed_layout": "per_post_cards", "feed_cards": cards, "feed_audit": audit,
+        }
+        flags = {flag: True for flag in LOCAL_AUDIT_FLAGS}
+        kwargs = dict(
+            observed_at=NOW.isoformat(),
+            source_url="https://m.search.naver.com/search.naver?query=x",
+            evidence={"screenshot_sha256": "f" * 64},
+        )
+        ok = observations_from_browser(raw, local_audit=flags, **kwargs)[SURFACE_FEED]
+        self.assertEqual(ok["status"], "VERIFIED")
+        self.assertEqual(validate_observation(ok), [])
+        self.assertEqual(ok["results"][0]["title"], "title 0")
+        for flag in LOCAL_AUDIT_FLAGS:
+            broken = observations_from_browser(raw, local_audit={**flags, flag: False}, **kwargs)[SURFACE_FEED]
+            self.assertEqual(broken["status"], "CANDIDATE", flag)
+            self.assertIn(flag, broken["reason"])
+        forged = dict(ok, evidence={**ok["evidence"], "feed_audit": {**ok["evidence"]["feed_audit"], "screen_hit_test": False}})
+        self.assertTrue(validate_observation(forged))
+
+    def test_failed_local_check_holds_assignment(self):
+        queries = run_queries()
+        set_group(queries, "KT바로유심", ten((1, "esim99_")))
+        set_group(queries, "다이소 유심", ten((1, "ntelecom59")))
+        queries["바로유심"]["surfaces"][SURFACE_FEED] = observation(ten(), status="CANDIDATE")
+        groups = aggregate_groups(queries, at=NOW)
+        self.assertFalse(groups["KT바로유심"]["complete"])
+        self.assertEqual(groups["KT바로유심"]["missing"], [])
+        self.assertTrue(groups["다이소 유심"]["complete"])
 
     def test_old_section_verified_is_not_used_as_feed_metric(self):
         queries = run_queries()
