@@ -49,7 +49,17 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add web/ops-data/latest.json web/ops-data/history.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data: update mobile blog SERP observation'
-          git push origin HEAD:main
+          cp web/ops-data/latest.json /tmp/serp-latest.json
+          cp web/ops-data/history.json /tmp/serp-history.json
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/serp-latest.json web/ops-data/latest.json
+            cp /tmp/serp-history.json web/ops-data/history.json
+            git add web/ops-data/latest.json web/ops-data/history.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data: update mobile blog SERP observation'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Remote changed during observation; retrying (attempt $attempt)"
+          done
+          exit 1
