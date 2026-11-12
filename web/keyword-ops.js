@@ -201,6 +201,7 @@
       const item = element('li', list);
       const link = element('a', item, row.post_url);
       link.href = row.post_url; link.target = '_blank'; link.rel = 'noopener';
+      if (row.title) element('div', item, row.title, 'muted');
       const owner = ownerFromRow(row);
       if (row.feed_rank) element('span', item, ` · 피드 ${row.feed_rank}번째`, 'muted');
       if (owner) element('span', item, ` · ${owner} (${row.blog_id})`, 'owner');
@@ -288,7 +289,7 @@
       const history = await fetch(`${DATA_ROOT}history.json${suffix}`, {cache: 'no-store'})
         .then(result => result.ok ? result.json() : {entries: []}).catch(() => ({entries: []}));
       render(data, history);
-      $('message').textContent = `최신 저장 자료 ${formatTime(data.captured_at_kst)} · 새로고침 ${formatTime(new Date().toISOString())}`;
+      $('message').textContent = `최신 저장 자료 ${formatTime(data.captured_at_kst)} · ${data.collector?.headed_browser ? '이 PC의 모바일 브라우저 화면 대조' : '클라우드 자동 검색'} · 새로고침 ${formatTime(new Date().toISOString())}`;
     } catch (error) {
       $('message').textContent = `자료 불러오기 실패: ${error.message}`;
     } finally {

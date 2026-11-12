@@ -21,6 +21,17 @@ DECISION_SURFACE = SURFACE_FEED
 SURFACES = {SURFACE_SECTION, SURFACE_ARTICLES, SURFACE_BLOG_TAB, SURFACE_FEED}
 FEED_AUDIT_METHOD = "automated_feed_crosscheck"
 FEED_AUDIT_FLAGS = ("order_consistent", "non_overlapping", "no_excluded_cards", "post_unique")
+# Windows headed-browser run: also compares what is painted on screen and the
+# saved full-page screenshot with the extracted card order.
+LOCAL_AUDIT_METHOD = "local_headed_visual_crosscheck"
+LOCAL_AUDIT_FLAGS = (
+    "screen_hit_test",
+    "screen_order",
+    "title_matches_screen",
+    "screenshot_size_matches",
+    "screenshot_crops_nonblank",
+    "stable_rerun",
+)
 STATUSES = {
     "VERIFIED",
     "CANDIDATE",
@@ -107,6 +118,8 @@ def make_observation(
         entry = {"rank": len(rows) + 1, **post}
         if isinstance(row.get("feed_rank"), int) and row["feed_rank"] >= 1:
             entry["feed_rank"] = row["feed_rank"]
+        if isinstance(row.get("title"), str) and row["title"].strip():
+            entry["title"] = " ".join(row["title"].split())[:120]
         rows.append(entry)
         if len(rows) == 10:
             break
@@ -162,9 +175,10 @@ def validate_observation(observation: object) -> list[str]:
             errors.append("VERIFIED requires screenshot SHA-256")
         if surface == SURFACE_FEED:
             audit = evidence.get("feed_audit") or {}
-            if method not in {FEED_AUDIT_METHOD, "human_visual_review"}:
+            if method not in {FEED_AUDIT_METHOD, LOCAL_AUDIT_METHOD, "human_visual_review"}:
                 errors.append("VERIFIED feed requires cross-check or visual review evidence")
-            if method == FEED_AUDIT_METHOD and not all(audit.get(flag) is True for flag in FEED_AUDIT_FLAGS):
+            required = FEED_AUDIT_FLAGS + (LOCAL_AUDIT_FLAGS if method == LOCAL_AUDIT_METHOD else ())
+            if method != "human_visual_review" and not all(audit.get(flag) is True for flag in required):
                 errors.append("VERIFIED feed requires every audit flag to pass")
             ranks = [row.get("feed_rank") for row in results]
             if any(not isinstance(rank, int) for rank in ranks) or ranks != sorted(ranks):
