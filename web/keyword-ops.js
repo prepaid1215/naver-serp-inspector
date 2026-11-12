@@ -19,6 +19,18 @@
   const $ = id => document.getElementById(id);
   let currentData = null;
   let currentHistory = [];
+  const AUTO_CHECK_MS = 60_000;
+  let loadInProgress = false;
+  let lastSnapshot = '';
+  let lastAutoAttempt = 0;
+
+  // Read a new recommendation whenever its actual search/run payload changes.
+  function snapshotKey(data) {
+    return JSON.stringify([
+      data.run_id, data.captured_at_kst, data.recommendation?.status,
+      data.recommendation?.assignments
+    ]);
+  }
 
   function element(tag, parent, text, className) {
     const node = document.createElement(tag);
@@ -404,27 +416,58 @@
     throw new Error(filename + ' 자료 접근 실패: ' + (lastError?.message || '알 수 없음'));
   }
 
-  async function load() {
-    $('refresh').disabled = true;
-    $('message').textContent = 'GitHub 최신 검색 자료를 읽는 중…';
+  async function load({automatic = false} = {}) {
+    if (loadInProgress || (automatic && document.visibilityState === 'hidden')) return;
+    loadInProgress = true;
+    if (!automatic) {
+      $('refresh').disabled = true;
+      $('message').textContent = 'GitHub 최신 검색 자료를 읽는 중…';
+    }
     try {
       const suffix = '?t=' + Date.now();
       const latest = await fetchLatestJson('latest.json', suffix);
       const data = latest.data;
-      const history = await fetchLatestJson('history.json', suffix)
-        .then(result => result.data).catch(() => ({entries: []}));
-      render(data, history);
+      const newSnapshot = snapshotKey(data);
+      const hasChanged = !currentData || lastSnapshot !== newSnapshot;
+      if (hasChanged) {
+        const history = await fetchLatestJson('history.json', suffix)
+          .then(result => result.data).catch(() => ({entries: []}));
+        render(data, history);
+        lastSnapshot = newSnapshot;
+      } else {
+        // The same observation can become stale without a new run.
+        renderStats(currentData);
+        renderRecommendations(currentData);
+      }
       const sourceNote = latest.source === 'GitHub Pages 보관본'
         ? ' · 최신 원본 연결 실패, 배포 시점 보관 자료'
         : ' · GitHub main 최신 검색 결과';
+      const checkLabel = automatic
+        ? (hasChanged ? ' · 새 검색 자동 반영 ' : ' · 자동 확인 ')
+        : ' · 직접 확인 ';
       $('message').textContent = '검색 자료 ' + formatTime(data.captured_at_kst) + sourceNote + ' · ' +
         (data.collector?.headed_browser ? '이 PC의 모바일 브라우저 화면 대조' : '클라우드 자동 검색') +
-        ' · 새로고침 ' + formatTime(new Date().toISOString());
+        checkLabel + formatTime(new Date().toISOString());
     } catch (error) {
-      $('message').textContent = '자료 불러오기 실패: ' + error.message;
+      $('message').textContent = (automatic ? '자동 확인 실패(이전 자료 유지): ' : '자료 불러오기 실패: ') +
+        error.message;
+      if (currentData) {
+        renderStats(currentData);
+        renderRecommendations(currentData);
+      }
     } finally {
-      $('refresh').disabled = false;
+      if (!automatic) $('refresh').disabled = false;
+      loadInProgress = false;
     }
+  }
+
+  function autoCheckIfVisible() {
+    if (document.visibilityState !== 'visible') return;
+    // visibilitychange and focus can fire together; only make one request.
+    const now = Date.now();
+    if (now - lastAutoAttempt < 10_000) return;
+    lastAutoAttempt = now;
+    void load({automatic: true});
   }
 
   function parsePost(url) {
@@ -483,7 +526,10 @@
       encodeURIComponent(query), '_blank', 'noopener,noreferrer');
     $('keyword-request-message').textContent = '네이버 검색 화면을 열었습니다. 자동 추적은 별도의 승인 요청이 필요합니다.';
   });
-  $('refresh').addEventListener('click', load);
+  $('refresh').addEventListener('click', () => void load());
+  setInterval(autoCheckIfVisible, AUTO_CHECK_MS);
+  document.addEventListener('visibilitychange', autoCheckIfVisible);
+  window.addEventListener('focus', autoCheckIfVisible);
   ['history-keyword', 'history-owner', 'history-status'].forEach(id => $(id).addEventListener('change', renderHistory));
   $('manual-form').addEventListener('submit', exportManual);
   const now = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
