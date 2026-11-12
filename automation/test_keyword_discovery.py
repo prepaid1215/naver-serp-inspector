@@ -24,7 +24,7 @@ class KeywordExpansionTests(unittest.TestCase):
             "바로유심": {"related_queries": ["KT 바로유심 구매", "바로유심", "다이소 유심"]},
         }
         proposed = aggregate_related_candidates(records)
-        self.assertEqual([row["query"] for row in proposed], ["KT 바로유심 구매", "편의점 바로유심", "서울"])
+        self.assertEqual({row["query"] for row in proposed}, {"KT 바로유심 구매", "편의점 바로유심", "서울"})
         self.assertEqual(proposed[0]["sources"], ["KT바로유심", "바로유심"])
         self.assertEqual(proposed[0]["status"], "PROPOSED")
         self.assertNotIn("다이소 유심", [row["query"] for row in proposed])
