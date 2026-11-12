@@ -37,6 +37,7 @@ def command_collect(args) -> int:
         data_dir=args.data_dir,
         evidence_root=args.evidence_dir,
         delay_seconds=args.delay,
+        local=args.local,
     )
     return 0
 
@@ -53,6 +54,51 @@ def command_validate(args) -> int:
         status = record["surfaces"][DECISION_SURFACE]["status"]
         counts[status] = counts.get(status, 0) + 1
     print("VALID", value["run_id"], counts)
+    return 0
+
+
+def build_report(run: dict) -> str:
+    """Plain-text summary: who is exposed, who publishes what, and why."""
+
+    lines = [
+        f"수집 {run.get('captured_at_kst')} · {run.get('collector', {}).get('kind', '')}",
+        "※ 순번은 네이버 공식 순위가 아닌 관측값(블로그 카드 순번 / 피드 순번)",
+        "",
+    ]
+    for keyword, group in (run.get("groups") or {}).items():
+        state = "검증 완료" if group.get("complete") else "검증 불가 → 미노출 확정·배정 보류"
+        lines.append(f"[{keyword}] {state}")
+        if not group.get("complete"):
+            lines.append("  " + group.get("decision_note", ""))
+            continue
+        for owner, rows in (group.get("matches") or {}).items():
+            if rows:
+                shown = ", ".join(
+                    f"{row['query']} 블로그 {row['rank']}번째(피드 {row.get('feed_rank', '?')}번째)" for row in rows
+                )
+                lines.append(f"  {owner}: 노출 · {shown}")
+            else:
+                lines.append(f"  {owner}: 상위 10개 블로그 카드에 미노출")
+    recommendation = run.get("recommendation") or {}
+    lines += ["", f"발행 제안 [{recommendation.get('status')}] {recommendation.get('slot_at_kst', '')}"]
+    for item in recommendation.get("assignments", []):
+        lines.append(f"  {item['keyword']} → {' + '.join(item['people'])} ({item['reason']})")
+        for title in item.get("titles", []):
+            lines.append(f"    - {title['owner']} [{title['intent']}] {title['title']}")
+    if not recommendation.get("assignments"):
+        lines.append("  " + recommendation.get("note", "배정 근거 없음"))
+    for error in run.get("errors", []):
+        lines.append(f"! {error}")
+    return "\n".join(lines)
+
+
+def command_report(args) -> int:
+    run = _load(args.input)
+    text = build_report(run)
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        print(text.encode("ascii", "replace").decode())
     return 0
 
 
@@ -116,11 +162,20 @@ def build_parser() -> argparse.ArgumentParser:
     collect.add_argument("--data-dir", type=Path, default=DATA_DIR)
     collect.add_argument("--evidence-dir", type=Path, default=EVIDENCE_DIR)
     collect.add_argument("--delay", type=float, default=6.0)
+    collect.add_argument(
+        "--local",
+        action="store_true",
+        help="open a visible browser window and cross-check extraction against the screen and screenshot",
+    )
     collect.set_defaults(handler=command_collect)
 
     validate = sub.add_parser("validate")
     validate.add_argument("--input", type=Path, default=DATA_DIR / "latest.json")
     validate.set_defaults(handler=command_validate)
+
+    report = sub.add_parser("report")
+    report.add_argument("--input", type=Path, default=DATA_DIR / "latest.json")
+    report.set_defaults(handler=command_report)
 
     migrate = sub.add_parser("migrate")
     migrate.add_argument("--input", type=Path, required=True)

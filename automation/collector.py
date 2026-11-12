@@ -52,7 +52,7 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def collect_query(page, query: str, evidence_dir: Path) -> dict:
+def collect_query(page, query: str, evidence_dir: Path, *, local: bool = False) -> dict:
     source_url = "https://m.search.naver.com/search.naver?" + urlencode(
         {"where": "nexearch", "query": query}
     )
@@ -67,7 +67,10 @@ def collect_query(page, query: str, evidence_dir: Path) -> dict:
 
     evidence_dir.mkdir(parents=True, exist_ok=True)
     screenshot = evidence_dir / f"{_safe_name(query)}.png"
+    height_js = "() => document.documentElement.scrollHeight"
+    height_before = page.evaluate(height_js)
     page.screenshot(path=str(screenshot), full_page=True, animations="disabled", timeout=30_000)
+    height_after = page.evaluate(height_js)
     screenshot_hash = _sha256(screenshot)
     evidence = {
         "screenshot_sha256": screenshot_hash,
@@ -75,11 +78,19 @@ def collect_query(page, query: str, evidence_dir: Path) -> dict:
         "browser": "playwright-chromium",
         "device": "mobile-emulation",
     }
+    local_audit = None
+    if local and not raw.get("blocked"):
+        from automation.local_verify import run_local_checks
+
+        page.wait_for_timeout(800)
+        rerun = page.evaluate(EXTRACT_JS)
+        local_audit = run_local_checks(page, raw, screenshot, rerun, (height_before, height_after))
     surfaces = observations_from_browser(
         raw,
         observed_at=observed_at,
         source_url=source_url,
         evidence=evidence,
+        local_audit=local_audit,
     )
     return {"query": query, "surfaces": surfaces}
 
@@ -113,6 +124,7 @@ def collect_all(
     data_dir: Path = DATA_DIR,
     evidence_root: Path = EVIDENCE_DIR,
     delay_seconds: float = 6.0,
+    local: bool = False,
 ) -> dict:
     from playwright.sync_api import sync_playwright
 
@@ -128,7 +140,7 @@ def collect_all(
     halted = False
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True, args=["--no-sandbox"])
+        browser = playwright.chromium.launch(headless=not local, args=["--no-sandbox"])
         try:
             context = browser.new_context(
                 user_agent=USER_AGENT,
@@ -151,7 +163,7 @@ def collect_all(
                 if index:
                     time.sleep(delay_seconds)
                 try:
-                    record = collect_query(page, query, evidence_dir)
+                    record = collect_query(page, query, evidence_dir, local=local)
                 except Exception as exc:  # Playwright surface errors are data, not invented ranks.
                     reason = f"{type(exc).__name__}: {str(exc)[:240]}"
                     record = {
@@ -179,7 +191,8 @@ def collect_all(
         "captured_at_kst": iso_kst(),
         "freshness_minutes": FRESHNESS_MINUTES,
         "collector": {
-            "kind": "playwright_mobile_emulation",
+            "kind": "windows_local_headed_mobile_emulation" if local else "playwright_mobile_emulation",
+            "headed_browser": bool(local),
             "viewport": "390x844",
             "user_agent_family": "Android Chrome",
             "rank_policy": "verified_integrated_feed_blog_cards_observed_order",

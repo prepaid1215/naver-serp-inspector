@@ -4,6 +4,8 @@ from __future__ import annotations
 from automation.models import (
     FEED_AUDIT_FLAGS,
     FEED_AUDIT_METHOD,
+    LOCAL_AUDIT_FLAGS,
+    LOCAL_AUDIT_METHOD,
     SURFACE_ARTICLES,
     SURFACE_FEED,
     SURFACE_SECTION,
@@ -79,6 +81,18 @@ EXTRACT_JS = r"""() => {
       if (seenPosts.has(rows[0].post_url)) { duplicates++; continue; }
       seenPosts.add(rows[0].post_url);
       entry.post_url = rows[0].post_url;
+      // The title link is the post anchor with the largest type size; the
+      // snippet, thumbnail and "N시간 전" links point to the same post.
+      let title = '', size = 0;
+      for (const anchor of card.querySelectorAll('a[href]')) {
+        if (canonical(anchor.href) !== entry.post_url || !visible(anchor)) continue;
+        const label = (anchor.innerText || '').trim().replace(/\s+/g, ' ');
+        const fontSize = parseFloat(getComputedStyle(anchor).fontSize) || 0;
+        if (label.length > 3 && fontSize > size) { title = label; size = fontSize; }
+      }
+      entry.title = title.slice(0, 120);
+      const source = card.querySelector('.sds-comps-profile-source');
+      entry.blog_name = ((source && source.innerText) || '').trim().split(/\r?\n/)[0].slice(0, 60);
     }
     feedCards.push(entry);
   }
@@ -138,6 +152,7 @@ def observations_from_browser(
     observed_at: str,
     source_url: str,
     evidence: dict,
+    local_audit: dict | None = None,
 ) -> dict[str, dict]:
     """Convert browser output into two explicitly separate surface records."""
 
@@ -214,11 +229,13 @@ def observations_from_browser(
         reason=reason,
         reason_code=reason_code,
     )
-    feed = _feed_observation(raw, observed_at, common_evidence)
+    feed = _feed_observation(raw, observed_at, common_evidence, local_audit)
     return {SURFACE_SECTION: section, SURFACE_ARTICLES: article, SURFACE_FEED: feed}
 
 
-def _feed_observation(raw: dict, observed_at: str, common_evidence: dict) -> dict:
+def _feed_observation(
+    raw: dict, observed_at: str, common_evidence: dict, local_audit: dict | None = None
+) -> dict:
     """Primary operating metric: blog-card order in the integrated UGC feed.
 
     VERIFIED only when the rendered-order audit passes and ten blog cards were
@@ -231,16 +248,27 @@ def _feed_observation(raw: dict, observed_at: str, common_evidence: dict) -> dic
     ]
     rows = []
     for card in cards:
-        rows.append({"post_url": card.get("post_url"), "feed_rank": card.get("feed_rank")})
+        rows.append({
+            "post_url": card.get("post_url"),
+            "feed_rank": card.get("feed_rank"),
+            "title": card.get("title"),
+        })
     audit_raw = raw.get("feed_audit") if isinstance(raw.get("feed_audit"), dict) else {}
     audit = {flag: audit_raw.get(flag) is True for flag in FEED_AUDIT_FLAGS}
     audit.update({
         key: int(audit_raw.get(key) or 0)
         for key in ("ugc_cards", "blog_cards", "excluded_ai_or_ad_cards", "duplicate_cards_dropped")
     })
+    method = FEED_AUDIT_METHOD
+    required = FEED_AUDIT_FLAGS
+    if local_audit is not None:
+        method = LOCAL_AUDIT_METHOD
+        required = FEED_AUDIT_FLAGS + LOCAL_AUDIT_FLAGS
+        audit.update({flag: local_audit.get(flag) is True for flag in LOCAL_AUDIT_FLAGS})
+        audit["checked_cards"] = int(local_audit.get("checked_cards") or 0)
     screenshot = common_evidence.get("screenshot_sha256")
     complete = len(cards) >= 10
-    passed = all(audit[flag] for flag in FEED_AUDIT_FLAGS)
+    passed = all(audit[flag] for flag in required)
     if raw.get("feed_layout") != "per_post_cards":
         status, code = "UNKNOWN", "FEED_LAYOUT_NOT_RECOGNIZED"
         reason = "게시글 카드 피드 구조를 인식하지 못해 순번을 확정하지 않음"
@@ -250,10 +278,15 @@ def _feed_observation(raw: dict, observed_at: str, common_evidence: dict) -> dic
         reason = "피드에서 블로그 카드를 10개 미만으로 관측"
     elif not passed or not screenshot:
         status, code = "CANDIDATE", "FEED_AUDIT_FAILED"
-        reason = "카드 순서·중복 검증 또는 캡처 근거가 부족해 후보로만 보관"
+        failed = [flag for flag in required if not audit.get(flag)]
+        reason = "카드 순서·화면 대조 또는 캡처 근거가 부족해 후보로만 보관: " + (", ".join(failed) or "캡처 없음")
     else:
         status, code = "VERIFIED", "FEED_CROSSCHECK_PASSED"
-        reason = "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)"
+        reason = (
+            "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)"
+            if local_audit is not None
+            else "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)"
+        )
     return make_observation(
         surface=SURFACE_FEED,
         status=status,
@@ -261,7 +294,7 @@ def _feed_observation(raw: dict, observed_at: str, common_evidence: dict) -> dic
         results=rows,
         evidence={
             **common_evidence,
-            "verification_method": FEED_AUDIT_METHOD,
+            "verification_method": method,
             "feed_audit": audit,
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": int(raw.get("feed_interleaved_cafe_cards") or 0),
