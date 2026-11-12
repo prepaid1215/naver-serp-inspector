@@ -3,8 +3,8 @@ name: Mobile blog SERP monitor
 on:
   workflow_dispatch:
   schedule:
-    # 09:00, 11:00, 14:00 Asia/Seoul (GitHub schedule may be delayed)
-    - cron: '0 0,2,5 * * *'
+    # Before 09:00, 11:00, 14:00 KST publication: collect 30 minutes early (may be delayed)
+    - cron: '30 23,1,4 * * *'
   push:
     branches: [main]
     paths:
