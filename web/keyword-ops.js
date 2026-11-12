@@ -3,6 +3,7 @@
 
   const DATA_ROOT = './ops-data/';
   const SECTION = 'INTEGRATED_BLOG_SECTION_TOP10';
+  const FEED = 'INTEGRATED_FEED_BLOG_CARDS_TOP10';
   const ARTICLES = 'INTEGRATED_BLOG_ARTICLES_TOP10';
   const OWNERS = ['건호', '영은', '하루', '수진'];
   const OWNER_BY_ID = {
@@ -28,7 +29,7 @@
   }
   function statusLabel(status) {
     return ({
-      VERIFIED: '검증 완료', CANDIDATE: '후보 10개', PARTIAL: '부분 관측', BLOCKED: '접근 제한',
+      VERIFIED: '검증 완료', CANDIDATE: '후보', PARTIAL: '부분 관측', BLOCKED: '접근 제한',
       ERROR: '수집 오류', STALE: '45분 경과', UNKNOWN: '미확인', READY: '2팀 제안', PENDING: '배정 보류'
     })[status] || status || '미확인';
   }
@@ -40,7 +41,8 @@
     if (!Number.isFinite(at) || Date.now() - at > FRESH_MS) return 'STALE';
     return status;
   }
-  function section(record) { return record?.surfaces?.[SECTION]; }
+  function section(record) { return record?.surfaces?.[FEED]; }
+  function legacySection(record) { return record?.surfaces?.[SECTION]; }
   function articles(record) { return record?.surfaces?.[ARTICLES]; }
   function badge(parent, status) { return element('span', parent, statusLabel(status), `status ${status}`); }
   function queryIsVerified(query) { return effective(section(currentData?.queries?.[query])) === 'VERIFIED'; }
@@ -115,7 +117,7 @@
         const matches = group.matches?.[owner] || [];
         let text = '미확인'; let cls = '';
         if (fresh) {
-          text = matches.length ? matches.map(item => `${item.query} ${item.rank}위`).join(' · ') : 'VERIFIED 상위10 미노출';
+          text = matches.length ? matches.map(item => `${item.query} 블로그 ${item.rank}번째${item.feed_rank ? `(피드 ${item.feed_rank}번째)` : ''}`).join(' · ') : '블로그 카드 상위10 미노출(관측)';
           cls = matches.length ? 'found' : 'missing';
         }
         element('span', row, text, cls);
@@ -132,6 +134,7 @@
     });
   }
 
+  function evidence0(observation) { return observation?.evidence || {}; }
   function renderSurface(root, observation, title) {
     const box = element('section', root, undefined, 'surface');
     const heading = element('h3', box);
@@ -144,9 +147,11 @@
       const link = element('a', item, row.post_url);
       link.href = row.post_url; link.target = '_blank'; link.rel = 'noopener';
       const owner = ownerFromRow(row);
+      if (row.feed_rank) element('span', item, ` · 피드 ${row.feed_rank}번째`, 'muted');
       if (owner) element('span', item, ` · ${owner} (${row.blog_id})`, 'owner');
     });
-    if (!(observation?.results || []).length) element('li', list, '확정할 수 있는 게시글 순위 없음', 'muted');
+    if (!(observation?.results || []).length) element('li', list, '확정할 수 있는 게시글 순번 없음', 'muted');
+    if (evidence0(observation).feed_audit) element('div', box, `카드 검증 ${Object.entries(evidence0(observation).feed_audit).map(([key, value]) => `${key}=${value}`).join(' ')}`, 'muted');
     const evidence = observation?.evidence || {};
     const evidenceBox = element('div', box, undefined, 'evidence');
     element('div', evidenceBox, `관측 ${formatTime(observation?.observed_at)}`);
@@ -170,8 +175,9 @@
       element('span', line, query);
       badge(line, effective(section(record)));
       const body = element('div', details, undefined, 'query-body');
-      renderSurface(body, section(record), '통합검색 블로그 영역');
+      renderSurface(body, section(record), '피드 블로그 카드 순번(관측·운영 기준)');
       renderSurface(body, articles(record), '통합검색 블로그 글 후보');
+      if (legacySection(record)) renderSurface(body, legacySection(record), '블로그 영역 TOP10(별도 영역 없음·참고)');
     });
   }
 

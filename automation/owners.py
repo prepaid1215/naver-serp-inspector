@@ -98,14 +98,15 @@ def owner_matches(results: list[dict]) -> dict[str, list[dict]]:
             continue
         if not 1 <= rank <= 10:
             continue
-        matches[post["owner"]].append(
-            {
-                "rank": rank,
-                "blog_id": post["blog_id"],
-                "post_id": post["post_id"],
-                "post_url": post["post_url"],
-            }
-        )
+        match = {
+            "rank": rank,
+            "blog_id": post["blog_id"],
+            "post_id": post["post_id"],
+            "post_url": post["post_url"],
+        }
+        if isinstance(row.get("feed_rank"), int):
+            match["feed_rank"] = row["feed_rank"]
+        matches[post["owner"]].append(match)
     for rows in matches.values():
         rows.sort(key=lambda item: (item["rank"], item["post_url"]))
     return matches

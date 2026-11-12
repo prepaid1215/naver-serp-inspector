@@ -14,7 +14,13 @@ HISTORY_SCHEMA = "naver-blog-ops-history-v2"
 SURFACE_SECTION = "INTEGRATED_BLOG_SECTION_TOP10"
 SURFACE_ARTICLES = "INTEGRATED_BLOG_ARTICLES_TOP10"
 SURFACE_BLOG_TAB = "BLOG_TAB_TOP10"
-SURFACES = {SURFACE_SECTION, SURFACE_ARTICLES, SURFACE_BLOG_TAB}
+# Operating metric: observed order of blog post cards inside Naver's mobile
+# integrated-search UGC feed (not an official Naver rank, not a blog "section").
+SURFACE_FEED = "INTEGRATED_FEED_BLOG_CARDS_TOP10"
+DECISION_SURFACE = SURFACE_FEED
+SURFACES = {SURFACE_SECTION, SURFACE_ARTICLES, SURFACE_BLOG_TAB, SURFACE_FEED}
+FEED_AUDIT_METHOD = "automated_feed_crosscheck"
+FEED_AUDIT_FLAGS = ("order_consistent", "non_overlapping", "no_excluded_cards", "post_unique")
 STATUSES = {
     "VERIFIED",
     "CANDIDATE",
@@ -98,7 +104,10 @@ def make_observation(
         post = parse_blog_post(row.get("post_url") if isinstance(row, dict) else None)
         if not post:
             continue
-        rows.append({"rank": len(rows) + 1, **post})
+        entry = {"rank": len(rows) + 1, **post}
+        if isinstance(row.get("feed_rank"), int) and row["feed_rank"] >= 1:
+            entry["feed_rank"] = row["feed_rank"]
+        rows.append(entry)
         if len(rows) == 10:
             break
     return {
@@ -145,18 +154,28 @@ def validate_observation(observation: object) -> list[str]:
     if status == "VERIFIED":
         evidence = observation.get("evidence") or {}
         method = evidence.get("verification_method")
-        if surface != SURFACE_SECTION:
-            errors.append("only integrated blog section observations can be VERIFIED")
+        if surface not in {SURFACE_SECTION, SURFACE_FEED}:
+            errors.append("only section or feed-card observations can be VERIFIED")
         if len(results) != 10:
             errors.append("VERIFIED requires exactly 10 posts")
-        if method not in {"human_visual_review", "approved_golden_sample"}:
-            errors.append("VERIFIED requires visual review evidence")
-        if not evidence.get("section_name"):
-            errors.append("VERIFIED requires a section name")
         if not evidence.get("screenshot_sha256"):
             errors.append("VERIFIED requires screenshot SHA-256")
-        if not evidence.get("reviewed_by"):
-            errors.append("VERIFIED requires reviewer identity")
+        if surface == SURFACE_FEED:
+            audit = evidence.get("feed_audit") or {}
+            if method not in {FEED_AUDIT_METHOD, "human_visual_review"}:
+                errors.append("VERIFIED feed requires cross-check or visual review evidence")
+            if method == FEED_AUDIT_METHOD and not all(audit.get(flag) is True for flag in FEED_AUDIT_FLAGS):
+                errors.append("VERIFIED feed requires every audit flag to pass")
+            ranks = [row.get("feed_rank") for row in results]
+            if any(not isinstance(rank, int) for rank in ranks) or ranks != sorted(ranks):
+                errors.append("VERIFIED feed requires increasing feed_rank values")
+        else:
+            if method not in {"human_visual_review", "approved_golden_sample"}:
+                errors.append("VERIFIED requires visual review evidence")
+            if not evidence.get("section_name"):
+                errors.append("VERIFIED requires a section name")
+            if not evidence.get("reviewed_by"):
+                errors.append("VERIFIED requires reviewer identity")
     if status == "CANDIDATE" and len(results) < 10:
         errors.append("CANDIDATE requires 10 posts")
     if status == "PARTIAL" and len(results) >= 10:
@@ -202,10 +221,10 @@ def validate_run(run: object) -> list[str]:
 
 
 def query_status(record: dict | None, at: datetime | None = None) -> str:
-    """The section surface is the product's primary decision metric."""
+    """The feed-card surface is the product's primary decision metric."""
 
-    section = (record or {}).get("surfaces", {}).get(SURFACE_SECTION)
-    return effective_status(section, at)
+    observation = (record or {}).get("surfaces", {}).get(DECISION_SURFACE)
+    return effective_status(observation, at)
 
 
 def candidate_urls(record: dict | None) -> list[str]:

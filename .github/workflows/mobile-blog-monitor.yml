@@ -72,6 +72,6 @@ jobs:
         if: always()
         run: |
           echo '## Naver mobile blog observation' >> "$GITHUB_STEP_SUMMARY"
-          echo '- VERIFIED is emitted only from approved visual evidence.' >> "$GITHUB_STEP_SUMMARY"
-          echo '- Candidate article order is never used for automatic assignment.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Primary metric: observed blog-card order in the mobile integrated feed (not an official Naver rank).' >> "$GITHUB_STEP_SUMMARY"
+          echo '- VERIFIED requires ten blog cards, a passing order/duplicate audit and a screenshot hash.' >> "$GITHUB_STEP_SUMMARY"
           echo '- CAPTCHA/access restriction stops subsequent requests.' >> "$GITHUB_STEP_SUMMARY"

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from automation.models import GROUPS, KST, SURFACE_SECTION, effective_status, now_kst
+from automation.models import DECISION_SURFACE, GROUPS, KST, effective_status, now_kst
 from automation.owners import PEOPLE, owner_matches
 
 
@@ -50,7 +50,7 @@ def next_publish_slot(at: datetime | None = None) -> str:
 def _verified_results(
     record: dict | None, at: datetime, *, require_fresh: bool = True
 ) -> list[dict] | None:
-    observation = (record or {}).get("surfaces", {}).get(SURFACE_SECTION)
+    observation = (record or {}).get("surfaces", {}).get(DECISION_SURFACE)
     status = effective_status(observation, at) if require_fresh else (observation or {}).get("status")
     if status != "VERIFIED":
         return None
@@ -77,7 +77,7 @@ def aggregate_groups(
         for query in variants:
             current_record = queries.get(query)
             current_results = _verified_results(current_record, reference)
-            current_observation = (current_record or {}).get("surfaces", {}).get(SURFACE_SECTION)
+            current_observation = (current_record or {}).get("surfaces", {}).get(DECISION_SURFACE)
             status = effective_status(current_observation, reference)
             query_states.append({
                 "query": query,

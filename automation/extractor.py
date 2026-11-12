@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 from automation.models import (
+    FEED_AUDIT_FLAGS,
+    FEED_AUDIT_METHOD,
     SURFACE_ARTICLES,
+    SURFACE_FEED,
     SURFACE_SECTION,
     make_observation,
 )
@@ -54,23 +57,42 @@ EXTRACT_JS = r"""() => {
     return [...map.values()].sort((a,b) => a.y - b.y || a.x - b.x);
   }
 
-  // Naver's mobile feed renders each UGC result as its own top-level
-  // `.api_subject_bx` card (one post per card, cafe cards interleaved) with no
-  // "블로그" heading. AI-briefing cards only cite posts and are not feed results.
+  // Naver's mobile feed renders each UGC result (blog, cafe, ...) as its own
+  // top-level `.api_subject_bx` card marked `.fds-ugc-ur`, with no "블로그"
+  // heading. AI-briefing cards only cite posts and are not feed results.
   const cards = [...root.querySelectorAll('.api_subject_bx')]
     .filter(card => !card.parentElement.closest('.api_subject_bx') && visible(card));
   const isAiBriefing = card => /^\s*AI\s*브리핑/.test((card.innerText || '').slice(0, 30));
-  const cardRows = [];
-  let nonBlogCards = 0;
-  for (const card of cards) {
-    if (isAiBriefing(card) || isAd(card)) continue;
-    const rows = linksWithin(card);
-    if (rows.length) cardRows.push(rows[0]);
-    else if (card.querySelector('a[href*="cafe.naver.com"]')) nonBlogCards++;
-  }
+  const feedCards = [];
   const seenPosts = new Set();
-  const feedRows = cardRows.filter(row => !seenPosts.has(row.post_url) && seenPosts.add(row.post_url));
-  const articleRows = feedRows.length ? feedRows : linksWithin(root);
+  let excluded = 0, duplicates = 0;
+  for (const card of cards) {
+    if (isAiBriefing(card) || isAd(card)) { excluded++; continue; }
+    const ugc = !!card.querySelector('.fds-ugc-ur');
+    const rows = linksWithin(card).sort((a, b) => a.y - b.y || a.x - b.x);
+    const hasCafe = !!card.querySelector('a[href*="cafe.naver.com"]');
+    if (!ugc && !rows.length && !hasCafe) continue;
+    const rect = card.getBoundingClientRect();
+    const entry = {feed_rank: feedCards.length + 1, kind: rows.length ? 'blog' : (hasCafe ? 'cafe' : 'other'),
+      y: Math.round(rect.top + scrollY), height: Math.round(rect.height)};
+    if (rows.length) {
+      if (seenPosts.has(rows[0].post_url)) { duplicates++; continue; }
+      seenPosts.add(rows[0].post_url);
+      entry.post_url = rows[0].post_url;
+    }
+    feedCards.push(entry);
+  }
+  const blogCards = feedCards.filter(card => card.kind === 'blog');
+  const feedAudit = {
+    order_consistent: feedCards.every((card, i) => i === 0 || card.y >= feedCards[i - 1].y),
+    non_overlapping: feedCards.every((card, i) => i === 0 || card.y >= feedCards[i - 1].y + feedCards[i - 1].height - 2),
+    no_excluded_cards: !blogCards.some(card => /ader\.naver\.com|ad\.search/.test(card.post_url || '')),
+    post_unique: new Set(blogCards.map(card => card.post_url)).size === blogCards.length,
+    ugc_cards: feedCards.length, blog_cards: blogCards.length,
+    excluded_ai_or_ad_cards: excluded, duplicate_cards_dropped: duplicates
+  };
+  const articleRows = blogCards.length ? blogCards : linksWithin(root);
+
   const headings = [...root.querySelectorAll('h1,h2,h3,h4,strong,[role="heading"],.title,.tit')]
     .filter(visible)
     .filter(node => /^(블로그|VIEW|블로그 인기글)$/i.test((node.textContent || '').trim()));
@@ -95,8 +117,9 @@ EXTRACT_JS = r"""() => {
   }
   sectionCandidates.sort((a,b) => b.rows.length - a.rows.length || a.depth - b.depth || a.bounds.y - b.bounds.y);
   return {blocked:false, article_rows:articleRows.slice(0,10), article_total:articleRows.length,
-    feed_layout: feedRows.length ? 'per_post_cards' : 'unstructured', feed_blog_cards: feedRows.length,
-    feed_interleaved_cafe_cards: nonBlogCards,
+    feed_layout: blogCards.length ? 'per_post_cards' : 'unstructured',
+    feed_cards: feedCards.slice(0, 60), feed_audit: feedAudit,
+    feed_interleaved_cafe_cards: feedCards.filter(card => card.kind !== 'blog').length,
     section:sectionCandidates[0] || null, section_candidate_count:sectionCandidates.length};
 }"""
 
@@ -133,7 +156,7 @@ def observations_from_browser(
                 reason=raw.get("reason", "Naver access restriction"),
                 reason_code="ACCESS_RESTRICTION",
             )
-            for surface in (SURFACE_SECTION, SURFACE_ARTICLES)
+            for surface in (SURFACE_SECTION, SURFACE_ARTICLES, SURFACE_FEED)
         }
 
     article_rows = _rows(raw.get("article_rows"))
@@ -191,7 +214,61 @@ def observations_from_browser(
         reason=reason,
         reason_code=reason_code,
     )
-    return {SURFACE_SECTION: section, SURFACE_ARTICLES: article}
+    feed = _feed_observation(raw, observed_at, common_evidence)
+    return {SURFACE_SECTION: section, SURFACE_ARTICLES: article, SURFACE_FEED: feed}
+
+
+def _feed_observation(raw: dict, observed_at: str, common_evidence: dict) -> dict:
+    """Primary operating metric: blog-card order in the integrated UGC feed.
+
+    VERIFIED only when the rendered-order audit passes and ten blog cards were
+    observed. The order is an observation, not an official Naver rank.
+    """
+
+    cards = [
+        row for row in (raw.get("feed_cards") or [])
+        if isinstance(row, dict) and row.get("kind") == "blog"
+    ]
+    rows = []
+    for card in cards:
+        rows.append({"post_url": card.get("post_url"), "feed_rank": card.get("feed_rank")})
+    audit_raw = raw.get("feed_audit") if isinstance(raw.get("feed_audit"), dict) else {}
+    audit = {flag: audit_raw.get(flag) is True for flag in FEED_AUDIT_FLAGS}
+    audit.update({
+        key: int(audit_raw.get(key) or 0)
+        for key in ("ugc_cards", "blog_cards", "excluded_ai_or_ad_cards", "duplicate_cards_dropped")
+    })
+    screenshot = common_evidence.get("screenshot_sha256")
+    complete = len(cards) >= 10
+    passed = all(audit[flag] for flag in FEED_AUDIT_FLAGS)
+    if raw.get("feed_layout") != "per_post_cards":
+        status, code = "UNKNOWN", "FEED_LAYOUT_NOT_RECOGNIZED"
+        reason = "게시글 카드 피드 구조를 인식하지 못해 순번을 확정하지 않음"
+        rows = []
+    elif not complete:
+        status, code = "PARTIAL", "FEED_BLOG_CARDS_LT_10"
+        reason = "피드에서 블로그 카드를 10개 미만으로 관측"
+    elif not passed or not screenshot:
+        status, code = "CANDIDATE", "FEED_AUDIT_FAILED"
+        reason = "카드 순서·중복 검증 또는 캡처 근거가 부족해 후보로만 보관"
+    else:
+        status, code = "VERIFIED", "FEED_CROSSCHECK_PASSED"
+        reason = "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)"
+    return make_observation(
+        surface=SURFACE_FEED,
+        status=status,
+        observed_at=observed_at,
+        results=rows,
+        evidence={
+            **common_evidence,
+            "verification_method": FEED_AUDIT_METHOD,
+            "feed_audit": audit,
+            "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
+            "feed_interleaved_cafe_cards": int(raw.get("feed_interleaved_cafe_cards") or 0),
+        },
+        reason=reason,
+        reason_code=code,
+    )
 
 
 def error_observations(*, observed_at: str, reason: str, source_url: str = "") -> dict[str, dict]:
@@ -204,6 +281,6 @@ def error_observations(*, observed_at: str, reason: str, source_url: str = "") -
             reason=reason,
             reason_code="COLLECTION_ERROR",
         )
-        for surface in (SURFACE_SECTION, SURFACE_ARTICLES)
+        for surface in (SURFACE_SECTION, SURFACE_ARTICLES, SURFACE_FEED)
     }
 

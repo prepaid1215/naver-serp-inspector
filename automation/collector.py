@@ -18,6 +18,7 @@ from automation.models import (
     GROUPS,
     KST,
     SCHEMA,
+    DECISION_SURFACE,
     SURFACE_ARTICLES,
     SURFACE_SECTION,
     iso_kst,
@@ -93,7 +94,7 @@ def _halted_record(query: str, observed_at: str, reason: str) -> dict:
             reason_code="RUN_HALTED_AFTER_RESTRICTION",
             evidence={"viewport": "390x844"},
         )
-        for surface in (SURFACE_SECTION, SURFACE_ARTICLES)
+        for surface in (SURFACE_SECTION, SURFACE_ARTICLES, DECISION_SURFACE)
     }
     return {"query": query, "surfaces": surfaces}
 
@@ -159,9 +160,9 @@ def collect_all(
                     }
                     errors.append(f"{query}: {reason}")
                 queries[query] = record
-                section = record["surfaces"][SURFACE_SECTION]
-                print(query, section["status"], section.get("reason", ""), flush=True)
-                if section["status"] == "BLOCKED":
+                feed = record["surfaces"][DECISION_SURFACE]
+                print(query, feed["status"], feed.get("reason", ""), flush=True)
+                if feed["status"] == "BLOCKED":
                     halted = True
                     errors.append("네이버 접근 제한 감지: 후속 검색 요청 중단")
             context.close()
@@ -181,7 +182,7 @@ def collect_all(
             "kind": "playwright_mobile_emulation",
             "viewport": "390x844",
             "user_agent_family": "Android Chrome",
-            "rank_policy": "verified_integrated_blog_section_only",
+            "rank_policy": "verified_integrated_feed_blog_cards_observed_order",
             "restriction_policy": "stop_on_block_no_bypass",
         },
         "people": PEOPLE,
@@ -200,8 +201,8 @@ def collect_all(
     atomic_write_json(history_path, history)
     counts: dict[str, int] = {}
     for record in queries.values():
-        status = record["surfaces"][SURFACE_SECTION]["status"]
+        status = record["surfaces"][DECISION_SURFACE]["status"]
         counts[status] = counts.get(status, 0) + 1
-    print("section_status_counts", counts, "recommendation", recommendation["status"])
+    print("feed_status_counts", counts, "recommendation", recommendation["status"])
     return run
 

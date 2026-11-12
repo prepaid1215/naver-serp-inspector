@@ -29,7 +29,7 @@ def history_entry(run: dict) -> dict:
     groups = run.get("groups") or {}
     query_counts: dict[str, int] = {}
     for record in (run.get("queries") or {}).values():
-        section = (record.get("surfaces") or {}).get("INTEGRATED_BLOG_SECTION_TOP10", {})
+        section = (record.get("surfaces") or {}).get("INTEGRATED_FEED_BLOG_CARDS_TOP10", {})
         status = section.get("status", "UNKNOWN")
         query_counts[status] = query_counts.get(status, 0) + 1
     return {

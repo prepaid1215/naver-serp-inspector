@@ -1,5 +1,7 @@
 """Offline responsive smoke test for the v2 operations dashboard."""
+from datetime import datetime, timedelta
 from functools import partial
+import json
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import os
 from pathlib import Path
@@ -32,12 +34,31 @@ try:
         page = context.new_page()
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
+        latest = json.loads((ROOT / "web" / "ops-data" / "latest.json").read_text(encoding="utf-8"))
+        captured = datetime.fromisoformat(latest["captured_at_kst"])
+        verified_total = sum(
+            1 for record in latest["queries"].values()
+            if record["surfaces"]["INTEGRATED_FEED_BLOG_CARDS_TOP10"]["status"] == "VERIFIED"
+        )
+
+        # Stale: three hours after capture nothing is confirmed and assignment is held.
+        page.clock.set_fixed_time(captured + timedelta(hours=3))
         page.goto(f"http://127.0.0.1:{server.server_port}/keyword-ops.html")
         expect(page.locator("#message")).to_contain_text("최신 저장 자료", timeout=10_000)
         expect(page.locator("#verified-count")).to_have_text("0/12")
         expect(page.locator("#team-count")).to_have_text("0/2")
         expect(page.locator("#recommendations")).to_contain_text("발행자 자동 배정 보류")
+
+        # Fresh: ten minutes after capture the feed-card metric drives the dashboard.
+        page.clock.set_fixed_time(captured + timedelta(minutes=10))
+        page.reload()
+        expect(page.locator("#message")).to_contain_text("최신 저장 자료", timeout=10_000)
+        expect(page.locator("#verified-count")).to_have_text(f"{verified_total}/12")
+        if latest["recommendation"]["assignments"] and verified_total == 12:
+            expect(page.locator("#recommendations")).to_contain_text("VERIFIED")
+            expect(page.locator("#keyword-cards")).to_contain_text("블로그")
         expect(page.locator("#query-details .query-detail")).to_have_count(12)
+        expect(page.locator("#query-details")).to_contain_text("피드 블로그 카드 순번")
         expect(page.locator("#query-details")).to_contain_text("통합검색 블로그 글 후보")
         dimensions = page.evaluate(
             "() => ({scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth})"
