@@ -157,6 +157,7 @@ def collect_search(page, query: str, evidence_dir: Path) -> dict:
     safe = re.sub(r'[^a-z0-9가-힣]+', '-', query.lower()).strip('-')[:50]
     evidence_dir.mkdir(parents=True, exist_ok=True)
     page.screenshot(path=str(evidence_dir / (safe + '.png')), full_page=True, timeout=30000)
+    (evidence_dir / (safe + '.html')).write_text(page.content(), encoding='utf-8')
     item = {'query': query, 'url': url, 'observed_at': datetime.now(KST).isoformat(),
             'device': 'mobile-emulation', 'surface': 'integrated_blog_section',
             'status': data.get('status', 'needs_review'), 'reason': data.get('reason',''),
