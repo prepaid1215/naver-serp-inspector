@@ -30,7 +30,7 @@
   function statusLabel(status) {
     return ({
       VERIFIED: '검증 완료', CANDIDATE: '후보', PARTIAL: '부분 관측', BLOCKED: '접근 제한',
-      ERROR: '수집 오류', STALE: '45분 경과', UNKNOWN: '미확인', READY: '2팀 제안', PENDING: '배정 보류'
+      ERROR: '수집 오류', STALE: '45분 경과', UNKNOWN: '미확인', READY: '4명 추천', PENDING: '배정 보류'
     })[status] || status || '미확인';
   }
   function effective(observation) {
@@ -63,7 +63,7 @@
     $('pending-count').textContent = String(records.length - verified - stale);
     $('stale-count').textContent = String(stale);
     $('group-count').textContent = `${freshGroups}/4`;
-    $('team-count').textContent = `${assignments.length}/2`;
+    $('team-count').textContent = `${new Set(assignments.flatMap(row => row.people || [])).size}/4`;
     $('success-rate').textContent = `${Math.round((verified / 12) * 100)}%`;
     $('updated').textContent = formatTime(data.captured_at_kst);
     $('slot').textContent = data.recommendation?.slot_at_kst ? `발행 ${formatTime(data.recommendation.slot_at_kst)}` : '배정 시각 없음';
@@ -73,86 +73,65 @@
     const root = $('recommendations'); clear(root);
     const decision = data.recommendation || {};
     const assignments = decision.assignments || [];
-    const current = assignments.filter(row => groupIsFresh(data.groups?.[row.keyword]));
-    const isCurrent = current.length > 0 && ['READY', 'PARTIAL'].includes(decision.status);
-    const shown = isCurrent ? current : assignments;
-    $('recommendation-heading').textContent = isCurrent ? '이번에 발행할 글' : '최근 분석 결과';
+    const freshAssignments = assignments.filter(row => groupIsFresh(data.groups?.[row.keyword]));
+    const isCurrent = ['READY', 'PARTIAL'].includes(decision.status) && freshAssignments.length > 0;
+    const visible = isCurrent ? freshAssignments : assignments;
+    const perOwner = new Map();
+    visible.forEach(item => {
+      (item.people || []).forEach(owner => {
+        const title = (item.titles || []).find(row => row.owner === owner);
+        if (!perOwner.has(owner) && title) perOwner.set(owner, {item, title});
+      });
+    });
+    $('recommendation-heading').textContent = isCurrent ? '4인 발행 추천' : '최근 분석 결과';
     $('decision-status').textContent = isCurrent
-      ? '검색을 확인했습니다. 아래 글을 추천합니다.'
+      ? (perOwner.size === OWNERS.length ? '4명 모두 발행 추천을 확인했습니다.' : '일부 담당자의 추천만 확인됐습니다.')
       : '최근 검색이 아닙니다. 발행 전 재확인이 필요합니다.';
     $('decision-status').className = isCurrent ? 'decision-ready' : 'decision-pending';
 
     if (!isCurrent) {
       const warning = element('div', root, undefined, 'simple-alert');
       element('b', warning, '최신 검색 결과가 없어 현재 발행은 보류합니다.');
-      element('p', warning, '자동 검색이 다시 완료되면 다음 발행 글을 확정해 표시합니다. 아래에 보이는 지난 추천은 참고용입니다.');
+      element('p', warning, '자동 검색이 다시 완료되면 아래 추천이 갱신됩니다. 오래된 추천은 참고용입니다.');
+    } else if (perOwner.size < OWNERS.length) {
+      const warning = element('div', root, undefined, 'simple-alert');
+      element('b', warning, '일부 담당자는 검증 자료가 부족해 발행 추천을 보류했습니다.');
     }
-    if (!shown.length) {
+    if (!perOwner.size) {
       const empty = element('div', root, undefined, 'simple-empty');
       element('h3', empty, '지금 추천할 글이 없습니다.');
-      element('p', empty, data.errors?.length
-        ? '검색 수집에 오류가 있습니다. 자세한 근거에서 상태를 확인해 주세요.'
-        : '충분한 검색 결과가 확인되면 담당자와 제목을 자동으로 안내합니다.');
-      element('p', empty, decision.note || '', 'muted');
-      element('span', empty, '발행자 자동 배정 보류', 'visually-hidden');
+      element('p', empty, decision.note || '검색 결과가 확보되면 추천합니다.', 'muted');
       return;
     }
 
-    shown.forEach((assignment, index) => {
-      const group = data.groups?.[assignment.keyword] || {};
-      const card = element('article', root, undefined,
-        'simple-publish-card' + (isCurrent ? '' : ' past'));
+    OWNERS.forEach(owner => {
+      const entry = perOwner.get(owner);
+      if (!entry) return;
+      const {item, title} = entry;
+      const card = element('article', root, undefined, 'simple-publish-card' + (isCurrent ? '' : ' past'));
       const top = element('div', card, undefined, 'publish-card-top');
-      element('span', top, '추천 ' + (index + 1) + ' · ' + assignment.keyword, 'publish-keyword');
+      element('span', top, owner + ' · ' + item.keyword, 'publish-keyword');
       if (isCurrent) badge(top, 'VERIFIED');
       else element('span', top, '과거 추천 · 발행 보류', 'past-tag');
 
-      const owners = (assignment.people || []).join(' · ');
-      element('h3', card, isCurrent ? owners + '님, 이 글을 발행하세요' : owners + '님께 지난번 추천했던 글');
-
+      element('h3', card, isCurrent ? owner + '님, 이 글을 발행하세요' : owner + '님의 이전 추천');
+      element('p', card, title.title || '제목 추천 대기', 'simple-owner-title');
       const reason = element('div', card, undefined, 'publish-reason');
-      element('b', reason, '왜 추천하나요?');
-      const appeared = (group.exposed || []).join('·');
-      const absent = (group.missing || []).join('·');
-      let explanation = '';
-      if (appeared && absent) {
-        explanation = (isCurrent ? '최근' : '마지막') + ' 조사에서 ‘' + assignment.keyword + '’ 관련 검색어 3개를 비교했습니다. '
-          + appeared + '님의 글은 블로그 카드 상위 10개에 나타났지만, ' + absent + '님의 글은 보이지 않았습니다. '
-          + '따라서 ' + owners + '님이 이 키워드를 맡는 것이 좋습니다.';
-      } else {
-        explanation = '이 키워드의 세 가지 검색어에서 ' + owners + '님의 글이 블로그 카드 상위 10개에 나타나지 않아 발행을 제안합니다.';
-      }
-      element('p', reason, explanation);
-      if (group.exits?.length) {
-        element('p', reason, '이전에 관측되던 글의 노출 이탈도 감지되어 우선 확인 대상으로 선정했습니다.', 'muted');
-      }
-
-      element('p', card, '담당자별 추천 제목', 'publish-title-heading');
-      const titles = element('div', card, undefined, 'simple-title-list');
-      for (const row of (assignment.titles || [])) {
-        const line = element('div', titles, undefined, 'simple-title-item');
-        element('strong', line, row.owner);
-        const name = element('div', line);
-        element('span', name, row.title, 'simple-draft-title');
-        if (row.intent) element('small', name, row.intent + ' 중심', 'muted');
-      }
-      if (!(assignment.titles || []).length) element('p', titles, '추천 제목 생성 대기', 'muted');
+      element('b', reason, '이유');
+      const fallback = item.reason || '블로그 카드 관측 결과를 기준으로 추천했습니다.';
+      element('p', reason, (item.owner_reasons || {})[owner] || fallback);
+      if (title.intent) element('p', card, '작성 방향: ' + title.intent, 'muted');
 
       const foot = element('div', card, undefined, 'publish-card-foot');
-      element('span', foot, '제목은 규칙 기반 초안 · 실제 발행 전 확인', 'muted');
-      if ((assignment.titles || []).length) {
-        const copy = element('button', foot, '제목 복사', 'simple-copy');
-        copy.type = 'button';
-        copy.addEventListener('click', async () => {
-          try {
-            const lines = (assignment.titles || []).map(row => row.owner + ': ' + row.title);
-            await navigator.clipboard.writeText([assignment.keyword, ...lines].join('\n'));
-            copy.textContent = '복사 완료';
-          } catch (_) {
-            copy.textContent = '복사 실패';
-          }
-        });
-      }
+      element('span', foot, '제목은 자동 초안 · 발행 전 확인', 'muted');
+      const copy = element('button', foot, '제목 복사', 'simple-copy');
+      copy.type = 'button';
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(title.title || '');
+          copy.textContent = '복사 완료';
+        } catch (_) { copy.textContent = '복사 실패'; }
+      });
     });
   }
 

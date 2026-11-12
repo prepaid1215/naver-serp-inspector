@@ -168,68 +168,125 @@ def _title_rows(keyword: str, people: list[str], used: set[str]) -> list[dict]:
     return rows
 
 
+def _recent_keyword_counts(history: object) -> dict[tuple[str, str], int]:
+    """Treat recent suggestions as a diversification signal, never proof of publication."""
+
+    records = history if isinstance(history, list) else (history or {}).get("entries", [])
+    counts: dict[tuple[str, str], int] = {}
+    for record in (records or [])[-12:]:
+        for assignment in (record.get("recommendation") or {}).get("assignments", []):
+            keyword = assignment.get("keyword")
+            for person in assignment.get("people", []):
+                key = (person, keyword)
+                counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _owner_priority(owner: str, keyword: str, group: dict) -> tuple[int, int, str]:
+    """Return a grounded priority and an owner-specific reason.
+
+    Tier 0: absent from all three fully verified variants.
+    Tier 1: present, but best observed card rank is only 8..10.
+    Tier 2: missing some variants or low on at least one variant.
+    Tier 3: best rank 4..7.
+    Tier 4: already visible near the top; diversify search intent.
+    """
+    rows = group.get("matches", {}).get(owner, [])
+    if not rows:
+        return (0, 10, "관련 검색어 3개를 모두 확인했지만 블로그 카드 상위 10개에서 글을 찾지 못해 신규 노출을 우선합니다.")
+
+    ranks = [int(row["rank"]) for row in rows if isinstance(row.get("rank"), int)]
+    if not ranks:
+        return (4, 1, "검증된 자료에서 순번을 확인할 수 없어 다른 검색 의도로 확장하는 초안을 제안합니다.")
+
+    best, worst = min(ranks), max(ranks)
+    seen_queries = {row.get("query") for row in rows}
+    query_count = len(group.get("queries", [])) or 3
+    absent_variants = max(0, query_count - len(seen_queries))
+    if best >= 8:
+        return (1, best, f"관련 검색어에서 가장 좋은 관측 순번도 블로그 카드 {best}번째입니다. 8~10번째 노출을 보강할 글을 권합니다.")
+    if absent_variants:
+        return (2, worst, f"관련 검색어 {query_count}개 중 {len(seen_queries)}개에서만 상위 10개에 글이 보입니다. 아직 보이지 않는 검색 의도를 보강합니다.")
+    if worst >= 8:
+        return (2, worst, f"일부 검색어에서 블로그 카드 {worst}번째로 관측돼 해당 검색 의도를 보강합니다.")
+    if best >= 4:
+        return (3, best, f"관련 검색어의 가장 좋은 관측 순번이 블로그 카드 {best}번째입니다. 노출을 더 높일 수 있는 다른 각도의 글을 권합니다.")
+    return (4, best, f"이미 블로그 카드 상위권({best}번째)에 글이 있어 같은 내용을 반복하기보다 다른 검색 의도로 확장합니다.")
+
+
 def recommend(
     groups: dict[str, dict],
     *,
     history: object = None,
     at: datetime | None = None,
 ) -> dict:
-    """Assign up to two non-overlapping two-person teams deterministically."""
+    """Recommend one supported keyword and distinct title for EACH of four owners.
 
+    No fresh verified keyword group => no invented assignment. A single
+    eligible keyword can support all four people with distinct article intent.
+    """
     order = {keyword: index for index, keyword in enumerate(GROUPS)}
-    ready = [
-        (keyword, group)
-        for keyword, group in groups.items()
-        if group.get("complete") and len(group.get("missing", [])) >= 2
-    ]
-    ready.sort(
-        key=lambda item: (
-            -len(item[1].get("dropped", [])),
-            abs(len(item[1].get("missing", [])) - 2),
-            order[item[0]],
-        )
-    )
-    used_people: set[str] = set()
+    eligible = [(keyword, group) for keyword, group in groups.items()
+                if group.get("complete") is True and group.get("status") == "VERIFIED"]
     used_titles = _used_titles(history)
-    assignments: list[dict] = []
-    for keyword, group in ready:
-        available = [owner for owner in PEOPLE if owner in group["missing"] and owner not in used_people]
-        available.sort(key=lambda owner: (owner not in group.get("dropped", []), list(PEOPLE).index(owner)))
-        if len(available) < 2:
+    recent = _recent_keyword_counts(history)
+    assigned: dict[str, dict] = {}
+    keyword_usage: dict[str, int] = {}
+
+    for owner in PEOPLE:
+        candidates = []
+        for keyword, group in eligible:
+            tier, rank, reason = _owner_priority(owner, keyword, group)
+            # Missing owners are the highest priority. In a tie, prefer
+            # keywords where multiple coworkers are missing too.
+            missing_group_size = len(group.get("missing", [])) if tier == 0 else 0
+            score = (
+                tier,
+                -missing_group_size,
+                recent.get((owner, keyword), 0),
+                keyword_usage.get(keyword, 0),
+                -rank,
+                order.get(keyword, 999),
+            )
+            candidates.append((score, keyword, tier, reason))
+        if not candidates:
             continue
-        team = available[:2]
+        _, keyword, tier, reason = min(candidates, key=lambda row: row[0])
+        assigned[owner] = {"keyword": keyword, "tier": tier, "reason": reason}
+        keyword_usage[keyword] = keyword_usage.get(keyword, 0) + 1
+
+    assignments: list[dict] = []
+    for keyword in GROUPS:
+        people = [owner for owner in PEOPLE
+                  if owner in assigned and assigned[owner]["keyword"] == keyword]
+        if not people:
+            continue
+        reasons = {owner: assigned[owner]["reason"] for owner in people}
         assignments.append({
             "keyword": keyword,
-            "people": team,
-            "titles": _title_rows(keyword, team, used_titles),
-            "reason": (
-                "검증된 10위권 이탈 복구 우선"
-                if any(owner in group.get("dropped", []) for owner in team)
-                else "3개 변형 검색어 모두 VERIFIED이며 10위권 미노출"
-            ),
+            "people": people,
+            "titles": _title_rows(keyword, people, used_titles),
+            "reason": "담당자별 노출 여부·관측 순번과 검색 의도에 따라 배정",
+            "owner_reasons": reasons,
+            "owner_priorities": {owner: assigned[owner]["tier"] for owner in people},
             "evidence_status": "VERIFIED",
         })
-        used_people.update(team)
-        if len(assignments) == 2:
-            break
 
-    if len(assignments) == 2:
-        status = "READY"
-        note = "2개 팀 모두 최신 VERIFIED 근거로 제안"
-    elif len(assignments) == 1:
-        status = "PARTIAL"
-        note = "1개 팀만 확정 가능하며 나머지는 증거 또는 가용 인원 부족으로 대기"
+    assigned_count = len(assigned)
+    if assigned_count == len(PEOPLE):
+        status, note = "READY", "4명 모두 최신 검증 결과에 따라 각자 한 가지 발행 주제를 추천"
+    elif assigned_count:
+        status, note = "PARTIAL", f"{assigned_count}명만 배정 가능하며 나머지는 최신 검증 자료 부족으로 보류"
     else:
-        status = "PENDING"
-        note = "최신 VERIFIED 근거가 부족하여 발행자 자동 배정을 보류"
+        status, note = "PENDING", "3개 변형 검색어가 모두 최신 검증된 키워드가 없어 발행 배정 보류"
+
     return {
         "status": status,
-        "ready": bool(assignments),
-        "complete": len(assignments) == 2,
+        "ready": bool(assigned),
+        "complete": assigned_count == len(PEOPLE),
         "slot_at_kst": next_publish_slot(at),
         "assignments": assignments,
-        "unassigned": [owner for owner in PEOPLE if owner not in used_people],
+        "unassigned": [owner for owner in PEOPLE if owner not in assigned],
         "note": note,
         "title_policy": "규칙 기반 초안; GPT/API 연결이 없으므로 사실 추가 없이 운영자가 수정",
     }
-
