@@ -130,11 +130,49 @@ EXTRACT_JS = r"""() => {
     });
   }
   sectionCandidates.sort((a,b) => b.rows.length - a.rows.length || a.depth - b.depth || a.bounds.y - b.bounds.y);
+  // Use only actual, visible related-search areas. Never generate related
+  // keywords from post titles, ads, profiles, or predicted phrases.
+  function readRelatedQueries() {
+    const selectors = [
+      '.lst_related_srch a[href]', '.related_srch a[href]',
+      '[class*="related_keyword"] a[href]',
+      '[class*="related_query"] a[href]',
+      '[class*="related_srch"] a[href]'
+    ];
+    const anchors = new Set();
+    for (const selector of selectors) {
+      for (const anchor of root.querySelectorAll(selector)) anchors.add(anchor);
+    }
+    const headings = [...root.querySelectorAll('h2,h3,h4,strong,span')]
+      .filter(node => visible(node) && /^연관\s*검색어$|^관련\s*검색어$/.test((node.textContent || '').trim()));
+    for (const heading of headings) {
+      const block = heading.closest('section,[class*="related"],[class*="api_subject"]')
+        || heading.parentElement?.parentElement;
+      if (!block) continue;
+      for (const anchor of block.querySelectorAll('a[href]')) anchors.add(anchor);
+    }
+    const found = [], used = new Set();
+    for (const anchor of anchors) {
+      if (!visible(anchor) || isAd(anchor)) continue;
+      let url;
+      try { url = new URL(anchor.href, location.href); } catch (_) { continue; }
+      if (!/^(m\.)?search\.naver\.com$/.test(url.hostname)) continue;
+      const query = (url.searchParams.get('query') || anchor.innerText || '').replace(/\s+/g, ' ').trim();
+      if (query.length < 2 || query.length > 60 || used.has(query)) continue;
+      used.add(query);
+      found.push(query);
+      if (found.length >= 20) break;
+    }
+    return found;
+  }
+  const relatedQueries = readRelatedQueries();
+
   return {blocked:false, article_rows:articleRows.slice(0,10), article_total:articleRows.length,
     feed_layout: blogCards.length ? 'per_post_cards' : 'unstructured',
     feed_cards: feedCards.slice(0, 60), feed_audit: feedAudit,
     feed_interleaved_cafe_cards: feedCards.filter(card => card.kind !== 'blog').length,
-    section:sectionCandidates[0] || null, section_candidate_count:sectionCandidates.length};
+    section:sectionCandidates[0] || null, section_candidate_count:sectionCandidates.length,
+    related_queries: relatedQueries};
 }"""
 
 

@@ -33,6 +33,30 @@ INTENTS: dict[str, tuple[tuple[str, str], ...]] = {
         ("오류 예방", "다이소 유심 개통할 때 놓치기 쉬운 체크포인트"),
         ("초보 안내", "다이소 유심 처음 이용하는 사람을 위한 단계별 안내"),
     ),
+    "선불폰 개통": (
+        ("기초 안내", "선불폰 개통 처음 시작할 때 필요한 준비와 신청 순서"),
+        ("신청 방법", "선불폰 셀프개통 신청 과정과 확인할 항목"),
+        ("본인확인", "선불폰 비대면 개통 준비물과 본인확인 순서"),
+        ("질문 정리", "선불폰 개통 전 자주 묻는 질문 정리"),
+    ),
+    "요금미납 선불폰": (
+        ("상황 안내", "요금미납 상태에서 선불폰 신청 전 확인할 사항"),
+        ("준비물", "휴대폰 요금이 미납됐을 때 선불폰 준비부터 신청까지"),
+        ("인증 확인", "미납정지 상태에서 선불폰 본인확인 준비 방법"),
+        ("순서 안내", "요금미납 후 선불폰 개통 신청 순서 정리"),
+    ),
+    "편의점 선불유심": (
+        ("유심 선택", "편의점 선불유심 구매 전 종류와 호환 여부 확인"),
+        ("구매·준비", "편의점 선불유심 준비물과 개통 신청 순서"),
+        ("초보 안내", "편의점 유심 처음 구매하고 신청하는 방법"),
+        ("구분 방법", "편의점 선불유심 제품별 차이와 선택 기준"),
+    ),
+    "앤텔레콤 396": (
+        ("요금제 설명", "앤텔레콤 396 요금제 구성과 신청 전 확인할 사항"),
+        ("비교 안내", "KT 396 요금제와 다른 선불 요금제 비교 기준"),
+        ("데이터 안내", "선불폰 396 요금제 데이터 이용 방법과 확인 사항"),
+        ("선택 기준", "앤텔레콤 396 요금제가 적합한 사용 유형 살펴보기"),
+    ),
 }
 
 SLOTS = ((9, 0), (11, 0), (14, 0))
@@ -65,7 +89,7 @@ def aggregate_groups(
     *,
     at: datetime | None = None,
 ) -> dict[str, dict]:
-    """Confirm missing owners only when all three variants are fresh VERIFIED."""
+    """Confirm missing owners only when every configured variant is VERIFIED."""
 
     reference = (at or now_kst()).astimezone(KST)
     previous_queries = (previous or {}).get("queries", {})
@@ -128,9 +152,9 @@ def aggregate_groups(
             "dropped": dropped,
             "exits": exits,
             "decision_note": (
-                "3개 변형 검색어가 모두 최신 VERIFIED"
+                "등록된 모든 변형 검색어가 최신 VERIFIED"
                 if complete
-                else "변형 검색어 중 UNKNOWN/CANDIDATE/PARTIAL/STALE가 있어 미노출 확정 금지"
+                else "변형 검색어 중 미검증 항목이 있어 미노출 확정 금지"
             ),
         }
     return groups

@@ -44,7 +44,7 @@ STATUSES = {
 }
 FRESHNESS_MINUTES = 45
 
-GROUPS: dict[str, tuple[str, ...]] = {
+BASE_GROUPS: dict[str, tuple[str, ...]] = {
     "KT바로유심": ("KT바로유심", "바로유심", "KT바로유심 개통"),
     "LG모두의 원칩": ("LG모두의 원칩", "모두의 원칩", "LG원칩 개통"),
     "태블릿소유자회원번호": (
@@ -53,7 +53,46 @@ GROUPS: dict[str, tuple[str, ...]] = {
         "태블릿소유자회원번호 입력",
     ),
     "다이소 유심": ("다이소 유심", "다이소 선불유심", "다이소 유심 개통"),
+    "선불폰 개통": ("선불폰 개통", "선불폰 셀프개통", "선불폰 비대면 개통"),
+    "요금미납 선불폰": ("요금미납 선불폰", "미납정지 선불폰", "휴대폰 정지 선불폰"),
+    "편의점 선불유심": ("편의점 선불유심", "편의점 유심 개통", "선불유심 구매"),
+    "앤텔레콤 396": ("앤텔레콤 396", "KT 396 요금제", "선불폰 396 요금제"),
 }
+
+# Additional search terms must be approved via a maintainer-applied GitHub label.
+# They belong to an existing group, so assignments still require EVERY variant
+# in that group to pass the usual freshness and visual-evidence tests.
+def load_keyword_groups() -> dict[str, tuple[str, ...]]:
+    import json
+    from pathlib import Path
+
+    groups = {name: list(queries) for name, queries in BASE_GROUPS.items()}
+    path = Path(__file__).resolve().parents[1] / "config" / "approved-keywords.json"
+    try:
+        saved = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except (OSError, ValueError):
+        saved = {}
+    seen = {query.casefold() for values in groups.values() for query in values}
+    extra = saved.get("groups", {}) if isinstance(saved, dict) else {}
+    total = 0
+    if isinstance(extra, dict):
+        for group, values in extra.items():
+            if group not in groups or not isinstance(values, list):
+                continue
+            for value in values:
+                if total >= 24:
+                    break
+                if not isinstance(value, str):
+                    continue
+                query = " ".join(value.split())
+                if 2 <= len(query) <= 60 and query.casefold() not in seen:
+                    groups[group].append(query)
+                    seen.add(query.casefold())
+                    total += 1
+    return {name: tuple(queries) for name, queries in groups.items()}
+
+
+GROUPS: dict[str, tuple[str, ...]] = load_keyword_groups()
 
 
 def now_kst() -> datetime:

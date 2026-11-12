@@ -8,6 +8,8 @@
   const FEED = 'INTEGRATED_FEED_BLOG_CARDS_TOP10';
   const ARTICLES = 'INTEGRATED_BLOG_ARTICLES_TOP10';
   const OWNERS = ['건호', '영은', '하루', '수진'];
+  const BASE_GROUP_NAMES = ['KT바로유심', 'LG모두의 원칩', '태블릿소유자회원번호',
+    '다이소 유심', '선불폰 개통', '요금미납 선불폰', '편의점 선불유심', '앤텔레콤 396'];
   const OWNER_BY_ID = {
     carrotmobile_: '건호', lifeon5g_: '건호', esim99_: '영은', esim99: '영은',
     esim87_: '영은', ntelecom59: '하루', jjuny1253: '수진'
