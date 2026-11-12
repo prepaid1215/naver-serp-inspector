@@ -108,7 +108,7 @@
       else element('span', top, '과거 추천 · 발행 보류', 'past-tag');
 
       const owners = (assignment.people || []).join(' · ');
-      element('h3', card, owners + '님, 이 글을 발행하세요');
+      element('h3', card, isCurrent ? owners + '님, 이 글을 발행하세요' : owners + '님께 지난번 추천했던 글');
 
       const reason = element('div', card, undefined, 'publish-reason');
       element('b', reason, '왜 추천하나요?');
