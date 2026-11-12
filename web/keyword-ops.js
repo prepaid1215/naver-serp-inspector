@@ -2,6 +2,8 @@
   'use strict';
 
   const DATA_ROOT = './ops-data/';
+  // Actions commits with GITHUB_TOKEN do not trigger a Pages deployment.
+  const LIVE_DATA_ROOT = 'https://raw.githubusercontent.com/prepaid1215/naver-serp-inspector/main/web/ops-data/';
   const SECTION = 'INTEGRATED_BLOG_SECTION_TOP10';
   const FEED = 'INTEGRATED_FEED_BLOG_CARDS_TOP10';
   const ARTICLES = 'INTEGRATED_BLOG_ARTICLES_TOP10';
@@ -285,21 +287,50 @@
     Object.keys(data.queries || {}).forEach(query => element('option', manual, query).value = query);
   }
 
+  async function fetchLatestJson(filename, suffix) {
+    const sources = [
+      {url: LIVE_DATA_ROOT + filename + suffix, label: 'GitHub 최신 원본'},
+      {url: DATA_ROOT + filename + suffix, label: 'GitHub Pages 보관본'},
+    ];
+    let lastError = null;
+    for (const source of sources) {
+      try {
+        const response = await fetch(source.url, {cache: 'no-store'});
+        if (!response.ok) throw new Error(filename + ' HTTP ' + response.status);
+        const data = await response.json();
+        if (filename === 'latest.json' && data.schema !== 'naver-blog-ops-v2') {
+          throw new Error('지원하지 않는 데이터 형식');
+        }
+        if (filename === 'latest.json' &&
+            !Number.isFinite(new Date(data.captured_at_kst).getTime())) {
+          throw new Error('수집 시각이 올바르지 않습니다');
+        }
+        return {data, source: source.label};
+      } catch (caught) {
+        lastError = caught;
+      }
+    }
+    throw new Error(filename + ' 자료 접근 실패: ' + (lastError?.message || '알 수 없음'));
+  }
+
   async function load() {
     $('refresh').disabled = true;
-    $('message').textContent = 'GitHub Pages 관측 자료를 읽는 중…';
+    $('message').textContent = 'GitHub 최신 검색 자료를 읽는 중…';
     try {
-      const suffix = `?t=${Date.now()}`;
-      const response = await fetch(`${DATA_ROOT}latest.json${suffix}`, {cache: 'no-store'});
-      if (!response.ok) throw new Error(`latest.json HTTP ${response.status}`);
-      const data = await response.json();
-      if (data.schema !== 'naver-blog-ops-v2') throw new Error(`지원하지 않는 데이터 형식: ${data.schema || '없음'}`);
-      const history = await fetch(`${DATA_ROOT}history.json${suffix}`, {cache: 'no-store'})
-        .then(result => result.ok ? result.json() : {entries: []}).catch(() => ({entries: []}));
+      const suffix = '?t=' + Date.now();
+      const latest = await fetchLatestJson('latest.json', suffix);
+      const data = latest.data;
+      const history = await fetchLatestJson('history.json', suffix)
+        .then(result => result.data).catch(() => ({entries: []}));
       render(data, history);
-      $('message').textContent = `최신 저장 자료 ${formatTime(data.captured_at_kst)} · ${data.collector?.headed_browser ? '이 PC의 모바일 브라우저 화면 대조' : '클라우드 자동 검색'} · 새로고침 ${formatTime(new Date().toISOString())}`;
+      const sourceNote = latest.source === 'GitHub Pages 보관본'
+        ? ' · 최신 원본 연결 실패, 배포 시점 보관 자료'
+        : ' · GitHub main 최신 검색 결과';
+      $('message').textContent = '검색 자료 ' + formatTime(data.captured_at_kst) + sourceNote + ' · ' +
+        (data.collector?.headed_browser ? '이 PC의 모바일 브라우저 화면 대조' : '클라우드 자동 검색') +
+        ' · 새로고침 ' + formatTime(new Date().toISOString());
     } catch (error) {
-      $('message').textContent = `자료 불러오기 실패: ${error.message}`;
+      $('message').textContent = '자료 불러오기 실패: ' + error.message;
     } finally {
       $('refresh').disabled = false;
     }
