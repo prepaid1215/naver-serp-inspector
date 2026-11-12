@@ -369,7 +369,7 @@ class SchedulerTests(unittest.TestCase):
         }
         blog_id, reason = _choose_blog_id("영은", "다이소 유심", group_data, {})
         self.assertEqual(blog_id, "esim99_")
-        self.assertIn("3개 모두", reason)
+        self.assertIn("모두 이 키워드", reason)
         blog_id, _ = _choose_blog_id("영은", "다이소 유심", group_data, {("영은", "esim99_"): 2})
         self.assertEqual(blog_id, "esim87_")  # rotate an otherwise unexposed ID
 
