@@ -10,7 +10,7 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from functools import partial
 from threading import Thread
 import os, tempfile, shutil, base64
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 ROOT=Path(__file__).resolve().parents[1]
 TEMP=Path(tempfile.mkdtemp(prefix='serp-lens-browser-e2e-'))
@@ -51,21 +51,21 @@ try:
     popup=ctx.new_page(); errors=[]
     popup.on('pageerror',lambda e: errors.append('popup: '+str(e)))
     popup.goto(f'{origin}/extension/popup.html')
-    popup.wait_for_function("document.getElementById('capture')?.disabled===false")
+    expect(popup.locator('#capture')).to_be_enabled()
     assert popup.locator('#query').inner_text()=='선불폰 개통'
     popup.locator('#capture').click()
-    popup.wait_for_function("Boolean(window.__newTabURL)")
+    expect(popup.locator('#status')).to_contain_text('수집 완료')
     opened=popup.evaluate('window.__newTabURL')
     assert 'serp_lens_capture=latest' in opened
     analysis=ctx.new_page();analysis.on('pageerror',lambda e: errors.append('dashboard: '+str(e)))
     analysis.goto(f'{origin}/web/index.html?serp_lens_capture=latest')
-    analysis.wait_for_function("document.querySelector('#metric-files')?.textContent==='1'",timeout=15000)
+    expect(analysis.locator('#metric-files')).to_have_text('1', timeout=15000)
     assert int(analysis.locator('#metric-results').inner_text()) >= 5
     assert analysis.locator('#extension-evidence').is_visible()
     assert analysis.locator('#section-blocks .section-block').count() >= 4
     analysis.locator('#domains').fill('59man.shop')
     analysis.locator('#analyze').click()
-    analysis.wait_for_function("document.querySelector('#metric-target')?.textContent==='1'",timeout=10000)
+    expect(analysis.locator('#metric-target')).to_have_text('1', timeout=10000)
     with analysis.expect_download() as info:
         analysis.locator('#save-extension-html').click()
     assert info.value.suggested_filename=='20261015-1630_pc_선불폰 개통.html' or info.value.suggested_filename.endswith('_pc_선불폰 개통.html')
@@ -73,7 +73,7 @@ try:
         analysis.locator('#save-extension-png').click()
     assert info.value.suggested_filename.endswith('_pc_선불폰 개통.png')
     analysis.locator('#erase-extension-capture').click()
-    analysis.wait_for_function('document.getElementById("save-extension-html").disabled')
+    expect(analysis.locator('#save-extension-html')).to_be_disabled()
     stored=analysis.evaluate('''async()=>{
       const {readCapture}=await import('../extension/capture-store.js');
       return Boolean(await readCapture('latest'));

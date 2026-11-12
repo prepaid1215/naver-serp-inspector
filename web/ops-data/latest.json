@@ -1,8 +1,15 @@
 {
-  "schema": "naver-mobile-integrated-blog-top10-v1",
-  "captured_at_kst": "2026-11-12T11:27:27.628853+09:00",
-  "source": "Playwright mobile-emulation, browser-visible Naver integrated search",
-  "trust": "automatic DOM observation only; screenshots required for independent audit",
+  "schema": "naver-blog-ops-v2",
+  "run_id": "20261112T123945+0900-mobile",
+  "captured_at_kst": "2026-11-12T12:42:28.270849+09:00",
+  "freshness_minutes": 45,
+  "collector": {
+    "kind": "playwright_mobile_emulation",
+    "viewport": "390x844",
+    "user_agent_family": "Android Chrome",
+    "rank_policy": "verified_integrated_blog_section_only",
+    "restriction_policy": "stop_on_block_no_bypass"
+  },
   "people": {
     "건호": [
       "carrotmobile_",
@@ -20,13 +27,1401 @@
       "jjuny1253"
     ]
   },
+  "queries": {
+    "KT바로유심": {
+      "query": "KT바로유심",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:39:47.036204+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "ef7677c8bb185d950347eea13d190a04275ed5309f50f1b96d87bdbaaef4b498",
+            "screenshot_artifact_name": "kt바로유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:39:47.036204+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "ef7677c8bb185d950347eea13d190a04275ed5309f50f1b96d87bdbaaef4b498",
+            "screenshot_artifact_name": "kt바로유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 10
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "runphone",
+              "post_id": "224467745988",
+              "post_url": "https://blog.naver.com/runphone/224467745988",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "jjuny1253",
+              "post_id": "224474091539",
+              "post_url": "https://blog.naver.com/jjuny1253/224474091539",
+              "owner": "수진"
+            },
+            {
+              "rank": 3,
+              "blog_id": "bori24_",
+              "post_id": "224474144176",
+              "post_url": "https://blog.naver.com/bori24_/224474144176",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "esim99",
+              "post_id": "224474074000",
+              "post_url": "https://blog.naver.com/esim99/224474074000",
+              "owner": "영은"
+            },
+            {
+              "rank": 5,
+              "blog_id": "fcealice",
+              "post_id": "224473054795",
+              "post_url": "https://blog.naver.com/fcealice/224473054795",
+              "owner": null
+            },
+            {
+              "rank": 6,
+              "blog_id": "soyemobie_4",
+              "post_id": "224472932502",
+              "post_url": "https://blog.naver.com/soyemobie_4/224472932502",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "life_log1111",
+              "post_id": "224473139186",
+              "post_url": "https://blog.naver.com/life_log1111/224473139186",
+              "owner": null
+            },
+            {
+              "rank": 8,
+              "blog_id": "dldl061400",
+              "post_id": "224471981085",
+              "post_url": "https://blog.naver.com/dldl061400/224471981085",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "dy4545969",
+              "post_id": "224470596615",
+              "post_url": "https://blog.naver.com/dy4545969/224470596615",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "nrc1122",
+              "post_id": "224470195185",
+              "post_url": "https://blog.naver.com/nrc1122/224470195185",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "바로유심": {
+      "query": "바로유심",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:01.332819+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "aa79acbe924ca272683a7e2165ec0fca2c4c3f9a887fbe18cc3505133aad5405",
+            "screenshot_artifact_name": "바로유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:40:01.332819+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "aa79acbe924ca272683a7e2165ec0fca2c4c3f9a887fbe18cc3505133aad5405",
+            "screenshot_artifact_name": "바로유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 14
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "n-telecom9591",
+              "post_id": "224354222042",
+              "post_url": "https://blog.naver.com/n-telecom9591/224354222042",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "0mobile_",
+              "post_id": "224324891963",
+              "post_url": "https://blog.naver.com/0mobile_/224324891963",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "tg3006",
+              "post_id": "224345462674",
+              "post_url": "https://blog.naver.com/tg3006/224345462674",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "jrs007",
+              "post_id": "224470425507",
+              "post_url": "https://blog.naver.com/jrs007/224470425507",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "jjuny1253",
+              "post_id": "224474091539",
+              "post_url": "https://blog.naver.com/jjuny1253/224474091539",
+              "owner": "수진"
+            },
+            {
+              "rank": 6,
+              "blog_id": "bystand80",
+              "post_id": "224473943679",
+              "post_url": "https://blog.naver.com/bystand80/224473943679",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "bori24_",
+              "post_id": "224474144176",
+              "post_url": "https://blog.naver.com/bori24_/224474144176",
+              "owner": null
+            },
+            {
+              "rank": 8,
+              "blog_id": "u0kyxm7htrb",
+              "post_id": "224474078862",
+              "post_url": "https://blog.naver.com/u0kyxm7htrb/224474078862",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "esim99",
+              "post_id": "224474074000",
+              "post_url": "https://blog.naver.com/esim99/224474074000",
+              "owner": "영은"
+            },
+            {
+              "rank": 10,
+              "blog_id": "soyemobie_4",
+              "post_id": "224472932502",
+              "post_url": "https://blog.naver.com/soyemobie_4/224472932502",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "KT바로유심 개통": {
+      "query": "KT바로유심 개통",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:15.226999+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
+            "viewport": "390x844",
+            "screenshot_sha256": "5ac205c4f38ced07e722fa2cf593777ab08442bcf370a9b98e2091e9d8651e9a",
+            "screenshot_artifact_name": "kt바로유심-개통.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:40:15.226999+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
+            "viewport": "390x844",
+            "screenshot_sha256": "5ac205c4f38ced07e722fa2cf593777ab08442bcf370a9b98e2091e9d8651e9a",
+            "screenshot_artifact_name": "kt바로유심-개통.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 15
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "toy3290",
+              "post_id": "224336384994",
+              "post_url": "https://blog.naver.com/toy3290/224336384994",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "lilili110",
+              "post_id": "224364723291",
+              "post_url": "https://blog.naver.com/lilili110/224364723291",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "sujung67966",
+              "post_id": "224390072646",
+              "post_url": "https://blog.naver.com/sujung67966/224390072646",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "lifeon5g_",
+              "post_id": "224470603118",
+              "post_url": "https://blog.naver.com/lifeon5g_/224470603118",
+              "owner": "건호"
+            },
+            {
+              "rank": 5,
+              "blog_id": "jjuny1253",
+              "post_id": "224474091539",
+              "post_url": "https://blog.naver.com/jjuny1253/224474091539",
+              "owner": "수진"
+            },
+            {
+              "rank": 6,
+              "blog_id": "bori24_",
+              "post_id": "224474144176",
+              "post_url": "https://blog.naver.com/bori24_/224474144176",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "u0kyxm7htrb",
+              "post_id": "224474081206",
+              "post_url": "https://blog.naver.com/u0kyxm7htrb/224474081206",
+              "owner": null
+            },
+            {
+              "rank": 8,
+              "blog_id": "esim99",
+              "post_id": "224474074000",
+              "post_url": "https://blog.naver.com/esim99/224474074000",
+              "owner": "영은"
+            },
+            {
+              "rank": 9,
+              "blog_id": "runphone",
+              "post_id": "224467745988",
+              "post_url": "https://blog.naver.com/runphone/224467745988",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "fcealice",
+              "post_id": "224473054795",
+              "post_url": "https://blog.naver.com/fcealice/224473054795",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "LG모두의 원칩": {
+      "query": "LG모두의 원칩",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:28.996462+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
+            "viewport": "390x844",
+            "screenshot_sha256": "d58c4aad28162d3c0d1e635168f050ea577ebb408c16b7af875895e60337be7f",
+            "screenshot_artifact_name": "lg모두의-원칩.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:40:28.996462+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
+            "viewport": "390x844",
+            "screenshot_sha256": "d58c4aad28162d3c0d1e635168f050ea577ebb408c16b7af875895e60337be7f",
+            "screenshot_artifact_name": "lg모두의-원칩.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 19
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "phone4050",
+              "post_id": "224464652527",
+              "post_url": "https://blog.naver.com/phone4050/224464652527",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "dongle2__",
+              "post_id": "224464433148",
+              "post_url": "https://blog.naver.com/dongle2__/224464433148",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "momo2712",
+              "post_id": "224461747126",
+              "post_url": "https://blog.naver.com/momo2712/224461747126",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "jin50078a",
+              "post_id": "224473669512",
+              "post_url": "https://blog.naver.com/jin50078a/224473669512",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "ria_mobile",
+              "post_id": "224472968512",
+              "post_url": "https://blog.naver.com/ria_mobile/224472968512",
+              "owner": null
+            },
+            {
+              "rank": 6,
+              "blog_id": "sdyoung0613",
+              "post_id": "224473243865",
+              "post_url": "https://blog.naver.com/sdyoung0613/224473243865",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "ntelecom_ria",
+              "post_id": "224471553130",
+              "post_url": "https://blog.naver.com/ntelecom_ria/224471553130",
+              "owner": null
+            },
+            {
+              "rank": 8,
+              "blog_id": "connect_mobile",
+              "post_id": "224473254389",
+              "post_url": "https://blog.naver.com/connect_mobile/224473254389",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "bori24_",
+              "post_id": "224473944300",
+              "post_url": "https://blog.naver.com/bori24_/224473944300",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "jin50078b",
+              "post_id": "224472997900",
+              "post_url": "https://blog.naver.com/jin50078b/224472997900",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "모두의 원칩": {
+      "query": "모두의 원칩",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:42.911759+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
+            "viewport": "390x844",
+            "screenshot_sha256": "ca55d279a776b7c4e879bfdb7cc765190229c16c8d3dcad441fd4af50fa92a94",
+            "screenshot_artifact_name": "모두의-원칩.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:40:42.911759+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
+            "viewport": "390x844",
+            "screenshot_sha256": "ca55d279a776b7c4e879bfdb7cc765190229c16c8d3dcad441fd4af50fa92a94",
+            "screenshot_artifact_name": "모두의-원칩.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 13
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "ktqkgf5duuld",
+              "post_id": "224474152723",
+              "post_url": "https://blog.naver.com/ktqkgf5duuld/224474152723",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "jin50078a",
+              "post_id": "224473669512",
+              "post_url": "https://blog.naver.com/jin50078a/224473669512",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "jin50078b",
+              "post_id": "224472997900",
+              "post_url": "https://blog.naver.com/jin50078b/224472997900",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "sdyoung0613",
+              "post_id": "224473243865",
+              "post_url": "https://blog.naver.com/sdyoung0613/224473243865",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "ntelecom59",
+              "post_id": "224472797467",
+              "post_url": "https://blog.naver.com/ntelecom59/224472797467",
+              "owner": "하루"
+            },
+            {
+              "rank": 6,
+              "blog_id": "nrc1122",
+              "post_id": "224471781595",
+              "post_url": "https://blog.naver.com/nrc1122/224471781595",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "esim99_",
+              "post_id": "224472123824",
+              "post_url": "https://blog.naver.com/esim99_/224472123824",
+              "owner": "영은"
+            },
+            {
+              "rank": 8,
+              "blog_id": "carrotmobile_",
+              "post_id": "224472796342",
+              "post_url": "https://blog.naver.com/carrotmobile_/224472796342",
+              "owner": "건호"
+            },
+            {
+              "rank": 9,
+              "blog_id": "jaejaejae9",
+              "post_id": "224472510604",
+              "post_url": "https://blog.naver.com/jaejaejae9/224472510604",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "ntelecom_ria",
+              "post_id": "224471553130",
+              "post_url": "https://blog.naver.com/ntelecom_ria/224471553130",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "LG원칩 개통": {
+      "query": "LG원칩 개통",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:57.368716+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
+            "viewport": "390x844",
+            "screenshot_sha256": "e62f32eeac86f9d6f620a72ef460e4eac7ab9bcbe9ac04c6af58cd976410896f",
+            "screenshot_artifact_name": "lg원칩-개통.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:40:57.368716+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
+            "viewport": "390x844",
+            "screenshot_sha256": "e62f32eeac86f9d6f620a72ef460e4eac7ab9bcbe9ac04c6af58cd976410896f",
+            "screenshot_artifact_name": "lg원칩-개통.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 19
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "bystand80",
+              "post_id": "224473943679",
+              "post_url": "https://blog.naver.com/bystand80/224473943679",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "jaejaejae9",
+              "post_id": "224474092882",
+              "post_url": "https://blog.naver.com/jaejaejae9/224474092882",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "jin50078a",
+              "post_id": "224473669512",
+              "post_url": "https://blog.naver.com/jin50078a/224473669512",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "dreamwonders001",
+              "post_id": "224474155864",
+              "post_url": "https://blog.naver.com/dreamwonders001/224474155864",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "arongtelecom",
+              "post_id": "224471460854",
+              "post_url": "https://blog.naver.com/arongtelecom/224471460854",
+              "owner": null
+            },
+            {
+              "rank": 6,
+              "blog_id": "nrc1122",
+              "post_id": "224471546359",
+              "post_url": "https://blog.naver.com/nrc1122/224471546359",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "dongle2__",
+              "post_id": "224464433148",
+              "post_url": "https://blog.naver.com/dongle2__/224464433148",
+              "owner": null
+            },
+            {
+              "rank": 8,
+              "blog_id": "qblog91",
+              "post_id": "224471783973",
+              "post_url": "https://blog.naver.com/qblog91/224471783973",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "rabo4050",
+              "post_id": "224464924580",
+              "post_url": "https://blog.naver.com/rabo4050/224464924580",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "jin50078a",
+              "post_id": "224471203431",
+              "post_url": "https://blog.naver.com/jin50078a/224471203431",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "태블릿소유자회원번호": {
+      "query": "태블릿소유자회원번호",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:11.667814+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
+            "viewport": "390x844",
+            "screenshot_sha256": "339ee34677e64596d5b9d541d5913235347e18b556f19c05d1bde231e2d7281c",
+            "screenshot_artifact_name": "태블릿소유자회원번호.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:41:11.667814+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
+            "viewport": "390x844",
+            "screenshot_sha256": "339ee34677e64596d5b9d541d5913235347e18b556f19c05d1bde231e2d7281c",
+            "screenshot_artifact_name": "태블릿소유자회원번호.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 14
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "esim99",
+              "post_id": "224470243789",
+              "post_url": "https://blog.naver.com/esim99/224470243789",
+              "owner": "영은"
+            },
+            {
+              "rank": 2,
+              "blog_id": "rightnowphone",
+              "post_id": "224472229177",
+              "post_url": "https://blog.naver.com/rightnowphone/224472229177",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "jrs007",
+              "post_id": "224464709162",
+              "post_url": "https://blog.naver.com/jrs007/224464709162",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "qblog89",
+              "post_id": "224473919097",
+              "post_url": "https://blog.naver.com/qblog89/224473919097",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "carrotmobile_",
+              "post_id": "224472896058",
+              "post_url": "https://blog.naver.com/carrotmobile_/224472896058",
+              "owner": "건호"
+            },
+            {
+              "rank": 6,
+              "blog_id": "ntelecom59",
+              "post_id": "224472896349",
+              "post_url": "https://blog.naver.com/ntelecom59/224472896349",
+              "owner": "하루"
+            },
+            {
+              "rank": 7,
+              "blog_id": "jjuny1253",
+              "post_id": "224472901108",
+              "post_url": "https://blog.naver.com/jjuny1253/224472901108",
+              "owner": "수진"
+            },
+            {
+              "rank": 8,
+              "blog_id": "kwae83",
+              "post_id": "224473102262",
+              "post_url": "https://blog.naver.com/kwae83/224473102262",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "esim99_",
+              "post_id": "224472896734",
+              "post_url": "https://blog.naver.com/esim99_/224472896734",
+              "owner": "영은"
+            },
+            {
+              "rank": 10,
+              "blog_id": "qblog91",
+              "post_id": "224472077277",
+              "post_url": "https://blog.naver.com/qblog91/224472077277",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "태블릿 소유자 회원번호": {
+      "query": "태블릿 소유자 회원번호",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:25.485899+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
+            "viewport": "390x844",
+            "screenshot_sha256": "4b1a2eb133327297ebfbb8426a236d2af555c8233afbd3751bbcb62455bd37bb",
+            "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:41:25.485899+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
+            "viewport": "390x844",
+            "screenshot_sha256": "4b1a2eb133327297ebfbb8426a236d2af555c8233afbd3751bbcb62455bd37bb",
+            "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 15
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "esim99",
+              "post_id": "224470243789",
+              "post_url": "https://blog.naver.com/esim99/224470243789",
+              "owner": "영은"
+            },
+            {
+              "rank": 2,
+              "blog_id": "rightnowphone",
+              "post_id": "224472229177",
+              "post_url": "https://blog.naver.com/rightnowphone/224472229177",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "jrs007",
+              "post_id": "224464709162",
+              "post_url": "https://blog.naver.com/jrs007/224464709162",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "qblog89",
+              "post_id": "224473919097",
+              "post_url": "https://blog.naver.com/qblog89/224473919097",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "carrotmobile_",
+              "post_id": "224472896058",
+              "post_url": "https://blog.naver.com/carrotmobile_/224472896058",
+              "owner": "건호"
+            },
+            {
+              "rank": 6,
+              "blog_id": "jjuny1253",
+              "post_id": "224472901108",
+              "post_url": "https://blog.naver.com/jjuny1253/224472901108",
+              "owner": "수진"
+            },
+            {
+              "rank": 7,
+              "blog_id": "ntelecom59",
+              "post_id": "224472896349",
+              "post_url": "https://blog.naver.com/ntelecom59/224472896349",
+              "owner": "하루"
+            },
+            {
+              "rank": 8,
+              "blog_id": "kwae83",
+              "post_id": "224473102262",
+              "post_url": "https://blog.naver.com/kwae83/224473102262",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "esim99_",
+              "post_id": "224472896734",
+              "post_url": "https://blog.naver.com/esim99_/224472896734",
+              "owner": "영은"
+            },
+            {
+              "rank": 10,
+              "blog_id": "qblog91",
+              "post_id": "224472077277",
+              "post_url": "https://blog.naver.com/qblog91/224472077277",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "태블릿소유자회원번호 입력": {
+      "query": "태블릿소유자회원번호 입력",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:39.612816+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
+            "viewport": "390x844",
+            "screenshot_sha256": "fa82698ac9f590ced866c01322abfc4cb592a7017339a73211c88346180c9129",
+            "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:41:39.612816+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
+            "viewport": "390x844",
+            "screenshot_sha256": "fa82698ac9f590ced866c01322abfc4cb592a7017339a73211c88346180c9129",
+            "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 16
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "hyohyojin_",
+              "post_id": "224381558754",
+              "post_url": "https://blog.naver.com/hyohyojin_/224381558754",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "jolly8735",
+              "post_id": "224377141982",
+              "post_url": "https://blog.naver.com/jolly8735/224377141982",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "ckqu-x1wku",
+              "post_id": "224233256028",
+              "post_url": "https://blog.naver.com/ckqu-x1wku/224233256028",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "jrs007",
+              "post_id": "224464709162",
+              "post_url": "https://blog.naver.com/jrs007/224464709162",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "qblog89",
+              "post_id": "224473919097",
+              "post_url": "https://blog.naver.com/qblog89/224473919097",
+              "owner": null
+            },
+            {
+              "rank": 6,
+              "blog_id": "kwae83",
+              "post_id": "224473102262",
+              "post_url": "https://blog.naver.com/kwae83/224473102262",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "carrotmobile_",
+              "post_id": "224472896058",
+              "post_url": "https://blog.naver.com/carrotmobile_/224472896058",
+              "owner": "건호"
+            },
+            {
+              "rank": 8,
+              "blog_id": "esim99_",
+              "post_id": "224472896734",
+              "post_url": "https://blog.naver.com/esim99_/224472896734",
+              "owner": "영은"
+            },
+            {
+              "rank": 9,
+              "blog_id": "ntelecom59",
+              "post_id": "224472896349",
+              "post_url": "https://blog.naver.com/ntelecom59/224472896349",
+              "owner": "하루"
+            },
+            {
+              "rank": 10,
+              "blog_id": "candymobile_",
+              "post_id": "224471546790",
+              "post_url": "https://blog.naver.com/candymobile_/224471546790",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "다이소 유심": {
+      "query": "다이소 유심",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:53.295385+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "ed3f1b6a3f6d9b7434c5b1116c08e6a3accbda1df0a7155d30cd5adb01a5ed84",
+            "screenshot_artifact_name": "다이소-유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:41:53.295385+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "ed3f1b6a3f6d9b7434c5b1116c08e6a3accbda1df0a7155d30cd5adb01a5ed84",
+            "screenshot_artifact_name": "다이소-유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 10
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "ntelecom59",
+              "post_id": "224474159568",
+              "post_url": "https://blog.naver.com/ntelecom59/224474159568",
+              "owner": "하루"
+            },
+            {
+              "rank": 2,
+              "blog_id": "junsmall",
+              "post_id": "224474040667",
+              "post_url": "https://blog.naver.com/junsmall/224474040667",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "soyemobile_3",
+              "post_id": "224473965418",
+              "post_url": "https://blog.naver.com/soyemobile_3/224473965418",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "mo1ta2",
+              "post_id": "224473265316",
+              "post_url": "https://blog.naver.com/mo1ta2/224473265316",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "km20010909",
+              "post_id": "224473582443",
+              "post_url": "https://blog.naver.com/km20010909/224473582443",
+              "owner": null
+            },
+            {
+              "rank": 6,
+              "blog_id": "qblog89",
+              "post_id": "224473447744",
+              "post_url": "https://blog.naver.com/qblog89/224473447744",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "carrotmobile_",
+              "post_id": "224472954280",
+              "post_url": "https://blog.naver.com/carrotmobile_/224472954280",
+              "owner": "건호"
+            },
+            {
+              "rank": 8,
+              "blog_id": "successful1510",
+              "post_id": "224473109310",
+              "post_url": "https://blog.naver.com/successful1510/224473109310",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "lost_ark_",
+              "post_id": "224473138234",
+              "post_url": "https://blog.naver.com/lost_ark_/224473138234",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "anpoerl9909",
+              "post_id": "224471685916",
+              "post_url": "https://blog.naver.com/anpoerl9909/224471685916",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "다이소 선불유심": {
+      "query": "다이소 선불유심",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:42:06.649868+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "668ea3a4af932c9985560a84b04f0c3a92b81d05d2024391d285b6c7679ea152",
+            "screenshot_artifact_name": "다이소-선불유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:42:06.649868+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
+            "viewport": "390x844",
+            "screenshot_sha256": "668ea3a4af932c9985560a84b04f0c3a92b81d05d2024391d285b6c7679ea152",
+            "screenshot_artifact_name": "다이소-선불유심.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 15
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "jrs007",
+              "post_id": "224464727846",
+              "post_url": "https://blog.naver.com/jrs007/224464727846",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "k_bc1994",
+              "post_id": "224471286153",
+              "post_url": "https://blog.naver.com/k_bc1994/224471286153",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "ghdgustnr0614",
+              "post_id": "224470058583",
+              "post_url": "https://blog.naver.com/ghdgustnr0614/224470058583",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "lost_ark_",
+              "post_id": "224466954280",
+              "post_url": "https://blog.naver.com/lost_ark_/224466954280",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "ntelecom59",
+              "post_id": "224474159568",
+              "post_url": "https://blog.naver.com/ntelecom59/224474159568",
+              "owner": "하루"
+            },
+            {
+              "rank": 6,
+              "blog_id": "junsmall",
+              "post_id": "224474040667",
+              "post_url": "https://blog.naver.com/junsmall/224474040667",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "mo1ta2",
+              "post_id": "224473265316",
+              "post_url": "https://blog.naver.com/mo1ta2/224473265316",
+              "owner": null
+            },
+            {
+              "rank": 8,
+              "blog_id": "soyemobile_3",
+              "post_id": "224473965418",
+              "post_url": "https://blog.naver.com/soyemobile_3/224473965418",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "carrotmobile_",
+              "post_id": "224472954280",
+              "post_url": "https://blog.naver.com/carrotmobile_/224472954280",
+              "owner": "건호"
+            },
+            {
+              "rank": 10,
+              "blog_id": "successful1510",
+              "post_id": "224473109310",
+              "post_url": "https://blog.naver.com/successful1510/224473109310",
+              "owner": null
+            }
+          ]
+        }
+      }
+    },
+    "다이소 유심 개통": {
+      "query": "다이소 유심 개통",
+      "surfaces": {
+        "INTEGRATED_BLOG_SECTION_TOP10": {
+          "surface": "INTEGRATED_BLOG_SECTION_TOP10",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:42:20.439039+09:00",
+          "reason": "명시적인 블로그 영역 경계를 찾지 못함",
+          "reason_code": "SECTION_NOT_PRESENT",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
+            "viewport": "390x844",
+            "screenshot_sha256": "08a548757217323b1a981eb04e5e0677291c4fb168c2cbdc0be44fbd9620665f",
+            "screenshot_artifact_name": "다이소-유심-개통.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "automated_section_candidate",
+            "section_name": "",
+            "section_bounds": null,
+            "section_candidate_count": 0
+          },
+          "results": []
+        },
+        "INTEGRATED_BLOG_ARTICLES_TOP10": {
+          "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-12T12:42:20.439039+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "reason_code": "ARTICLE_ORDER_ONLY",
+          "evidence": {
+            "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
+            "viewport": "390x844",
+            "screenshot_sha256": "08a548757217323b1a981eb04e5e0677291c4fb168c2cbdc0be44fbd9620665f",
+            "screenshot_artifact_name": "다이소-유심-개통.png",
+            "browser": "playwright-chromium",
+            "device": "mobile-emulation",
+            "verification_method": "rendered_article_visual_order",
+            "observed_distinct_posts": 17
+          },
+          "results": [
+            {
+              "rank": 1,
+              "blog_id": "jmheve",
+              "post_id": "223083699529",
+              "post_url": "https://blog.naver.com/jmheve/223083699529",
+              "owner": null
+            },
+            {
+              "rank": 2,
+              "blog_id": "blogmarketingpgl",
+              "post_id": "224393631435",
+              "post_url": "https://blog.naver.com/blogmarketingpgl/224393631435",
+              "owner": null
+            },
+            {
+              "rank": 3,
+              "blog_id": "itjeong_manager",
+              "post_id": "223572578042",
+              "post_url": "https://blog.naver.com/itjeong_manager/223572578042",
+              "owner": null
+            },
+            {
+              "rank": 4,
+              "blog_id": "rabo4050",
+              "post_id": "224463213700",
+              "post_url": "https://blog.naver.com/rabo4050/224463213700",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "jrs007",
+              "post_id": "224464727846",
+              "post_url": "https://blog.naver.com/jrs007/224464727846",
+              "owner": null
+            },
+            {
+              "rank": 6,
+              "blog_id": "han-pangpang",
+              "post_id": "224467314306",
+              "post_url": "https://blog.naver.com/han-pangpang/224467314306",
+              "owner": null
+            },
+            {
+              "rank": 7,
+              "blog_id": "junsmall",
+              "post_id": "224474040667",
+              "post_url": "https://blog.naver.com/junsmall/224474040667",
+              "owner": null
+            },
+            {
+              "rank": 8,
+              "blog_id": "soyemobile_3",
+              "post_id": "224473965418",
+              "post_url": "https://blog.naver.com/soyemobile_3/224473965418",
+              "owner": null
+            },
+            {
+              "rank": 9,
+              "blog_id": "mo1ta2",
+              "post_id": "224473265316",
+              "post_url": "https://blog.naver.com/mo1ta2/224473265316",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "carrotmobile_",
+              "post_id": "224472954280",
+              "post_url": "https://blog.naver.com/carrotmobile_/224472954280",
+              "owner": "건호"
+            }
+          ]
+        }
+      }
+    }
+  },
   "groups": {
     "KT바로유심": {
+      "status": "UNKNOWN",
       "complete": false,
       "queries": [
         "KT바로유심",
         "바로유심",
         "KT바로유심 개통"
+      ],
+      "query_states": [
+        {
+          "query": "KT바로유심",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:39:47.036204+09:00"
+        },
+        {
+          "query": "바로유심",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:01.332819+09:00"
+        },
+        {
+          "query": "KT바로유심 개통",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:15.226999+09:00"
+        }
       ],
       "matches": {
         "건호": [],
@@ -34,597 +1429,167 @@
         "하루": [],
         "수진": []
       },
+      "owner_states": {
+        "건호": "UNKNOWN",
+        "영은": "UNKNOWN",
+        "하루": "UNKNOWN",
+        "수진": "UNKNOWN"
+      },
       "exposed": [],
       "missing": [],
       "dropped": [],
-      "status": "unverified"
+      "exits": [],
+      "decision_note": "변형 검색어 중 UNKNOWN/CANDIDATE/PARTIAL/STALE가 있어 미노출 확정 금지"
     },
     "LG모두의 원칩": {
-      "complete": true,
+      "status": "UNKNOWN",
+      "complete": false,
       "queries": [
         "LG모두의 원칩",
         "모두의 원칩",
         "LG원칩 개통"
       ],
-      "matches": {
-        "건호": [
-          {
-            "query": "LG모두의 원칩",
-            "rank": 10,
-            "id": "carrotmobile_",
-            "post": "224472796342",
-            "url": "https://blog.naver.com/carrotmobile_/224472796342"
-          },
-          {
-            "query": "모두의 원칩",
-            "rank": 5,
-            "id": "carrotmobile_",
-            "post": "224472796342",
-            "url": "https://blog.naver.com/carrotmobile_/224472796342"
-          }
-        ],
-        "영은": [
-          {
-            "query": "모두의 원칩",
-            "rank": 8,
-            "id": "esim99_",
-            "post": "224472123824",
-            "url": "https://blog.naver.com/esim99_/224472123824"
-          }
-        ],
-        "하루": [
-          {
-            "query": "모두의 원칩",
-            "rank": 4,
-            "id": "ntelecom59",
-            "post": "224472797467",
-            "url": "https://blog.naver.com/ntelecom59/224472797467"
-          }
-        ],
-        "수진": [
-          {
-            "query": "모두의 원칩",
-            "rank": 6,
-            "id": "jjuny1253",
-            "post": "224472791151",
-            "url": "https://blog.naver.com/jjuny1253/224472791151"
-          }
-        ]
-      },
-      "exposed": [
-        "건호",
-        "영은",
-        "하루",
-        "수진"
+      "query_states": [
+        {
+          "query": "LG모두의 원칩",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:28.996462+09:00"
+        },
+        {
+          "query": "모두의 원칩",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:42.911759+09:00"
+        },
+        {
+          "query": "LG원칩 개통",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:40:57.368716+09:00"
+        }
       ],
+      "matches": {
+        "건호": [],
+        "영은": [],
+        "하루": [],
+        "수진": []
+      },
+      "owner_states": {
+        "건호": "UNKNOWN",
+        "영은": "UNKNOWN",
+        "하루": "UNKNOWN",
+        "수진": "UNKNOWN"
+      },
+      "exposed": [],
       "missing": [],
       "dropped": [],
-      "status": "assessable"
+      "exits": [],
+      "decision_note": "변형 검색어 중 UNKNOWN/CANDIDATE/PARTIAL/STALE가 있어 미노출 확정 금지"
     },
     "태블릿소유자회원번호": {
-      "complete": true,
+      "status": "UNKNOWN",
+      "complete": false,
       "queries": [
         "태블릿소유자회원번호",
         "태블릿 소유자 회원번호",
         "태블릿소유자회원번호 입력"
       ],
-      "matches": {
-        "건호": [
-          {
-            "query": "태블릿소유자회원번호",
-            "rank": 5,
-            "id": "carrotmobile_",
-            "post": "224472896058",
-            "url": "https://blog.naver.com/carrotmobile_/224472896058"
-          },
-          {
-            "query": "태블릿 소유자 회원번호",
-            "rank": 5,
-            "id": "carrotmobile_",
-            "post": "224472896058",
-            "url": "https://blog.naver.com/carrotmobile_/224472896058"
-          },
-          {
-            "query": "태블릿소유자회원번호 입력",
-            "rank": 7,
-            "id": "carrotmobile_",
-            "post": "224472896058",
-            "url": "https://blog.naver.com/carrotmobile_/224472896058"
-          }
-        ],
-        "영은": [
-          {
-            "query": "태블릿소유자회원번호",
-            "rank": 1,
-            "id": "esim99",
-            "post": "224470243789",
-            "url": "https://blog.naver.com/esim99/224470243789"
-          },
-          {
-            "query": "태블릿소유자회원번호",
-            "rank": 9,
-            "id": "esim99_",
-            "post": "224472896734",
-            "url": "https://blog.naver.com/esim99_/224472896734"
-          },
-          {
-            "query": "태블릿 소유자 회원번호",
-            "rank": 1,
-            "id": "esim99",
-            "post": "224470243789",
-            "url": "https://blog.naver.com/esim99/224470243789"
-          },
-          {
-            "query": "태블릿 소유자 회원번호",
-            "rank": 9,
-            "id": "esim99_",
-            "post": "224472896734",
-            "url": "https://blog.naver.com/esim99_/224472896734"
-          },
-          {
-            "query": "태블릿소유자회원번호 입력",
-            "rank": 8,
-            "id": "esim99_",
-            "post": "224472896734",
-            "url": "https://blog.naver.com/esim99_/224472896734"
-          }
-        ],
-        "하루": [
-          {
-            "query": "태블릿소유자회원번호",
-            "rank": 6,
-            "id": "ntelecom59",
-            "post": "224472896349",
-            "url": "https://blog.naver.com/ntelecom59/224472896349"
-          },
-          {
-            "query": "태블릿 소유자 회원번호",
-            "rank": 7,
-            "id": "ntelecom59",
-            "post": "224472896349",
-            "url": "https://blog.naver.com/ntelecom59/224472896349"
-          },
-          {
-            "query": "태블릿소유자회원번호 입력",
-            "rank": 9,
-            "id": "ntelecom59",
-            "post": "224472896349",
-            "url": "https://blog.naver.com/ntelecom59/224472896349"
-          }
-        ],
-        "수진": [
-          {
-            "query": "태블릿소유자회원번호",
-            "rank": 7,
-            "id": "jjuny1253",
-            "post": "224472901108",
-            "url": "https://blog.naver.com/jjuny1253/224472901108"
-          },
-          {
-            "query": "태블릿 소유자 회원번호",
-            "rank": 6,
-            "id": "jjuny1253",
-            "post": "224472901108",
-            "url": "https://blog.naver.com/jjuny1253/224472901108"
-          }
-        ]
-      },
-      "exposed": [
-        "건호",
-        "영은",
-        "하루",
-        "수진"
+      "query_states": [
+        {
+          "query": "태블릿소유자회원번호",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:11.667814+09:00"
+        },
+        {
+          "query": "태블릿 소유자 회원번호",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:25.485899+09:00"
+        },
+        {
+          "query": "태블릿소유자회원번호 입력",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:39.612816+09:00"
+        }
       ],
+      "matches": {
+        "건호": [],
+        "영은": [],
+        "하루": [],
+        "수진": []
+      },
+      "owner_states": {
+        "건호": "UNKNOWN",
+        "영은": "UNKNOWN",
+        "하루": "UNKNOWN",
+        "수진": "UNKNOWN"
+      },
+      "exposed": [],
       "missing": [],
       "dropped": [],
-      "status": "assessable"
+      "exits": [],
+      "decision_note": "변형 검색어 중 UNKNOWN/CANDIDATE/PARTIAL/STALE가 있어 미노출 확정 금지"
     },
     "다이소 유심": {
-      "complete": true,
+      "status": "UNKNOWN",
+      "complete": false,
       "queries": [
         "다이소 유심",
         "다이소 선불유심",
         "다이소 유심 개통"
       ],
+      "query_states": [
+        {
+          "query": "다이소 유심",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:41:53.295385+09:00"
+        },
+        {
+          "query": "다이소 선불유심",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:42:06.649868+09:00"
+        },
+        {
+          "query": "다이소 유심 개통",
+          "status": "UNKNOWN",
+          "observed_at": "2026-11-12T12:42:20.439039+09:00"
+        }
+      ],
       "matches": {
-        "건호": [
-          {
-            "query": "다이소 유심",
-            "rank": 6,
-            "id": "carrotmobile_",
-            "post": "224472954280",
-            "url": "https://blog.naver.com/carrotmobile_/224472954280"
-          },
-          {
-            "query": "다이소 선불유심",
-            "rank": 9,
-            "id": "carrotmobile_",
-            "post": "224472954280",
-            "url": "https://blog.naver.com/carrotmobile_/224472954280"
-          }
-        ],
+        "건호": [],
         "영은": [],
         "하루": [],
         "수진": []
       },
-      "exposed": [
-        "건호"
-      ],
-      "missing": [
-        "영은",
-        "하루",
-        "수진"
-      ],
+      "owner_states": {
+        "건호": "UNKNOWN",
+        "영은": "UNKNOWN",
+        "하루": "UNKNOWN",
+        "수진": "UNKNOWN"
+      },
+      "exposed": [],
+      "missing": [],
       "dropped": [],
-      "status": "assessable"
-    }
-  },
-  "queries": {
-    "KT바로유심": {
-      "query": "KT바로유심",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
-      "observed_at": "2026-11-12T11:25:02.699815+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "needs_review",
-      "reason": "fewer than ten rendered blog posts in integrated page",
-      "urls": [],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 9,
-      "preview_urls": [
-        "https://blog.naver.com/runphone/224467745988",
-        "https://blog.naver.com/fcealice/224473054795",
-        "https://blog.naver.com/soyemobie_4/224472932502",
-        "https://blog.naver.com/life_log1111/224473139186",
-        "https://blog.naver.com/dldl061400/224471981085",
-        "https://blog.naver.com/k_bc1994/224471473119",
-        "https://blog.naver.com/dy4545969/224470596615",
-        "https://blog.naver.com/nrc1122/224470195185",
-        "https://blog.naver.com/phone4050/224465888739"
-      ],
-      "evidence_file": "kt바로유심.png"
-    },
-    "바로유심": {
-      "query": "바로유심",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
-      "observed_at": "2026-11-12T11:25:16.206952+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/n-telecom9591/224354222042",
-        "https://blog.naver.com/0mobile_/224324891963",
-        "https://blog.naver.com/tg3006/224345462674",
-        "https://blog.naver.com/jrs007/224470425507",
-        "https://blog.naver.com/bystand80/224473943679",
-        "https://blog.naver.com/nrc1122/224473896973",
-        "https://blog.naver.com/soyemobie_4/224472932502",
-        "https://blog.naver.com/dldl061400/224471981085",
-        "https://blog.naver.com/qblog89/224470592804",
-        "https://blog.naver.com/dy4545969/224470596615"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 13,
-      "preview_urls": [],
-      "evidence_file": "바로유심.png"
-    },
-    "KT바로유심 개통": {
-      "query": "KT바로유심 개통",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
-      "observed_at": "2026-11-12T11:25:29.658129+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/toy3290/224336384994",
-        "https://blog.naver.com/lilili110/224364723291",
-        "https://blog.naver.com/sujung67966/224390072646",
-        "https://blog.naver.com/lifeon5g_/224470603118",
-        "https://blog.naver.com/mobile-parter/224473115409",
-        "https://blog.naver.com/runphone/224467745988",
-        "https://blog.naver.com/fcealice/224473054795",
-        "https://blog.naver.com/soyemobie_4/224472932502",
-        "https://blog.naver.com/nrc1122/224470195185",
-        "https://blog.naver.com/life_log1111/224473139186"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 14,
-      "preview_urls": [],
-      "evidence_file": "kt바로유심-개통.png"
-    },
-    "LG모두의 원칩": {
-      "query": "LG모두의 원칩",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
-      "observed_at": "2026-11-12T11:25:43.229791+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/phone4050/224464652527",
-        "https://blog.naver.com/dongle2__/224464433148",
-        "https://blog.naver.com/momo2712/224461747126",
-        "https://blog.naver.com/jin50078a/224473669512",
-        "https://blog.naver.com/sdyoung0613/224473243865",
-        "https://blog.naver.com/connect_mobile/224473254389",
-        "https://blog.naver.com/ntelecom_ria/224471553130",
-        "https://blog.naver.com/jin50078b/224472997900",
-        "https://blog.naver.com/bori24_/224473944300",
-        "https://blog.naver.com/carrotmobile_/224472796342"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 19,
-      "preview_urls": [],
-      "evidence_file": "lg모두의-원칩.png"
-    },
-    "모두의 원칩": {
-      "query": "모두의 원칩",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
-      "observed_at": "2026-11-12T11:25:56.562301+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/jin50078a/224473669512",
-        "https://blog.naver.com/sdyoung0613/224473243865",
-        "https://blog.naver.com/jin50078b/224472997900",
-        "https://blog.naver.com/ntelecom59/224472797467",
-        "https://blog.naver.com/carrotmobile_/224472796342",
-        "https://blog.naver.com/jjuny1253/224472791151",
-        "https://blog.naver.com/nrc1122/224471781595",
-        "https://blog.naver.com/esim99_/224472123824",
-        "https://blog.naver.com/jaejaejae9/224472510604",
-        "https://blog.naver.com/ntelecom_ria/224471553130"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 13,
-      "preview_urls": [],
-      "evidence_file": "모두의-원칩.png"
-    },
-    "LG원칩 개통": {
-      "query": "LG원칩 개통",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
-      "observed_at": "2026-11-12T11:26:09.556168+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/bystand80/224473943679",
-        "https://blog.naver.com/jin50078a/224473669512",
-        "https://blog.naver.com/basicplus00/224474036240",
-        "https://blog.naver.com/bori24_/224473944300",
-        "https://blog.naver.com/arongtelecom/224471460854",
-        "https://blog.naver.com/nrc1122/224471546359",
-        "https://blog.naver.com/dongle2__/224464433148",
-        "https://blog.naver.com/qblog91/224471783973",
-        "https://blog.naver.com/rabo4050/224464924580",
-        "https://blog.naver.com/jin50078a/224471203431"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 17,
-      "preview_urls": [],
-      "evidence_file": "lg원칩-개통.png"
-    },
-    "태블릿소유자회원번호": {
-      "query": "태블릿소유자회원번호",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
-      "observed_at": "2026-11-12T11:26:22.541246+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/esim99/224470243789",
-        "https://blog.naver.com/rightnowphone/224472229177",
-        "https://blog.naver.com/jrs007/224464709162",
-        "https://blog.naver.com/qblog89/224473919097",
-        "https://blog.naver.com/carrotmobile_/224472896058",
-        "https://blog.naver.com/ntelecom59/224472896349",
-        "https://blog.naver.com/jjuny1253/224472901108",
-        "https://blog.naver.com/kwae83/224473102262",
-        "https://blog.naver.com/esim99_/224472896734",
-        "https://blog.naver.com/qblog91/224472077277"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 14,
-      "preview_urls": [],
-      "evidence_file": "태블릿소유자회원번호.png"
-    },
-    "태블릿 소유자 회원번호": {
-      "query": "태블릿 소유자 회원번호",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
-      "observed_at": "2026-11-12T11:26:35.479397+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/esim99/224470243789",
-        "https://blog.naver.com/rightnowphone/224472229177",
-        "https://blog.naver.com/jrs007/224464709162",
-        "https://blog.naver.com/qblog89/224473919097",
-        "https://blog.naver.com/carrotmobile_/224472896058",
-        "https://blog.naver.com/jjuny1253/224472901108",
-        "https://blog.naver.com/ntelecom59/224472896349",
-        "https://blog.naver.com/kwae83/224473102262",
-        "https://blog.naver.com/esim99_/224472896734",
-        "https://blog.naver.com/qblog91/224472077277"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 14,
-      "preview_urls": [],
-      "evidence_file": "태블릿-소유자-회원번호.png"
-    },
-    "태블릿소유자회원번호 입력": {
-      "query": "태블릿소유자회원번호 입력",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
-      "observed_at": "2026-11-12T11:26:48.204975+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/hyohyojin_/224381558754",
-        "https://blog.naver.com/jolly8735/224377141982",
-        "https://blog.naver.com/ckqu-x1wku/224233256028",
-        "https://blog.naver.com/jrs007/224464709162",
-        "https://blog.naver.com/qblog89/224473919097",
-        "https://blog.naver.com/kwae83/224473102262",
-        "https://blog.naver.com/carrotmobile_/224472896058",
-        "https://blog.naver.com/esim99_/224472896734",
-        "https://blog.naver.com/ntelecom59/224472896349",
-        "https://blog.naver.com/candymobile_/224471546790"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 15,
-      "preview_urls": [],
-      "evidence_file": "태블릿소유자회원번호-입력.png"
-    },
-    "다이소 유심": {
-      "query": "다이소 유심",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
-      "observed_at": "2026-11-12T11:27:01.128691+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/soyemobile_3/224473965418",
-        "https://blog.naver.com/junsmall/224474040667",
-        "https://blog.naver.com/mo1ta2/224473265316",
-        "https://blog.naver.com/km20010909/224473582443",
-        "https://blog.naver.com/qblog89/224473447744",
-        "https://blog.naver.com/carrotmobile_/224472954280",
-        "https://blog.naver.com/otr2601/224472683629",
-        "https://blog.naver.com/successful1510/224473109310",
-        "https://blog.naver.com/lost_ark_/224473138234",
-        "https://blog.naver.com/anpoerl9909/224471685916"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 11,
-      "preview_urls": [],
-      "evidence_file": "다이소-유심.png"
-    },
-    "다이소 선불유심": {
-      "query": "다이소 선불유심",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
-      "observed_at": "2026-11-12T11:27:14.265878+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/jrs007/224464727846",
-        "https://blog.naver.com/k_bc1994/224471286153",
-        "https://blog.naver.com/ghdgustnr0614/224470058583",
-        "https://blog.naver.com/lost_ark_/224466954280",
-        "https://blog.naver.com/mo1ta2/224473265316",
-        "https://blog.naver.com/junsmall/224474040667",
-        "https://blog.naver.com/soyemobile_3/224473965418",
-        "https://blog.naver.com/otr2601/224472683629",
-        "https://blog.naver.com/carrotmobile_/224472954280",
-        "https://blog.naver.com/lost_ark_/224473138234"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 16,
-      "preview_urls": [],
-      "evidence_file": "다이소-선불유심.png"
-    },
-    "다이소 유심 개통": {
-      "query": "다이소 유심 개통",
-      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
-      "observed_at": "2026-11-12T11:27:27.516203+09:00",
-      "device": "mobile-emulation",
-      "surface": "integrated_blog_section",
-      "status": "auto_observed",
-      "reason": "first ten rendered Naver Blog articles in mobile integrated search",
-      "urls": [
-        "https://blog.naver.com/jmheve/223083699529",
-        "https://blog.naver.com/blogmarketingpgl/224393631435",
-        "https://blog.naver.com/itjeong_manager/223572578042",
-        "https://blog.naver.com/rabo4050/224463213700",
-        "https://blog.naver.com/jrs007/224464727846",
-        "https://blog.naver.com/han-pangpang/224467314306",
-        "https://blog.naver.com/junsmall/224474040667",
-        "https://blog.naver.com/soyemobile_3/224473965418",
-        "https://blog.naver.com/mo1ta2/224473265316",
-        "https://blog.naver.com/otr2601/224472683629"
-      ],
-      "candidate_urls": [],
-      "candidate_total": 0,
-      "section_heading": null,
-      "candidate_count": 1,
-      "basis": "mobile_integrated_blog_cards_visual_order",
-      "observed_blog_posts": 18,
-      "preview_urls": [],
-      "evidence_file": "다이소-유심-개통.png"
+      "exits": [],
+      "decision_note": "변형 검색어 중 UNKNOWN/CANDIDATE/PARTIAL/STALE가 있어 미노출 확정 금지"
     }
   },
   "recommendation": {
+    "status": "PENDING",
     "ready": false,
-    "assignments": [
-      {
-        "keyword": "다이소 유심",
-        "people": [
-          "영은",
-          "하루"
-        ],
-        "reason": "3개 검색어 모두 상위 10개 미노출"
-      }
-    ],
+    "complete": false,
+    "slot_at_kst": "2026-11-12T14:00:00+09:00",
+    "assignments": [],
     "unassigned": [
       "건호",
+      "영은",
+      "하루",
       "수진"
     ],
-    "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
+    "note": "최신 VERIFIED 근거가 부족하여 발행자 자동 배정을 보류",
+    "title_policy": "규칙 기반 초안; GPT/API 연결이 없으므로 사실 추가 없이 운영자가 수정"
   },
-  "errors": []
+  "errors": [],
+  "evidence": {
+    "local_directory": "monitor-evidence\\2026-11-12_123945",
+    "contains_raw_html": false,
+    "public_upload_default": false
+  }
 }

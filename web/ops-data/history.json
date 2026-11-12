@@ -1,169 +1,225 @@
-[
-  {
-    "at": "2026-11-12T11:09:14.524698+09:00",
-    "summary": {
-      "KT바로유심": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "LG모두의 원칩": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "태블릿소유자회원번호": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "다이소 유심": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      }
-    },
-    "recommendation": {
-      "ready": false,
-      "assignments": [],
-      "unassigned": [
-        "건호",
-        "영은",
-        "하루",
-        "수진"
-      ],
-      "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
-    }
-  },
-  {
-    "at": "2026-11-12T11:12:26.823425+09:00",
-    "summary": {
-      "KT바로유심": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "LG모두의 원칩": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "태블릿소유자회원번호": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "다이소 유심": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      }
-    },
-    "recommendation": {
-      "ready": false,
-      "assignments": [],
-      "unassigned": [
-        "건호",
-        "영은",
-        "하루",
-        "수진"
-      ],
-      "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
-    }
-  },
-  {
-    "at": "2026-11-12T11:21:27.110774+09:00",
-    "summary": {
-      "KT바로유심": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "LG모두의 원칩": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "태블릿소유자회원번호": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "다이소 유심": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      }
-    },
-    "recommendation": {
-      "ready": false,
-      "assignments": [],
-      "unassigned": [
-        "건호",
-        "영은",
-        "하루",
-        "수진"
-      ],
-      "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
-    }
-  },
-  {
-    "at": "2026-11-12T11:27:27.628853+09:00",
-    "summary": {
-      "KT바로유심": {
-        "complete": false,
-        "exposed": [],
-        "missing": []
-      },
-      "LG모두의 원칩": {
-        "complete": true,
-        "exposed": [
-          "건호",
-          "영은",
-          "하루",
-          "수진"
-        ],
-        "missing": []
-      },
-      "태블릿소유자회원번호": {
-        "complete": true,
-        "exposed": [
-          "건호",
-          "영은",
-          "하루",
-          "수진"
-        ],
-        "missing": []
-      },
-      "다이소 유심": {
-        "complete": true,
-        "exposed": [
-          "건호"
-        ],
-        "missing": [
-          "영은",
-          "하루",
-          "수진"
-        ]
-      }
-    },
-    "recommendation": {
-      "ready": false,
-      "assignments": [
-        {
-          "keyword": "다이소 유심",
-          "people": [
-            "영은",
-            "하루"
-          ],
-          "reason": "3개 검색어 모두 상위 10개 미노출"
+{
+  "schema": "naver-blog-ops-history-v2",
+  "entries": [
+    {
+      "at": "2026-11-12T11:09:14.524698+09:00",
+      "summary": {
+        "KT바로유심": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "LG모두의 원칩": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "태블릿소유자회원번호": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "다이소 유심": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
         }
-      ],
-      "unassigned": [
-        "건호",
-        "수진"
-      ],
-      "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
+      },
+      "recommendation": {
+        "ready": false,
+        "assignments": [],
+        "unassigned": [
+          "건호",
+          "영은",
+          "하루",
+          "수진"
+        ],
+        "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
+      }
+    },
+    {
+      "at": "2026-11-12T11:12:26.823425+09:00",
+      "summary": {
+        "KT바로유심": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "LG모두의 원칩": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "태블릿소유자회원번호": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "다이소 유심": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        }
+      },
+      "recommendation": {
+        "ready": false,
+        "assignments": [],
+        "unassigned": [
+          "건호",
+          "영은",
+          "하루",
+          "수진"
+        ],
+        "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
+      }
+    },
+    {
+      "at": "2026-11-12T11:21:27.110774+09:00",
+      "summary": {
+        "KT바로유심": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "LG모두의 원칩": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "태블릿소유자회원번호": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "다이소 유심": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        }
+      },
+      "recommendation": {
+        "ready": false,
+        "assignments": [],
+        "unassigned": [
+          "건호",
+          "영은",
+          "하루",
+          "수진"
+        ],
+        "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
+      }
+    },
+    {
+      "at": "2026-11-12T11:27:27.628853+09:00",
+      "summary": {
+        "KT바로유심": {
+          "complete": false,
+          "exposed": [],
+          "missing": []
+        },
+        "LG모두의 원칩": {
+          "complete": true,
+          "exposed": [
+            "건호",
+            "영은",
+            "하루",
+            "수진"
+          ],
+          "missing": []
+        },
+        "태블릿소유자회원번호": {
+          "complete": true,
+          "exposed": [
+            "건호",
+            "영은",
+            "하루",
+            "수진"
+          ],
+          "missing": []
+        },
+        "다이소 유심": {
+          "complete": true,
+          "exposed": [
+            "건호"
+          ],
+          "missing": [
+            "영은",
+            "하루",
+            "수진"
+          ]
+        }
+      },
+      "recommendation": {
+        "ready": false,
+        "assignments": [
+          {
+            "keyword": "다이소 유심",
+            "people": [
+              "영은",
+              "하루"
+            ],
+            "reason": "3개 검색어 모두 상위 10개 미노출"
+          }
+        ],
+        "unassigned": [
+          "건호",
+          "수진"
+        ],
+        "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
+      }
+    },
+    {
+      "run_id": "20261112T123945+0900-mobile",
+      "at": "2026-11-12T12:42:28.270849+09:00",
+      "query_counts": {
+        "UNKNOWN": 12
+      },
+      "summary": {
+        "KT바로유심": {
+          "status": "UNKNOWN",
+          "complete": false,
+          "exposed": [],
+          "missing": [],
+          "dropped": []
+        },
+        "LG모두의 원칩": {
+          "status": "UNKNOWN",
+          "complete": false,
+          "exposed": [],
+          "missing": [],
+          "dropped": []
+        },
+        "태블릿소유자회원번호": {
+          "status": "UNKNOWN",
+          "complete": false,
+          "exposed": [],
+          "missing": [],
+          "dropped": []
+        },
+        "다이소 유심": {
+          "status": "UNKNOWN",
+          "complete": false,
+          "exposed": [],
+          "missing": [],
+          "dropped": []
+        }
+      },
+      "recommendation": {
+        "status": "PENDING",
+        "ready": false,
+        "complete": false,
+        "slot_at_kst": "2026-11-12T14:00:00+09:00",
+        "assignments": [],
+        "unassigned": [
+          "건호",
+          "영은",
+          "하루",
+          "수진"
+        ],
+        "note": "최신 VERIFIED 근거가 부족하여 발행자 자동 배정을 보류",
+        "title_policy": "규칙 기반 초안; GPT/API 연결이 없으므로 사실 추가 없이 운영자가 수정"
+      },
+      "errors": []
     }
-  }
-]
+  ]
+}

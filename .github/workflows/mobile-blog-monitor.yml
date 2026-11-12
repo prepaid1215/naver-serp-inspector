@@ -3,13 +3,13 @@ name: Mobile blog SERP monitor
 on:
   workflow_dispatch:
   schedule:
-    # Before 09:00, 11:00, 14:00 KST publication: collect 30 minutes early (may be delayed)
+    # 08:30, 10:30, 13:30 Asia/Seoul. GitHub may start scheduled jobs late.
     - cron: '30 23,1,4 * * *'
   push:
     branches: [main]
     paths:
-      - 'automation/mobile_monitor.py'
-      - 'automation/test_mobile_monitor.py'
+      - 'automation/**'
+      - 'web/keyword-ops.*'
       - '.github/workflows/mobile-blog-monitor.yml'
 
 permissions:
@@ -22,7 +22,7 @@ concurrency:
 jobs:
   observe:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,20 +32,21 @@ jobs:
         run: |
           python -m pip install playwright
           python -m playwright install --with-deps chromium
-      - name: Test owner detection and assignment
-        run: python -m unittest automation.test_mobile_monitor -v
+      - name: Test evidence, owner, scheduling, and history rules
+        run: python -m unittest discover -s automation -p "test_*.py" -v
       - name: Observe mobile integrated search
-        run: python -m automation.mobile_monitor
-      - name: Retain screenshots for audit
-        if: always()
+        run: python -m automation.cli collect
+      - name: Validate versioned output
+        run: python -m automation.cli validate --input web/ops-data/latest.json
+      - name: Retain screenshots only when explicitly enabled
+        if: ${{ always() && vars.UPLOAD_SERP_EVIDENCE == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: naver-mobile-evidence-${{ github.run_number }}
-          path: monitor-evidence/
+          path: monitor-evidence/**/*.png
           if-no-files-found: ignore
-          retention-days: 7
-      - name: Store observed results
-        if: success()
+          retention-days: 3
+      - name: Store observed results without losing concurrent history
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -55,11 +56,22 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             cp /tmp/serp-latest.json web/ops-data/latest.json
-            cp /tmp/serp-history.json web/ops-data/history.json
+            python -m automation.cli merge-history \
+              --remote web/ops-data/history.json \
+              --observed /tmp/serp-history.json \
+              --output web/ops-data/history.json
+            python -m automation.cli validate --input web/ops-data/latest.json
             git add web/ops-data/latest.json web/ops-data/history.json
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'data: update mobile blog SERP observation'
+            git commit -m 'data: update v2 mobile blog observation'
             if git push origin HEAD:main; then exit 0; fi
             echo "Remote changed during observation; retrying (attempt $attempt)"
           done
           exit 1
+      - name: Write run summary
+        if: always()
+        run: |
+          echo '## Naver mobile blog observation' >> "$GITHUB_STEP_SUMMARY"
+          echo '- VERIFIED is emitted only from approved visual evidence.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Candidate article order is never used for automatic assignment.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- CAPTCHA/access restriction stops subsequent requests.' >> "$GITHUB_STEP_SUMMARY"

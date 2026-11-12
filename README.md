@@ -4,6 +4,19 @@
 
 > **비공식 오픈소스 프로그램**입니다. 네이버와 무관하며 결과의 정확도, 실시간 순위, 색인을 보장하지 않습니다. HTML만으로 실제 화면 블록 순서가 재현되지 않을 수 있어 PNG 캡처와 반드시 비교해야 합니다.
 
+## 4인 네이버 블로그 발행 관제
+
+기존 SERP Lens 위에 읽기 전용 운영 화면과 증거 기반 배정 엔진을 추가했습니다.
+
+- 운영 화면: `https://prepaid1215.github.io/naver-serp-inspector/keyword-ops.html`
+- 4명·7개 블로그 ID, 4개 대표 키워드·12개 변형 검색어를 고정 초기값으로 추적
+- 모바일 통합검색 **블로그 영역 순위**와 통합검색 전체 **블로그 글 후보 순서**를 별도 저장
+- 스크린샷 해시·검수자·영역명·게시글 10개가 모두 있는 최신 `VERIFIED` 자료만 미노출·이탈·2인 팀 배정에 사용
+- 08:30, 10:30, 13:30 KST GitHub Actions 수집. CAPTCHA/접근 제한 감지 시 후속 요청 중단
+- 공유 쓰기 백엔드와 OpenAI API 키 없이 동작. 제목은 사실을 추가하지 않는 규칙 기반 초안이며 최종 발행은 운영자가 결정
+
+데이터 계약은 [docs/DATA_SCHEMA_V2.md](docs/DATA_SCHEMA_V2.md), 재실행·수동 검증·장애 대응은 [docs/OPERATIONS.md](docs/OPERATIONS.md)를 참고하세요.
+
 ## 기능
 
 - 다중 HTML 파일, `.zip` 압축파일, PNG 스크린샷 불러오기
@@ -107,7 +120,9 @@ Windows 실행파일은 `web/` 및 Python Playwright 드라이버를 포함한 `
 
 ```bash
 npm test                 # JavaScript 구문 검사, ZIP 로더 오프라인 테스트
+python -m unittest discover -s automation -p "test_*.py" -v  # 블로그 관제 수용 테스트
 python tests/browser_in_memory.py   # Chromium/Playwright 설치된 환경에서 브라우저 기능 검증
+python tests/browser_keyword_ops.py # 390px 관제판과 수동 증거 내보내기 검증
 ```
 
 `web/engine.js`만 브라우저 DOMParser API에 의존하며, 외부 npm/CDN 라이브러리를 사용하지 않습니다. Windows에서만 `desktop/collector.py`가 사용자의 직접 실행 요청으로 검색 사이트에 접속합니다. Windows GUI 프레임워크는 Python `pywebview`이고, 실제 결과 분석은 공통 JavaScript 엔진이 수행합니다.
@@ -122,7 +137,7 @@ python tests/browser_in_memory.py   # Chromium/Playwright 설치된 환경에서
 ## 개인정보 · 보안 · 라이선스
 
 - 검색 화면 데이터는 서버에 전송되지 않습니다. 사이트 호스팅업체는 일반 페이지 접속 기록을 남길 수 있습니다.
-- CSP `connect-src 'none'` 설정으로 웹앱의 네트워크 호출을 제한합니다. 도구에 분석 추적 스크립트와 외부 폰트/CDN이 없습니다.
+- SERP Lens 분석 화면은 CSP `connect-src 'none'`으로 입력 파일의 네트워크 호출을 제한합니다. 관제 화면은 같은 Pages origin의 `ops-data`와 공개 GitHub 원본 데이터만 읽도록 별도 CSP를 사용합니다. 분석 추적 스크립트와 외부 폰트/CDN이 없습니다.
 - 분석 전 파일 크기 및 ZIP 해제 크기를 제한합니다.
 - MIT License. 네이버/제3자 상표와 콘텐츠의 권리는 각 권리자에게 있습니다.
 

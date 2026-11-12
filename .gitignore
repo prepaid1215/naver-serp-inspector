@@ -15,3 +15,6 @@ exports/
 # User-collected search evidence, never publish
 runs/
 serp_evidence.zip
+monitor-evidence/
+.tmp-evidence-crops/
+debug.log

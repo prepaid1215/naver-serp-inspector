@@ -1,109 +1,85 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>네이버 모바일 SERP · 4인 블로그 발행 관제</title>
-<style>
-:root{font-family:system-ui,"Apple SD Gothic Neo",sans-serif;color:#20324c;background:#f4f6fa}
-*{box-sizing:border-box}body{margin:0}main{max-width:1080px;margin:auto;padding:20px 14px 60px}
-header{background:#1c3153;color:white;padding:28px;border-radius:18px}header h1{margin:7px 0;font-size:25px;letter-spacing:-.04em}
-header p{color:#c9d6eb;font-size:13px;line-height:1.75}
-h2{font-size:18px;margin:27px 0 12px}
-button,a.button{display:inline-flex;justify-content:center;align-items:center;min-height:40px;border:1px solid #c6d4ec;border-radius:9px;padding:9px 14px;background:white;font-weight:700;color:#274980;text-decoration:none;cursor:pointer}
-button.primary{background:#4b67d4;color:#fff;border-color:#4b67d4}
-.tools{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
-.stats,.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.cards{grid-template-columns:repeat(2,1fr)}
-.card,.stat{border:1px solid #dfe5ee;border-radius:14px;background:#fff;padding:18px}
-.stat b{display:block;font-size:25px;margin:5px 0}
-.muted{color:#73849d;font-size:12px;line-height:1.7}.green{color:#00865e}.orange{color:#af7111}.red{color:#b6433f}
-.warning{background:#fff7e9;border:1px solid #ead7b5;color:#835c24;padding:14px;border-radius:12px;line-height:1.8;font-size:12px;margin:14px 0}
-.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.chip{padding:5px 9px;border-radius:20px;background:#ecf1fb;color:#4260a7;font-weight:800;font-size:11px;white-space:nowrap}
-.chip.ok{background:#e7f7ef;color:#0a845d}.chip.wait{background:#fff2de;color:#926321}
-.member{padding:10px 0;border-bottom:1px solid #eff2f7;display:grid;grid-template-columns:65px 1fr;gap:8px;font-size:12px}.member:last-child{border:0}
-.assign{background:#f1f5fd;border-radius:12px;padding:14px;margin:10px 0}a{color:#315dc0}
-details{margin-top:13px;border-top:1px solid #e9eef5;padding-top:12px}summary{font-weight:800;cursor:pointer;font-size:12px}
-ul{margin:10px 0;padding-left:22px;line-height:2}li{font-size:12px}
-footer{margin:28px 0;color:#7b8799;font-size:12px;line-height:1.8}
-@media(max-width:680px){main{padding:10px 10px 40px}header{padding:21px 18px}header h1{font-size:21px}
-.cards{grid-template-columns:1fr}.stat{padding:12px}.stat b{font-size:21px}}
-</style></head>
-<body><main>
-<header><small style="color:#bcd1f3">NAVER MOBILE · INTEGRATED BLOG TOP 10</small>
-<h1>4인 블로그 키워드 자동 관제</h1>
-<p>KT바로유심 · LG모두의 원칩 · 태블릿소유자회원번호 · 다이소 유심<br>
-08:30 · 10:30 · 13:30 사전 관측 / 08:55 · 10:55 · 13:55 GPT 보고 / 발행 09:00 · 11:00 · 14:00</p></header>
-<div class="tools"><button class="primary" id="refresh">최신 결과 불러오기</button>
-<a class="button" href="https://github.com/prepaid1215/naver-serp-inspector/actions/workflows/mobile-blog-monitor.yml" target="_blank" rel="noopener">수동 조사 실행</a>
-<a class="button" href="https://github.com/prepaid1215/naver-serp-inspector" target="_blank" rel="noopener">GitHub 저장소</a></div>
-<p id="message" class="muted" aria-live="polite">관측 결과 불러오는 중…</p>
-<div class="stats"><div class="stat"><span class="muted">검색어 관측</span><b id="count">0/12</b></div>
-<div class="stat"><span class="muted">판정 가능 키워드</span><b id="groups">0/4</b></div>
-<div class="stat"><span class="muted">추천된 2인 팀</span><b id="pairs">0/2</b></div></div>
-<div class="warning">실제 스마트폰이 아닌 <b>모바일 브라우저 에뮬레이션</b>으로 관측합니다.
-'블로그' 영역과 게시글 10개를 식별할 때만 잠정 순위를 계산합니다.
-블로그 영역이 불명확하거나 네이버 접근 제한 시 <b>미확인</b>으로 표시하고 미노출로 처리하지 않습니다.
-화면 캡처는 GitHub Actions 실행 아티팩트에 7일간 보관합니다.</div>
-<h2>다음 발행 추천</h2><section id="recs" class="card"><span class="muted">관측 데이터 없음</span></section>
-<h2>4개 키워드의 담당자별 노출</h2><section class="cards" id="keywords"></section>
-<h2>수집 상태와 이력</h2><section class="card"><div class="row"><b>마지막 관측</b><span id="updated" class="muted">기록 없음</span></div>
-<p id="errors" class="orange"></p><details><summary>12개 검색어 상태</summary><ul id="queries"></ul></details>
-<details><summary>최근 관측 기록</summary><ul id="history"></ul></details></section>
-<footer>검색 위치는 네이버가 공식 제공한 순위가 아니라 자동 관측 값입니다.
-GitHub Actions 예약 실행은 예정 시각에서 지연될 수 있습니다. CAPTCHA 또는 접근 제한은 우회하지 않습니다.</footer>
-</main><script>
-(()=>{'use strict';
-const root='https://raw.githubusercontent.com/prepaid1215/naver-serp-inspector/main/web/ops-data/';
-const names=['건호','영은','하루','수진'],$=id=>document.getElementById(id);
-function el(tag,parent,text,cls){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;parent.appendChild(x);return x}
-function empty(node){node.replaceChildren()}
-function status(v){return ({auto_observed:'10개 자동 관측',needs_review:'블로그 영역 확인 필요',error:'수집 실패',blocked:'접근 제한'})[v]||'미확인'}
-function render(data,history){
- const queries=data.queries||{},groups=data.groups||{},rec=data.recommendation||{};
- const valid=Object.values(queries).filter(x=>x.status==='auto_observed'&&x.urls?.length===10).length;
- $('count').textContent=valid+'/12';$('groups').textContent=Object.values(groups).filter(g=>g.complete).length+'/4';
- $('pairs').textContent=(rec.assignments?.length||0)+'/2';
- $('updated').textContent=data.captured_at_kst?new Date(data.captured_at_kst).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'첫 조사 전';
- $('errors').textContent=(data.errors||[]).join(' · ');
- const recs=$('recs');empty(recs);
- if(!rec.ready){el('b',recs,'발행 추천 보류','orange');el('p',recs,'각 키워드의 관련 검색어 3개에서 상위 10개를 모두 확인하기 전에는 미노출자를 확정하지 않습니다.','muted')}
- else for(let i=0;i<rec.assignments.length;i++){const a=rec.assignments[i],box=el('div',recs,undefined,'assign');
- el('small',box,(i+1)+'조 · '+a.reason);el('h3',box,a.people.join(' · ')+' → '+a.keyword)}
- const cards=$('keywords');empty(cards);
- for(const [word,g] of Object.entries(groups)){const card=el('article',cards,undefined,'card'),head=el('div',card,undefined,'row');
- el('b',head,word);el('span',head,g.complete?'순위 관측':'미확인','chip '+(g.complete?'ok':'wait'));
- if(!g.complete)el('p',card,'확장 검색어 포함 10개 게시글 검증 대기','muted');
- for(const person of names){const line=el('div',card,undefined,'member');el('b',line,person);
- const match=(g.matches||{})[person]||[];
- el('span',line,g.complete?(match.length?match.map(m=>m.query+' '+m.rank+'위').join(' · '):'상위10 미노출'):'미확인',
-    g.complete?(match.length?'green':'red'):'muted')}
- if(g.dropped?.length)el('p',card,'이전 관측 대비 순위 이탈: '+g.dropped.join(', '),'orange')}
- if(!Object.keys(groups).length)el('div',cards,'아직 수집한 결과가 없습니다.','card muted');
- const list=$('queries');empty(list);
- for(const g of Object.values(groups)){for(const word of g.queries||[]){const o=queries[word],li=el('li',list,word+': '+status(o?.status));
- if(o?.reason)el('span',li,' · '+o.reason,'muted');
- if(o?.candidate_urls?.length){
-   const map={'carrotmobile_':'건호','lifeon5g_':'건호','esim99_':'영은','esim99':'영은','esim87_':'영은','ntelecom59':'하루','jjuny1253':'수진'};
-   const found=[];
-   o.candidate_urls.forEach((url,i)=>{
-     const hit=url.match(/^https:\/\/blog\.naver\.com\/([\w-]+)\/\d+$/i);
-     if(hit&&map[hit[1].toLowerCase()])found.push(map[hit[1].toLowerCase()]+' 후보 '+(i+1)+'번째');
-   });
-   el('span',li,' · 블로그 게시글 후보 '+o.candidate_urls.length+'개'+(found.length?' · '+found.join(', '):' · 등록 블로그 발견 없음 (미노출 확정 아님)'),'orange');
- }
- if(o?.url){const a=el('a',li,' · 검색 페이지');a.href=o.url;a.target='_blank';a.rel='noopener'}}}
- if(!list.childNodes.length)el('li',list,'첫 자동 조사 전');
- const recent=$('history');empty(recent);
- for(const row of (Array.isArray(history)?history.slice(-12).reverse():[])){
- el('li',recent,new Date(row.at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' · '+Object.values(row.summary||{}).filter(x=>x.complete).length+'/4개 판정 · '+(row.recommendation?.ready?'2팀 배정':'배정 보류'))}
- if(!recent.childNodes.length)el('li',recent,'관측 이력 없음');
-}
-async function load(){
- $('refresh').disabled=true;$('message').textContent='GitHub 관측 데이터 읽는 중…';
- try{const suffix='?t='+Date.now(),response=await fetch(root+'latest.json'+suffix,{cache:'no-store'});
- if(!response.ok)throw Error('HTTP '+response.status);
- const data=await response.json();if(data.schema!=='naver-mobile-integrated-blog-top10-v1')throw Error('데이터 형식 오류');
- const history=await fetch(root+'history.json'+suffix,{cache:'no-store'}).then(r=>r.ok?r.json():[]).catch(()=>[]);
- render(data,history);$('message').textContent='GitHub 최신 저장 자료를 불러왔습니다.';
- }catch(e){$('message').textContent='자료 불러오기 실패: '+e.message+' (네트워크 및 Actions 실행 상태 확인)'}
- finally{$('refresh').disabled=false}}
-$('refresh').addEventListener('click',load);load();
-})();
-</script></body></html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://raw.githubusercontent.com; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>네이버 블로그 발행 관제 · SERP Lens</title>
+  <link rel="stylesheet" href="keyword-ops.css">
+</head>
+<body>
+<main>
+  <header class="hero">
+    <p class="eyebrow">SERP LENS · EVIDENCE FIRST</p>
+    <h1>4인 블로그 발행 관제</h1>
+    <p>08:30 · 10:30 · 13:30 수집 / 08:55 · 10:55 · 13:55 보고 / 09:00 · 11:00 · 14:00 발행 판단</p>
+  </header>
+
+  <nav class="tools" aria-label="관제 도구">
+    <button class="primary" id="refresh" type="button">최신 자료 새로고침</button>
+    <a class="button" href="https://github.com/prepaid1215/naver-serp-inspector/actions/workflows/mobile-blog-monitor.yml" target="_blank" rel="noopener">수동 수집 실행</a>
+    <a class="button" href="./index.html">SERP Lens 열기</a>
+  </nav>
+  <p id="message" class="muted" aria-live="polite">관측 자료를 불러오는 중…</p>
+
+  <section class="stats" aria-label="관제 요약">
+    <article class="stat"><span>최신 VERIFIED 검색어</span><strong id="verified-count">0/12</strong></article>
+    <article class="stat"><span>후보·부분·미확인</span><strong id="pending-count">12</strong></article>
+    <article class="stat"><span>45분 경과</span><strong id="stale-count">0</strong></article>
+    <article class="stat"><span>검증 완료 키워드</span><strong id="group-count">0/4</strong></article>
+    <article class="stat"><span>제안된 2인 팀</span><strong id="team-count">0/2</strong></article>
+    <article class="stat"><span>검증 성공률</span><strong id="success-rate">0%</strong></article>
+  </section>
+
+  <section class="notice" aria-labelledby="trust-title">
+    <div><span class="status UNKNOWN">검증 원칙</span><h2 id="trust-title">후보 링크를 확정 순위로 승격하지 않습니다</h2></div>
+    <p><b>INTEGRATED_BLOG_SECTION_TOP10</b>은 영역 경계와 화면 순서를 시각 검수한 경우만 VERIFIED입니다. 통합검색 전체에서 찾은 블로그 링크 순서는 별도 CANDIDATE로 남고, 배정 근거에 쓰이지 않습니다.</p>
+    <p>이 사이트는 공개 GitHub Pages의 읽기 전용 화면입니다. 발행 예정·완료·보류 상태는 공유 백엔드가 연결되기 전까지 저장하지 않습니다.</p>
+  </section>
+
+  <div class="section-heading"><div><p class="eyebrow">NEXT SLOT</p><h2>다음 발행 제안</h2></div><span id="slot" class="muted">시간 계산 중</span></div>
+  <section id="recommendations" class="panel"><p class="muted">검증 자료 없음</p></section>
+
+  <div class="section-heading"><div><p class="eyebrow">KEYWORD GROUPS</p><h2>4개 키워드 · 담당자 노출</h2></div></div>
+  <section id="keyword-cards" class="keyword-grid"></section>
+
+  <div class="section-heading"><div><p class="eyebrow">QUERY EVIDENCE</p><h2>12개 검색어 · 근거와 상위 10개</h2></div></div>
+  <section id="query-details" class="query-list"></section>
+
+  <div class="section-heading"><div><p class="eyebrow">HISTORY</p><h2>관측·배정 이력</h2></div><span id="updated" class="muted">수집 전</span></div>
+  <section class="panel">
+    <div class="filters">
+      <label>키워드<select id="history-keyword"><option value="">전체</option></select></label>
+      <label>담당자<select id="history-owner"><option value="">전체</option><option>건호</option><option>영은</option><option>하루</option><option>수진</option></select></label>
+      <label>상태<select id="history-status"><option value="">전체</option><option>READY</option><option>PARTIAL</option><option>PENDING</option></select></label>
+    </div>
+    <p id="errors" class="error"></p>
+    <ol id="history" class="history"></ol>
+  </section>
+
+  <div class="section-heading"><div><p class="eyebrow">BOUNDED FALLBACK</p><h2>수동 시각 검증 자료 만들기</h2></div></div>
+  <section class="panel manual-panel">
+    <p>자동 수집이 불확실할 때만 사용합니다. 네이버 모바일 화면에서 확인한 블로그 영역의 게시글 URL 10개와 캡처를 넣으면, 서버에 저장하지 않고 검증용 JSON 파일을 만듭니다.</p>
+    <form id="manual-form">
+      <div class="form-grid">
+        <label>검색어<select id="manual-query" required></select></label>
+        <label>영역명<input id="manual-section" value="블로그" required></label>
+        <label>검수자 식별값<input id="manual-reviewer" placeholder="예: 운영자-건호" required></label>
+        <label>관측 시각<input id="manual-time" type="datetime-local" required></label>
+        <label class="wide">검색 URL<input id="manual-source" type="url" placeholder="https://m.search.naver.com/search.naver?..." required></label>
+        <label class="wide">전체 화면 캡처<input id="manual-screenshot" type="file" accept="image/png,image/jpeg" required></label>
+        <label class="wide">1위부터 10위 게시글 URL<textarea id="manual-urls" rows="11" placeholder="한 줄에 게시글 URL 하나" required></textarea></label>
+        <label class="wide">검수 메모<input id="manual-note" placeholder="영역 경계와 순서를 확인한 방법"></label>
+      </div>
+      <div class="tools"><button class="primary" type="submit">검증 JSON 내려받기</button><span id="manual-message" class="muted" aria-live="polite"></span></div>
+    </form>
+  </section>
+
+  <footer>
+    <p>CAPTCHA·접근 제한을 우회하지 않습니다. GitHub Actions 예약은 지연될 수 있으며, 45분이 지난 자료는 현재 순위가 아닌 STALE로 표시합니다.</p>
+    <p><a href="https://github.com/prepaid1215/naver-serp-inspector" target="_blank" rel="noopener">소스·운영 문서·장애 절차</a></p>
+  </footer>
+</main>
+<script src="keyword-ops.js" defer></script>
+</body>
+</html>
