@@ -120,6 +120,9 @@ try:
             status=200, content_type="application/json",
             body=json.dumps(fixture, ensure_ascii=False)))
         page.reload()
+        # Ensure the initial request has finished before swapping fixtures.
+        expect(page.locator("#recommendations")).to_contain_text("1팀 · 다이소 유심")
+        expect(page.locator("#message")).to_contain_text("직접 확인")
 
         # A newly saved run must appear automatically without clicking "다시 확인".
         updated_fixture = deepcopy(fixture)
@@ -130,7 +133,7 @@ try:
         page.route(raw_latest, lambda route: route.fulfill(
             status=200, content_type="application/json",
             body=json.dumps(updated_fixture, ensure_ascii=False)))
-        page.clock.fast_forward(60_000)
+        page.clock.run_for(60_000)
         expect(page.locator("#recommendations")).to_contain_text("1팀 · KT바로유심", timeout=10_000)
         expect(page.locator("#recommendations")).to_contain_text("2팀 · 다이소 유심")
         expect(page.locator("#message")).to_contain_text("새 검색 자동 반영")
