@@ -120,6 +120,30 @@ try:
             status=200, content_type="application/json",
             body=json.dumps(fixture, ensure_ascii=False)))
         page.reload()
+        # Ensure the initial request has finished before swapping fixtures.
+        expect(page.locator("#recommendations")).to_contain_text("1팀 · 다이소 유심")
+        expect(page.locator("#message")).to_contain_text("직접 확인")
+
+        # A newly saved run must appear automatically without clicking "다시 확인".
+        updated_fixture = deepcopy(fixture)
+        updated_fixture["run_id"] = "auto-refresh-next-run"
+        updated_fixture["captured_at_kst"] = (captured + timedelta(minutes=11)).isoformat()
+        updated_fixture["recommendation"]["assignments"][0]["keyword"] = "KT바로유심"
+        updated_fixture["recommendation"]["assignments"][1]["keyword"] = "다이소 유심"
+        page.route(raw_latest, lambda route: route.fulfill(
+            status=200, content_type="application/json",
+            body=json.dumps(updated_fixture, ensure_ascii=False)))
+        page.clock.run_for(60_000)
+        expect(page.locator("#recommendations")).to_contain_text("1팀 · KT바로유심", timeout=10_000)
+        expect(page.locator("#recommendations")).to_contain_text("2팀 · 다이소 유심")
+        expect(page.locator("#message")).to_contain_text("새 검색 자동 반영")
+        # Reset fixture for the remaining smoke assertions.
+        page.route(raw_latest, lambda route: route.fulfill(
+            status=200, content_type="application/json",
+            body=json.dumps(fixture, ensure_ascii=False)))
+        page.locator("#refresh").click()
+        expect(page.locator("#recommendations")).to_contain_text("1팀 · 다이소 유심")
+        expect(page.locator("#recommendations")).to_contain_text("2팀 · LG모두의 원칩")
         expect(page.locator("#recommendations .team-publish-card")).to_have_count(2)
         expect(page.locator("#recommendations .team-member")).to_have_count(4)
         expect(page.locator("#team-count")).to_have_text("2/2")
