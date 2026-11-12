@@ -1,8 +1,8 @@
 {
   "schema": "naver-mobile-integrated-blog-top10-v1",
-  "captured_at_kst": null,
-  "source": "not yet collected",
-  "trust": "No observed rankings yet",
+  "captured_at_kst": "2026-11-12T11:09:14.524698+09:00",
+  "source": "Playwright mobile-emulation, browser-visible Naver integrated search",
+  "trust": "automatic DOM observation only; screenshots required for independent audit",
   "people": {
     "건호": [
       "carrotmobile_",
@@ -20,8 +20,238 @@
       "jjuny1253"
     ]
   },
-  "groups": {},
-  "queries": {},
+  "groups": {
+    "KT바로유심": {
+      "complete": false,
+      "queries": [
+        "KT바로유심",
+        "바로유심",
+        "KT바로유심 개통"
+      ],
+      "matches": {
+        "건호": [],
+        "영은": [],
+        "하루": [],
+        "수진": []
+      },
+      "exposed": [],
+      "missing": [],
+      "dropped": [],
+      "status": "unverified"
+    },
+    "LG모두의 원칩": {
+      "complete": false,
+      "queries": [
+        "LG모두의 원칩",
+        "모두의 원칩",
+        "LG원칩 개통"
+      ],
+      "matches": {
+        "건호": [],
+        "영은": [],
+        "하루": [],
+        "수진": []
+      },
+      "exposed": [],
+      "missing": [],
+      "dropped": [],
+      "status": "unverified"
+    },
+    "태블릿소유자회원번호": {
+      "complete": false,
+      "queries": [
+        "태블릿소유자회원번호",
+        "태블릿 소유자 회원번호",
+        "태블릿소유자회원번호 입력"
+      ],
+      "matches": {
+        "건호": [],
+        "영은": [],
+        "하루": [],
+        "수진": []
+      },
+      "exposed": [],
+      "missing": [],
+      "dropped": [],
+      "status": "unverified"
+    },
+    "다이소 유심": {
+      "complete": false,
+      "queries": [
+        "다이소 유심",
+        "다이소 선불유심",
+        "다이소 유심 개통"
+      ],
+      "matches": {
+        "건호": [],
+        "영은": [],
+        "하루": [],
+        "수진": []
+      },
+      "exposed": [],
+      "missing": [],
+      "dropped": [],
+      "status": "unverified"
+    }
+  },
+  "queries": {
+    "KT바로유심": {
+      "query": "KT바로유심",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
+      "observed_at": "2026-11-12T11:06:57.037487+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "kt바로유심.png"
+    },
+    "바로유심": {
+      "query": "바로유심",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
+      "observed_at": "2026-11-12T11:07:09.652033+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "바로유심.png"
+    },
+    "KT바로유심 개통": {
+      "query": "KT바로유심 개통",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
+      "observed_at": "2026-11-12T11:07:22.558570+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "kt바로유심-개통.png"
+    },
+    "LG모두의 원칩": {
+      "query": "LG모두의 원칩",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
+      "observed_at": "2026-11-12T11:07:35.177079+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "lg모두의-원칩.png"
+    },
+    "모두의 원칩": {
+      "query": "모두의 원칩",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
+      "observed_at": "2026-11-12T11:07:47.843182+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "모두의-원칩.png"
+    },
+    "LG원칩 개통": {
+      "query": "LG원칩 개통",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
+      "observed_at": "2026-11-12T11:08:00.216179+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "lg원칩-개통.png"
+    },
+    "태블릿소유자회원번호": {
+      "query": "태블릿소유자회원번호",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
+      "observed_at": "2026-11-12T11:08:12.693186+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "태블릿소유자회원번호.png"
+    },
+    "태블릿 소유자 회원번호": {
+      "query": "태블릿 소유자 회원번호",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
+      "observed_at": "2026-11-12T11:08:24.975231+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "태블릿-소유자-회원번호.png"
+    },
+    "태블릿소유자회원번호 입력": {
+      "query": "태블릿소유자회원번호 입력",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
+      "observed_at": "2026-11-12T11:08:37.201950+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "태블릿소유자회원번호-입력.png"
+    },
+    "다이소 유심": {
+      "query": "다이소 유심",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
+      "observed_at": "2026-11-12T11:08:49.296728+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "다이소-유심.png"
+    },
+    "다이소 선불유심": {
+      "query": "다이소 선불유심",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
+      "observed_at": "2026-11-12T11:09:01.814012+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "다이소-선불유심.png"
+    },
+    "다이소 유심 개통": {
+      "query": "다이소 유심 개통",
+      "url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
+      "observed_at": "2026-11-12T11:09:14.418908+09:00",
+      "device": "mobile-emulation",
+      "surface": "integrated_blog_section",
+      "status": "needs_review",
+      "reason": "explicit blog section with ten posts not found",
+      "urls": [],
+      "section_heading": null,
+      "candidate_count": 0,
+      "evidence_file": "다이소-유심-개통.png"
+    }
+  },
   "recommendation": {
     "ready": false,
     "assignments": [],
@@ -31,7 +261,7 @@
       "하루",
       "수진"
     ],
-    "note": "첫 자동 수집 전"
+    "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
   },
   "errors": []
 }
