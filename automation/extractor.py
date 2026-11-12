@@ -54,7 +54,23 @@ EXTRACT_JS = r"""() => {
     return [...map.values()].sort((a,b) => a.y - b.y || a.x - b.x);
   }
 
-  const articleRows = linksWithin(root);
+  // Naver's mobile feed renders each UGC result as its own top-level
+  // `.api_subject_bx` card (one post per card, cafe cards interleaved) with no
+  // "블로그" heading. AI-briefing cards only cite posts and are not feed results.
+  const cards = [...root.querySelectorAll('.api_subject_bx')]
+    .filter(card => !card.parentElement.closest('.api_subject_bx') && visible(card));
+  const isAiBriefing = card => /^\s*AI\s*브리핑/.test((card.innerText || '').slice(0, 30));
+  const cardRows = [];
+  let nonBlogCards = 0;
+  for (const card of cards) {
+    if (isAiBriefing(card) || isAd(card)) continue;
+    const rows = linksWithin(card);
+    if (rows.length) cardRows.push(rows[0]);
+    else if (card.querySelector('a[href*="cafe.naver.com"]')) nonBlogCards++;
+  }
+  const seenPosts = new Set();
+  const feedRows = cardRows.filter(row => !seenPosts.has(row.post_url) && seenPosts.add(row.post_url));
+  const articleRows = feedRows.length ? feedRows : linksWithin(root);
   const headings = [...root.querySelectorAll('h1,h2,h3,h4,strong,[role="heading"],.title,.tit')]
     .filter(visible)
     .filter(node => /^(블로그|VIEW|블로그 인기글)$/i.test((node.textContent || '').trim()));
@@ -79,6 +95,8 @@ EXTRACT_JS = r"""() => {
   }
   sectionCandidates.sort((a,b) => b.rows.length - a.rows.length || a.depth - b.depth || a.bounds.y - b.bounds.y);
   return {blocked:false, article_rows:articleRows.slice(0,10), article_total:articleRows.length,
+    feed_layout: feedRows.length ? 'per_post_cards' : 'unstructured', feed_blog_cards: feedRows.length,
+    feed_interleaved_cafe_cards: nonBlogCards,
     section:sectionCandidates[0] || null, section_candidate_count:sectionCandidates.length};
 }"""
 
@@ -129,6 +147,8 @@ def observations_from_browser(
             **common_evidence,
             "verification_method": "rendered_article_visual_order",
             "observed_distinct_posts": int(raw.get("article_total") or len(article_rows)),
+            "feed_layout": raw.get("feed_layout", ""),
+            "feed_interleaved_cafe_cards": int(raw.get("feed_interleaved_cafe_cards") or 0),
         },
         reason=(
             "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보"
@@ -142,7 +162,11 @@ def observations_from_browser(
     section_rows = _rows(raw_section.get("rows")) if raw_section else []
     if not raw_section:
         section_status = "UNKNOWN"
-        reason = "명시적인 블로그 영역 경계를 찾지 못함"
+        reason = (
+            "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음"
+            if raw.get("feed_layout") == "per_post_cards"
+            else "명시적인 블로그 영역 경계를 찾지 못함"
+        )
         reason_code = "SECTION_NOT_PRESENT"
     elif len(section_rows) < 10:
         section_status = "PARTIAL"

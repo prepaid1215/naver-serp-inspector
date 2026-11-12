@@ -114,6 +114,30 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(surfaces[SURFACE_ARTICLES]["status"], "CANDIDATE")
         self.assertEqual(surfaces[SURFACE_SECTION]["status"], "UNKNOWN")
 
+    def test_per_post_card_feed_explains_missing_section_without_substituting_rank(self):
+        raw = {
+            "blocked": False,
+            "article_rows": [{"post_url": url} for url in ten()],
+            "article_total": 16,
+            "section": None,
+            "feed_layout": "per_post_cards",
+            "feed_interleaved_cafe_cards": 3,
+        }
+        surfaces = observations_from_browser(
+            raw,
+            observed_at=NOW.isoformat(),
+            source_url="https://m.search.naver.com/search.naver?query=x",
+            evidence={},
+        )
+        section = surfaces[SURFACE_SECTION]
+        self.assertEqual(section["status"], "UNKNOWN")
+        self.assertEqual(section["reason_code"], "SECTION_NOT_PRESENT")
+        self.assertEqual(section["results"], [])
+        article = surfaces[SURFACE_ARTICLES]
+        self.assertEqual(article["status"], "CANDIDATE")
+        self.assertEqual(article["evidence"]["feed_layout"], "per_post_cards")
+        self.assertEqual(article["evidence"]["feed_interleaved_cafe_cards"], 3)
+
     def test_verified_requires_visual_audit_fields(self):
         invalid = make_observation(
             surface=SURFACE_SECTION,
