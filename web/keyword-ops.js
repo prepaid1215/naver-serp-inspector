@@ -63,7 +63,7 @@
     $('pending-count').textContent = String(records.length - verified - stale);
     $('stale-count').textContent = String(stale);
     $('group-count').textContent = `${freshGroups}/4`;
-    $('team-count').textContent = `${new Set(assignments.flatMap(row => row.people || [])).size}/4`;
+    $('team-count').textContent = `${data.recommendation?.assignment_mode === 'TWO_PERSON_KEYWORD_TEAMS' ? assignments.filter(row => (row.people || []).length === 2).length : 0}/2`;
     $('success-rate').textContent = `${Math.round((verified / 12) * 100)}%`;
     $('updated').textContent = formatTime(data.captured_at_kst);
     $('slot').textContent = data.recommendation?.slot_at_kst ? `발행 ${formatTime(data.recommendation.slot_at_kst)}` : '배정 시각 없음';
@@ -72,75 +72,92 @@
   function renderRecommendations(data) {
     const root = $('recommendations'); clear(root);
     const decision = data.recommendation || {};
-    const assignments = decision.assignments || [];
-    const freshAssignments = assignments.filter(row => groupIsFresh(data.groups?.[row.keyword]));
-    const isCurrent = ['READY', 'PARTIAL'].includes(decision.status) && freshAssignments.length > 0;
-    const visible = isCurrent ? freshAssignments : assignments;
-    const perOwner = new Map();
-    visible.forEach(item => {
-      (item.people || []).forEach(owner => {
-        const title = (item.titles || []).find(row => row.owner === owner);
-        if (!perOwner.has(owner) && title) perOwner.set(owner, {item, title});
-      });
-    });
-    $('recommendation-heading').textContent = isCurrent ? '4인 발행 추천' : '최근 분석 결과';
+    const all = decision.assignments || [];
+    const flatOwners = all.flatMap(row => row.people || []);
+    const properPairs = decision.assignment_mode === 'TWO_PERSON_KEYWORD_TEAMS'
+      && all.length <= 2 && all.every(row => (row.people || []).length === 2
+        && (row.titles || []).length === 2)
+      && new Set(flatOwners).size === flatOwners.length
+      && new Set(all.map(row => row.keyword)).size === all.length;
+    const current = properPairs ? all.filter(row => groupIsFresh(data.groups?.[row.keyword])) : [];
+    const isCurrent = current.length > 0 && ['READY', 'PARTIAL'].includes(decision.status);
+    $('recommendation-heading').textContent = '키워드별 2인 팀 발행';
     $('decision-status').textContent = isCurrent
-      ? (perOwner.size === OWNERS.length ? '4명 모두 발행 추천을 확인했습니다.' : '일부 담당자의 추천만 확인됐습니다.')
-      : '최근 검색이 아닙니다. 발행 전 재확인이 필요합니다.';
+      ? (current.length === 2 ? '2팀 · 4명 발행 추천을 확인했습니다.' : '1팀만 추천됐습니다. 나머지는 보류합니다.')
+      : '검색 결과를 다시 확인한 후 2인 팀을 배정합니다.';
     $('decision-status').className = isCurrent ? 'decision-ready' : 'decision-pending';
 
     if (!isCurrent) {
       const warning = element('div', root, undefined, 'simple-alert');
       element('b', warning, '최신 검색 결과가 없어 현재 발행은 보류합니다.');
-      element('p', warning, '자동 검색이 다시 완료되면 아래 추천이 갱신됩니다. 오래된 추천은 참고용입니다.');
-    } else if (perOwner.size < OWNERS.length) {
-      const warning = element('div', root, undefined, 'simple-alert');
-      element('b', warning, '일부 담당자는 검증 자료가 부족해 발행 추천을 보류했습니다.');
+      element('p', warning, '새 검색이 완료되면 같은 키워드에 두 명씩 배정합니다.');
     }
-    if (!perOwner.size) {
-      const empty = element('div', root, undefined, 'simple-empty');
-      element('h3', empty, '지금 추천할 글이 없습니다.');
-      element('p', empty, decision.note || '검색 결과가 확보되면 추천합니다.', 'muted');
+    if (!properPairs) {
+      const warning = element('div', root, undefined, 'simple-alert');
+      element('b', warning, '이전 1인 배정 자료입니다. 2인 팀으로 재계산이 필요합니다.');
+      element('p', warning, '다음 자동 검색 결과부터 키워드별 2인 팀과 발행 블로그가 표시됩니다.');
       return;
     }
+    const shown = isCurrent ? current : all;
+    if (!shown.length) {
+      const empty = element('div', root, undefined, 'simple-empty');
+      element('h3', empty, '지금 추천할 팀이 없습니다.');
+      element('p', empty, decision.note || '검증된 키워드가 확보되면 2명씩 추천합니다.', 'muted');
+      return;
+    }
+    if (isCurrent && shown.length < 2) {
+      const warning = element('div', root, undefined, 'simple-alert');
+      element('b', warning, '서로 다른 검증 키워드가 부족하여 한 팀만 제안합니다.');
+    }
 
-    OWNERS.forEach(owner => {
-      const entry = perOwner.get(owner);
-      if (!entry) return;
-      const {item, title} = entry;
-      const card = element('article', root, undefined, 'simple-publish-card' + (isCurrent ? '' : ' past'));
+    shown.forEach((assignment, index) => {
+      const owners = assignment.people || [];
+      const card = element('article', root, undefined,
+        'simple-publish-card team-publish-card' + (isCurrent ? '' : ' past'));
       const top = element('div', card, undefined, 'publish-card-top');
-      element('span', top, owner + ' · ' + item.keyword, 'publish-keyword');
+      element('span', top, (index + 1) + '팀 · ' + assignment.keyword, 'publish-keyword');
       if (isCurrent) badge(top, 'VERIFIED');
       else element('span', top, '과거 추천 · 발행 보류', 'past-tag');
+      element('h3', card, owners.join(' + ') + ' · 같은 키워드로 각각 글을 발행하세요');
+      element('p', card, '핵심 키워드는 같고, 블로그와 글 제목은 서로 다르게 배정했습니다.', 'muted');
 
-      element('h3', card, isCurrent ? owner + '님, 이 글을 발행하세요' : owner + '님의 이전 추천');
-      const blogId = title.blog_id || (item.blog_ids || {})[owner];
-      const blogReason = title.blog_reason || (item.blog_reasons || {})[owner];
-      const blogBox = element('div', card, undefined, 'simple-blog-target');
-      element('b', blogBox, '발행할 블로그');
-      if (blogId && /^[\w-]{2,40}$/.test(blogId)) {
-        const link = element('a', blogBox, blogId + ' · 블로그 열기', 'simple-blog-id');
-        link.href = 'https://blog.naver.com/' + encodeURIComponent(blogId);
-        link.target = '_blank'; link.rel = 'noopener noreferrer';
-        if (blogReason) element('p', blogBox, blogReason, 'simple-blog-reason');
-      } else {
-        element('span', blogBox, '블로그 미지정 — 새 검색 후 추천', 'muted');
-      }
-      element('p', card, title.title || '제목 추천 대기', 'simple-owner-title');
-      const reason = element('div', card, undefined, 'publish-reason');
-      element('b', reason, '이유');
-      const fallback = item.reason || '블로그 카드 관측 결과를 기준으로 추천했습니다.';
-      element('p', reason, (item.owner_reasons || {})[owner] || fallback);
-      if (title.intent) element('p', card, '작성 방향: ' + title.intent, 'muted');
+      const memberBox = element('div', card, undefined, 'team-members');
+      owners.forEach(owner => {
+        const row = (assignment.titles || []).find(t => t.owner === owner) || {};
+        const person = element('section', memberBox, undefined, 'team-member');
+        element('h4', person, owner);
+        const blogId = row.blog_id || (assignment.blog_ids || {})[owner];
+        const blogReason = row.blog_reason || (assignment.blog_reasons || {})[owner];
+        const blogBox = element('div', person, undefined, 'simple-blog-target');
+        element('b', blogBox, '발행할 블로그');
+        if (blogId && /^[\w-]{2,40}$/.test(blogId)) {
+          const link = element('a', blogBox, blogId + ' · 블로그 열기', 'simple-blog-id');
+          link.href = 'https://blog.naver.com/' + encodeURIComponent(blogId);
+          link.target = '_blank'; link.rel = 'noopener noreferrer';
+          if (blogReason) element('p', blogBox, blogReason, 'simple-blog-reason');
+        } else {
+          element('span', blogBox, '발행 블로그 미지정 — 다시 검색 필요', 'muted');
+        }
+        element('p', person, row.title || '제목 추천 대기', 'simple-owner-title');
+        const reasonBox = element('div', person, undefined, 'publish-reason');
+        element('b', reasonBox, '추천 이유');
+        element('p', reasonBox, (assignment.owner_reasons || {})[owner] ||
+          '검증된 블로그 카드 순번을 기준으로 추천했습니다.');
+        if (row.intent) element('p', person, '작성 방향: ' + row.intent, 'muted');
+      });
 
       const foot = element('div', card, undefined, 'publish-card-foot');
-      element('span', foot, '제목은 자동 초안 · 발행 전 확인', 'muted');
-      const copy = element('button', foot, '제목 복사', 'simple-copy');
+      element('span', foot, '두 글은 서로 다른 내용으로 작성 · 발행 전 제목 확인', 'muted');
+      const copy = element('button', foot, '2명 제목 복사', 'simple-copy');
       copy.type = 'button';
       copy.addEventListener('click', async () => {
         try {
-          await navigator.clipboard.writeText(title.title || '');
+          const lines = owners.map(owner => {
+            const row = (assignment.titles || []).find(t => t.owner === owner) || {};
+            return owner + ' (' + (row.blog_id || (assignment.blog_ids || {})[owner] || '미지정') + '): ' +
+              (row.title || '제목 추천 대기');
+          });
+          await navigator.clipboard.writeText([assignment.keyword, ...lines].join('\n'));
           copy.textContent = '복사 완료';
         } catch (_) { copy.textContent = '복사 실패'; }
       });
