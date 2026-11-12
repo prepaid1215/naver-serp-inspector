@@ -4,6 +4,7 @@ from functools import partial
 import json
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import os
+import re
 from pathlib import Path
 from threading import Thread
 
@@ -58,6 +59,9 @@ try:
             expect(page.locator("#recommendations")).to_contain_text("이유")
             expect(page.locator("#decision-status")).to_contain_text("추천")
             expect(page.locator("#recommendations")).to_contain_text("이 글을 발행하세요")
+            expect(page.locator("#recommendations")).to_contain_text("발행할 블로그")
+            if any(row.get("blog_ids") for row in latest["recommendation"]["assignments"]):
+                expect(page.locator("#recommendations .simple-blog-id").first).to_have_attribute("href", re.compile(r"^https://blog\.naver\.com/[a-z0-9_-]+$"))
             expect(page.locator("#keyword-cards")).to_contain_text("블로그")
         expect(page.locator("#query-details .query-detail")).to_have_count(12)
         expect(page.locator("#query-details")).to_contain_text("피드 블로그 카드 순번")

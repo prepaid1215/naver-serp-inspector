@@ -326,6 +326,60 @@ class SchedulerTests(unittest.TestCase):
         self.assertIn("10번째", by_owner["건호"][1])
         self.assertIn("상위 10개", by_owner["하루"][1])
 
+    def test_each_author_gets_only_configured_blog_id_and_link(self):
+        from automation.owners import PEOPLE
+        queries = run_queries()
+        set_group(queries, "KT바로유심",
+                  ten((3, "esim99"), (7, "ntelecom59"), (10, "carrotmobile_")))
+        result = recommend(aggregate_groups(queries, at=NOW), at=NOW)
+        all_rows = [row for item in result["assignments"] for row in item["titles"]]
+        self.assertEqual(len(all_rows), 4)
+        for row in all_rows:
+            self.assertIn(row["blog_id"], PEOPLE[row["owner"]])
+            self.assertEqual(row["blog_url"], "https://blog.naver.com/" + row["blog_id"])
+            self.assertTrue(row["blog_reason"])
+        chosen = {row["owner"]: row["blog_id"] for row in all_rows}
+        self.assertEqual(chosen["건호"], "lifeon5g_")  # weaker than carrotmobile_ at 10th
+        self.assertEqual(chosen["하루"], "ntelecom59")
+        self.assertEqual(chosen["수진"], "jjuny1253")
+
+    def test_owner_blog_selection_prefers_weakest_global_presence_when_keyword_all_missing(self):
+        from automation.scheduler import _choose_blog_id
+        group_data = {
+            "KT바로유심": {"complete": True, "status": "VERIFIED",
+                            "queries": list(GROUPS["KT바로유심"]),
+                            "matches": {"영은": [
+                                {"blog_id": "esim99", "query": q, "rank": 3}
+                                for q in GROUPS["KT바로유심"]]}},
+            "LG모두의 원칩": {"complete": True, "status": "VERIFIED",
+                              "queries": list(GROUPS["LG모두의 원칩"]),
+                              "matches": {"영은": [
+                                  {"blog_id": "esim99", "query": q, "rank": 4}
+                                  for q in GROUPS["LG모두의 원칩"]] + [
+                                  {"blog_id": "esim99_", "query": "모두의 원칩", "rank": 10},
+                                  {"blog_id": "esim99_", "query": "LG모두의 원칩", "rank": 9}]}},
+            "태블릿소유자회원번호": {"complete": True, "status": "VERIFIED",
+                                      "queries": list(GROUPS["태블릿소유자회원번호"]),
+                                      "matches": {"영은": [
+                                          {"blog_id": "esim87_", "query": q, "rank": 6}
+                                          for q in GROUPS["태블릿소유자회원번호"]]}},
+            "다이소 유심": {"complete": True, "status": "VERIFIED",
+                             "queries": list(GROUPS["다이소 유심"]),
+                             "matches": {"영은": []}},
+        }
+        blog_id, reason = _choose_blog_id("영은", "다이소 유심", group_data, {})
+        self.assertEqual(blog_id, "esim99_")
+        self.assertIn("모두 이 키워드", reason)
+        blog_id, _ = _choose_blog_id("영은", "다이소 유심", group_data, {("영은", "esim99_"): 2})
+        self.assertEqual(blog_id, "esim87_")  # rotate an otherwise unexposed ID
+
+    def test_no_blog_selection_when_serp_group_not_verified(self):
+        queries = run_queries()
+        set_group(queries, "다이소 유심", ten(), status="CANDIDATE")
+        result = recommend(aggregate_groups(queries, at=NOW), at=NOW)
+        self.assertFalse(result["assignments"])
+        self.assertEqual(result["status"], "PENDING")
+
     def test_recent_recommendations_break_same_priority_ties(self):
         queries = run_queries()
         for key in ("KT바로유심", "LG모두의 원칩"):
