@@ -115,6 +115,18 @@
       else element('span', top, '과거 추천 · 발행 보류', 'past-tag');
 
       element('h3', card, isCurrent ? owner + '님, 이 글을 발행하세요' : owner + '님의 이전 추천');
+      const blogId = title.blog_id || (item.blog_ids || {})[owner];
+      const blogReason = title.blog_reason || (item.blog_reasons || {})[owner];
+      const blogBox = element('div', card, undefined, 'simple-blog-target');
+      element('b', blogBox, '발행할 블로그');
+      if (blogId && /^[\w-]{2,40}$/.test(blogId)) {
+        const link = element('a', blogBox, blogId + ' · 블로그 열기', 'simple-blog-id');
+        link.href = 'https://blog.naver.com/' + encodeURIComponent(blogId);
+        link.target = '_blank'; link.rel = 'noopener noreferrer';
+        if (blogReason) element('p', blogBox, blogReason, 'simple-blog-reason');
+      } else {
+        element('span', blogBox, '블로그 미지정 — 새 검색 후 추천', 'muted');
+      }
       element('p', card, title.title || '제목 추천 대기', 'simple-owner-title');
       const reason = element('div', card, undefined, 'publish-reason');
       element('b', reason, '이유');

@@ -214,6 +214,72 @@ def _owner_priority(owner: str, keyword: str, group: dict) -> tuple[int, int, st
     return (4, best, f"이미 블로그 카드 상위권({best}번째)에 글이 있어 같은 내용을 반복하기보다 다른 검색 의도로 확장합니다.")
 
 
+def _recent_blog_recommendations(history: object) -> dict[tuple[str, str], int]:
+    """Previous suggestions help rotate IDs, but are NOT proof of publishing."""
+    rows = history if isinstance(history, list) else (history or {}).get("entries", [])
+    counts: dict[tuple[str, str], int] = {}
+    for run in (rows or [])[-12:]:
+        for item in (run.get("recommendation") or {}).get("assignments", []):
+            chosen = item.get("blog_ids") or {}
+            for owner, blog_id in chosen.items():
+                if owner in PEOPLE and blog_id in PEOPLE[owner]:
+                    key = (owner, blog_id)
+                    counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _choose_blog_id(
+    owner: str, keyword: str, groups: dict[str, dict], recent: dict[tuple[str, str], int]
+) -> tuple[str, str]:
+    """Pick the weakest visible blog ID, without treating absent posts as unindexed.
+
+    Only fully verified groups contribute evidence. Same-keyword exposure has
+    priority; ties favor IDs suggested less often, then weaker visibility in
+    other verified keywords, then stable configured order.
+    """
+    blog_ids = PEOPLE[owner]
+    group = groups[keyword]
+    group_rows = (group.get("matches") or {}).get(owner, [])
+
+    def matches_for(blog_id: str, source_group: dict) -> list[dict]:
+        return [row for row in ((source_group.get("matches") or {}).get(owner) or [])
+                if row.get("blog_id") == blog_id]
+
+    choices = []
+    for pos, blog_id in enumerate(blog_ids):
+        target = matches_for(blog_id, group)
+        target_queries = {row.get("query") for row in target if row.get("query")}
+        all_queries = set()
+        for group_name, verified_group in groups.items():
+            if verified_group.get("complete") is not True or verified_group.get("status") != "VERIFIED":
+                continue
+            for row in matches_for(blog_id, verified_group):
+                if row.get("query"):
+                    all_queries.add((group_name, row["query"]))
+        best = min((int(row["rank"]) for row in target
+                    if isinstance(row.get("rank"), int) and 1 <= row["rank"] <= 10),
+                   default=11)
+        score = (len(target_queries), recent.get((owner, blog_id), 0),
+                 len(all_queries), -best, pos)
+        choices.append((score, blog_id, len(target_queries), best))
+    _, blog_id, visible_variants, best = min(choices, key=lambda row: row[0])
+
+    if len(blog_ids) == 1:
+        reason = "이 담당자가 등록한 블로그 ID는 하나이므로 해당 계정에서 발행합니다."
+    elif visible_variants == 0:
+        others_appear = any(row.get("blog_id") != blog_id for row in group_rows)
+        if others_appear:
+            reason = (f"같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, "
+                      f"이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다.")
+        else:
+            reason = (f"등록한 블로그들이 모두 이 키워드의 상위 10개에 보이지 않아 "
+                      f"다른 검증 키워드의 노출과 최근 추천 이력을 비교해 선택했습니다.")
+    else:
+        reason = (f"이 블로그는 관련 검색어 {visible_variants}/{len(group.get('queries') or []) or 3}개에서만 "
+                  f"노출됐고 가장 좋은 관측 순번은 {best}번째입니다. 다른 계정보다 보강이 필요한 블로그입니다.")
+    return blog_id, reason
+
+
 def recommend(
     groups: dict[str, dict],
     *,
@@ -230,6 +296,7 @@ def recommend(
                 if group.get("complete") is True and group.get("status") == "VERIFIED"]
     used_titles = _used_titles(history)
     recent = _recent_keyword_counts(history)
+    recent_blogs = _recent_blog_recommendations(history)
     assigned: dict[str, dict] = {}
     keyword_usage: dict[str, int] = {}
 
@@ -262,10 +329,22 @@ def recommend(
         if not people:
             continue
         reasons = {owner: assigned[owner]["reason"] for owner in people}
+        blog_choices = {
+            owner: _choose_blog_id(owner, keyword, groups, recent_blogs)
+            for owner in people
+        }
+        title_rows = _title_rows(keyword, people, used_titles)
+        for row in title_rows:
+            blog_id, blog_reason = blog_choices[row["owner"]]
+            row["blog_id"] = blog_id
+            row["blog_url"] = f"https://blog.naver.com/{blog_id}"
+            row["blog_reason"] = blog_reason
         assignments.append({
             "keyword": keyword,
             "people": people,
-            "titles": _title_rows(keyword, people, used_titles),
+            "titles": title_rows,
+            "blog_ids": {owner: blog_choices[owner][0] for owner in people},
+            "blog_reasons": {owner: blog_choices[owner][1] for owner in people},
             "reason": "담당자별 노출 여부·관측 순번과 검색 의도에 따라 배정",
             "owner_reasons": reasons,
             "owner_priorities": {owner: assigned[owner]["tier"] for owner in people},

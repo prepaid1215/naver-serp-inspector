@@ -80,6 +80,12 @@ def build_report(run: dict) -> str:
             continue
         item, title = decisions[owner]
         lines.append(f"{owner}: {item['keyword']}")
+        blog_id = title.get("blog_id") or (item.get("blog_ids") or {}).get(owner)
+        if blog_id:
+            lines.append(f"  발행 블로그: {blog_id} (https://blog.naver.com/{blog_id})")
+            lines.append("  블로그 선정 이유: " + (title.get("blog_reason") or (item.get("blog_reasons") or {}).get(owner, "해당 블로그 노출 보강 추천")))
+        else:
+            lines.append("  발행 블로그: 미지정 — 최신 수집 후 다시 확인")
         lines.append("  제목: " + title.get("title", "제목 추천 대기"))
         lines.append("  이유: " + (item.get("owner_reasons") or {}).get(owner, item.get("reason", "검증 자료 기준 추천")))
     if not assignments:
