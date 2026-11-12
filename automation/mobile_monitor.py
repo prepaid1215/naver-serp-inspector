@@ -141,7 +141,22 @@ EXTRACT_JS = r'''() => {
      }
    }
  }
- if(candidates.length!==1)return {status:'needs_review',reason:candidates.length?'multiple blog sections':'explicit blog section with ten posts not found',urls:[],heading_count:heads.length,candidate_count:candidates.length};
+ // The integrated mobile SERP may blend blog entries among other result types
+ // without a separately labelled 블로그 section. Extract candidate blog posts
+ // but DO NOT promote their positions to verified blog-section rank.
+ if(candidates.length!==1){
+   const found=new Map();
+   for(const a of main.querySelectorAll('a[href]')){
+     if(!visible(a) || a.closest('.ad_section,.powerlink,[class*="ad_wrap"],[class*="powerlink"]'))continue;
+     const url=parse(a.href);if(!url)continue;
+     const y=a.getBoundingClientRect().top+scrollY;
+     if(!found.has(url)||y<found.get(url))found.set(url,y);
+   }
+   const links=[...found].sort((a,b)=>a[1]-b[1]);
+   return {status:'needs_review',reason:'integrated SERP has no verifiable standalone blog section; candidate blog links only',urls:[],
+     candidate_urls:links.slice(0,10).map(x=>x[0]),candidate_total:found.size,
+     heading_count:heads.length,candidate_count:candidates.length};
+ }
  return {status:'auto_observed',reason:'ten distinct visible posts under an explicit blog heading; mobile viewport y-order',...candidates[0]};
 }'''
 
@@ -161,7 +176,8 @@ def collect_search(page, query: str, evidence_dir: Path) -> dict:
     item = {'query': query, 'url': url, 'observed_at': datetime.now(KST).isoformat(),
             'device': 'mobile-emulation', 'surface': 'integrated_blog_section',
             'status': data.get('status', 'needs_review'), 'reason': data.get('reason',''),
-            'urls': data.get('urls', []), 'section_heading': data.get('heading'),
+            'urls': data.get('urls', []), 'candidate_urls': data.get('candidate_urls', []),
+            'candidate_total': data.get('candidate_total', 0), 'section_heading': data.get('heading'),
             'candidate_count': data.get('candidate_count', 1),
             'evidence_file': safe + '.png'}
     if item['status'] == 'auto_observed' and (len(item['urls']) != 10 or not all(blog_article(u) for u in item['urls'])):
