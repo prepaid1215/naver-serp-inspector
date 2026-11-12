@@ -26,7 +26,7 @@ with sync_playwright() as p:
     page.locator('#domains').fill('59man.shop')
     page.locator('#files').set_input_files(str(FIX))
     page.locator('#analyze').click()
-    page.wait_for_function("document.querySelector('#metric-files')?.textContent==='1'")
+    page.locator("#metric-files").get_by_text("1", exact=True).wait_for(timeout=10000)
     print('HTML metrics:',{x:page.locator('#'+x).inner_text() for x in ['metric-files','metric-results','metric-target']})
     print('row types:',page.locator('#rows').inner_text()[:270])
     print('status',page.locator('#status').inner_text())
@@ -38,7 +38,7 @@ with sync_playwright() as p:
     assert page.locator('#download-blocks').is_visible()
     page.locator('#files').set_input_files(str(ZIP))
     page.locator('#analyze').click()
-    page.wait_for_function("document.querySelector('#metric-files')?.textContent==='2'")
+    page.locator("#metric-files").get_by_text("2", exact=True).wait_for(timeout=10000)
     print('ZIP metrics:',{x:page.locator('#'+x).inner_text() for x in ['metric-files','metric-results','metric-target']})
     assert int(page.locator('#metric-results').inner_text())>=10
     assert not errors,errors
