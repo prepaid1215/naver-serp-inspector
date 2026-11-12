@@ -50,7 +50,7 @@ python -m unittest discover -s automation -p "test_*.py" -v
 
 ## ChatGPT 예약 보고
 
-기존 `네이버 4인 발행 키워드 배정` 작업을 재사용한다. 새 작업을 만들지 않는다. 보고 작업은 `latest.json`의 `captured_at_kst`, 검색어별 블로그 영역 `status`, `recommendation.status`를 먼저 확인해야 한다.
+기존 `네이버 4인 발행 키워드 배정` 작업을 재사용한다. 새 작업을 만들지 않는다. 보고 작업은 `latest.json`의 `captured_at_kst`, 검색어별 `INTEGRATED_FEED_BLOG_CARDS_TOP10`의 `status`, `recommendation.status`를 먼저 확인해야 한다.
 
 - `VERIFIED`가 아닌 관측을 확정 순위로 표현하지 않는다.
 - `recommendation.status=PENDING`이면 담당자를 임의 배정하지 않는다.
@@ -59,3 +59,8 @@ python -m unittest discover -s automation -p "test_*.py" -v
 
 OpenAI API 키는 필요하지 않다. 서버 측 GPT 호출은 구현하지 않았으며 클라이언트 코드에 키를 넣지 않는다.
 
+
+
+## 2026-11-12 운영 정책 변경: 4인 개별 발행
+
+기존 2인 팀 매칭 조건은 폐지했다. 매 수집마다 `recommendation.assignments`의 `people`, `titles`, `owner_reasons`를 사용하여 **건호·영은·하루·수진 각 1건**의 발행 주제를 추천한다. 3개 변형 검색어가 모두 최신 `VERIFIED`인 키워드만 사용한다. 미노출 우선, 8~10번째 노출 보강, 일부 변형 검색어 미노출, 4~7번째 노출 보강, 상위권의 다른 검색 의도 확장 순서다. 자료가 부족한 담당자만 배정 보류한다. 기존 예약 작업은 같은 일정으로 4인 보고를 출력한다.
