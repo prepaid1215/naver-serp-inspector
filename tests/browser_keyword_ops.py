@@ -47,7 +47,7 @@ try:
         expect(page.locator("#message")).to_contain_text("최신 저장 자료", timeout=10_000)
         expect(page.locator("#verified-count")).to_have_text("0/12")
         expect(page.locator("#team-count")).to_have_text("0/2")
-        expect(page.locator("#recommendations")).to_contain_text("발행자 자동 배정 보류")
+        expect(page.locator("#recommendations")).to_contain_text("최신 검색 결과가 없어 현재 발행은 보류합니다.")
 
         # Fresh: ten minutes after capture the feed-card metric drives the dashboard.
         page.clock.set_fixed_time(captured + timedelta(minutes=10))
@@ -55,7 +55,9 @@ try:
         expect(page.locator("#message")).to_contain_text("최신 저장 자료", timeout=10_000)
         expect(page.locator("#verified-count")).to_have_text(f"{verified_total}/12")
         if latest["recommendation"]["assignments"] and verified_total == 12:
-            expect(page.locator("#recommendations")).to_contain_text("VERIFIED")
+            expect(page.locator("#recommendations")).to_contain_text("왜 추천하나요?")
+            expect(page.locator("#decision-status")).to_contain_text("아래 글을 추천합니다.")
+            expect(page.locator("#recommendations")).to_contain_text("이 글을 발행하세요")
             expect(page.locator("#keyword-cards")).to_contain_text("블로그")
         expect(page.locator("#query-details .query-detail")).to_have_count(12)
         expect(page.locator("#query-details")).to_contain_text("피드 블로그 카드 순번")
@@ -69,6 +71,10 @@ try:
             f"https://blog.naver.com/external_{index}/{224500000000 + index}"
             for index in range(10)
         )
+        expect(page.locator("#analysis-details")).to_be_visible()
+        expect(page.locator(".stats")).to_be_hidden()
+        page.locator("#analysis-details > summary").click()
+        expect(page.locator(".stats")).to_be_visible()
         page.locator("#manual-reviewer").fill("ui-test")
         page.locator("#manual-source").fill("https://m.search.naver.com/search.naver?query=test")
         page.locator("#manual-urls").fill(urls)
