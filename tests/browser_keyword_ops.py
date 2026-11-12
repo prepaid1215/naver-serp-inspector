@@ -43,10 +43,16 @@ try:
             if record["surfaces"]["INTEGRATED_FEED_BLOG_CARDS_TOP10"]["status"] == "VERIFIED"
         )
 
+        raw_latest = "https://raw.githubusercontent.com/prepaid1215/naver-serp-inspector/main/web/ops-data/latest.json*"
+        raw_history = "https://raw.githubusercontent.com/prepaid1215/naver-serp-inspector/main/web/ops-data/history.json*"
+        # Offline browser tests exercise the Pages fallback when live main is unavailable.
+        page.route(raw_latest, lambda route: route.abort())
+        page.route(raw_history, lambda route: route.abort())
+
         # Stale: three hours after capture nothing is confirmed and assignment is held.
         page.clock.set_fixed_time(captured + timedelta(hours=3))
         page.goto(f"http://127.0.0.1:{server.server_port}/keyword-ops.html")
-        expect(page.locator("#message")).to_contain_text("최신 저장 자료", timeout=10_000)
+        expect(page.locator("#message")).to_contain_text("검색 자료", timeout=10_000)
         expect(page.locator("#verified-count")).to_have_text("0/12")
         expect(page.locator("#team-count")).to_have_text("0/2")
         expect(page.locator("#recommendations")).to_contain_text("최신 검색 결과가 없어 현재 발행은 보류합니다.")
@@ -54,7 +60,7 @@ try:
         # Fresh: ten minutes after capture the feed-card metric drives the dashboard.
         page.clock.set_fixed_time(captured + timedelta(minutes=10))
         page.reload()
-        expect(page.locator("#message")).to_contain_text("최신 저장 자료", timeout=10_000)
+        expect(page.locator("#message")).to_contain_text("검색 자료", timeout=10_000)
         expect(page.locator("#verified-count")).to_have_text(f"{verified_total}/12")
         if latest["recommendation"].get("assignment_mode") != "TWO_PERSON_KEYWORD_TEAMS":
             expect(page.locator("#recommendations")).to_contain_text("이전 1인 배정 자료입니다.")
@@ -86,10 +92,13 @@ try:
             ],
             "unassigned": [],
         }
-        page.route("**/ops-data/latest.json*", lambda route: route.fulfill(
+        page.unroute(raw_latest)
+        # A newer main branch snapshot must override stale Pages JSON.
+        page.route(raw_latest, lambda route: route.fulfill(
             status=200, content_type="application/json",
             body=json.dumps(fixture, ensure_ascii=False)))
         page.reload()
+        expect(page.locator("#message")).to_contain_text("GitHub main 최신 검색 결과")
         expect(page.locator("#recommendations .team-publish-card")).to_have_count(2)
         expect(page.locator("#recommendations .team-member")).to_have_count(4)
         expect(page.locator("#team-count")).to_have_text("2/2")
