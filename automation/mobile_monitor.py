@@ -105,59 +105,54 @@ def recommend(groups: dict) -> dict:
 # visible post links in a nearby container are required, not generic DOM order.
 EXTRACT_JS = r'''() => {
  const main=document.querySelector('#main_pack') || document.querySelector('main') || document.body;
- const blocked=/자동입력 방지|비정상적인 검색 요청|캡차를 입력|captcha|접근이 제한/i.test((document.body.innerText||'').slice(0,25000));
- if(blocked) return {status:'blocked',reason:'access restriction or CAPTCHA',urls:[]};
+ const full=(document.body.innerText||'').slice(0,30000);
+ const blocked=/자동입력 방지|비정상적인 검색 요청|캡차를 입력|captcha|접근이 제한/i.test(full);
+ if(blocked)return {status:'blocked',reason:'Naver search restriction',urls:[]};
  function parse(href){
-  try {const u=new URL(href,location.href);if(!/^(m\.)?blog\.naver\.com$/i.test(u.hostname))return null;
-   let m=u.pathname.match(/^\/([\w-]{2,40})\/(\d{5,20})(?:\/|$)/);
-   if(m)return 'https://blog.naver.com/'+m[1]+'/'+m[2];
-   if(/^\/PostView\.(naver|nhn)$/i.test(u.pathname)){
-     const id=u.searchParams.get('blogId'),no=u.searchParams.get('logNo');
-     if(/^[\w-]{2,40}$/.test(id||'')&&/^\d{5,20}$/.test(no||''))return 'https://blog.naver.com/'+id+'/'+no;
-   }
-  } catch(e){} return null;
+   try{const u=new URL(href,location.href);
+      if(!/^(m\.)?blog\.naver\.com$/i.test(u.hostname))return null;
+      const m=u.pathname.match(/^\/([\w-]{2,40})\/(\d{5,20})(?:\/|$)/);
+      if(m)return 'https://blog.naver.com/'+m[1]+'/'+m[2];
+      if(/^\/PostView\.(naver|nhn)$/i.test(u.pathname)){
+        const id=u.searchParams.get('blogId'),log=u.searchParams.get('logNo');
+        if(/^[\w-]{2,40}$/.test(id||'')&&/^\d{5,20}$/.test(log||''))
+          return 'https://blog.naver.com/'+id+'/'+log;
+      }
+   }catch(e){} return null;
  }
- function visible(el){const r=el.getBoundingClientRect(),s=getComputedStyle(el);
-   return r.width>0 && r.height>0 && s.display!=='none' && s.visibility!=='hidden';}
- const heads=[...main.querySelectorAll('h1,h2,h3,h4,strong,[role="heading"],.api_title')]
-   .filter(x=>visible(x) && (x.innerText||'').trim()==='블로그');
- let candidates=[];
- for(const h of heads){
-   let ancestor=h;
-   for(let depth=0;depth<6 && ancestor;depth++,ancestor=ancestor.parentElement){
-     if(ancestor===document.body||ancestor===main&&depth>3)break;
-     const unique=new Map();
-     for(const a of ancestor.querySelectorAll('a[href]')){
-       if(!visible(a))continue;const u=parse(a.href);if(!u)continue;
-       const y=a.getBoundingClientRect().top+scrollY;
-       if(!unique.has(u)||y<unique.get(u))unique.set(u,y);
-     }
-     if(unique.size>=10 && unique.size<=30){
-       const links=[...unique].sort((a,b)=>a[1]-b[1]);
-       const bounds=ancestor.getBoundingClientRect();
-       candidates.push({urls:links.slice(0,10).map(x=>x[0]),depth,all:unique.size,heading:'블로그',
-         width:Math.round(bounds.width),height:Math.round(bounds.height)});
-       break;
-     }
-   }
+ function visible(el){
+    const r=el.getBoundingClientRect(),s=getComputedStyle(el);
+    return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';
  }
- // The integrated mobile SERP may blend blog entries among other result types
- // without a separately labelled 블로그 section. Extract candidate blog posts
- // but DO NOT promote their positions to verified blog-section rank.
- if(candidates.length!==1){
-   const found=new Map();
-   for(const a of main.querySelectorAll('a[href]')){
-     if(!visible(a) || a.closest('.ad_section,.powerlink,[class*="ad_wrap"],[class*="powerlink"]'))continue;
-     const url=parse(a.href);if(!url)continue;
-     const y=a.getBoundingClientRect().top+scrollY;
-     if(!found.has(url)||y<found.get(url))found.set(url,y);
+ function nearAd(el){
+   let node=el;
+   for(let i=0;i<7&&node;i++,node=node.parentElement){
+     const cls=String(node.className?.baseVal||node.className||'');
+     if(/(?:^|[\s_-])(ad_section|powerlink|sp_ad|ad_group|ad_item)(?:$|[\s_-])/i.test(cls))return true;
    }
-   const links=[...found].sort((a,b)=>a[1]-b[1]);
-   return {status:'needs_review',reason:'integrated SERP has no verifiable standalone blog section; candidate blog links only',urls:[],
-     candidate_urls:links.slice(0,10).map(x=>x[0]),candidate_total:found.size,
-     heading_count:heads.length,candidate_count:candidates.length};
+   return false;
  }
- return {status:'auto_observed',reason:'ten distinct visible posts under an explicit blog heading; mobile viewport y-order',...candidates[0]};
+ const links=new Map();
+ for(const a of main.querySelectorAll('a[href]')){
+   if(!visible(a)||nearAd(a))continue;
+   const url=parse(a.href);if(!url)continue;
+   const r=a.getBoundingClientRect();
+   const y=r.top+scrollY;
+   const prev=links.get(url);
+   if(prev===undefined||prev>y)links.set(url,y);
+ }
+ const ordered=[...links.entries()].sort((a,b)=>a[1]-b[1]).map(x=>x[0]);
+ // A distinct labelled BLOG block is not guaranteed in integrated Naver search.
+ // Here ranks refer ONLY to the visual order of Naver Blog post cards within
+ // the mobile integrated SERP, not to Naver's separate Blog tab.
+ if(ordered.length>=10){
+   return {status:'auto_observed',reason:'first ten rendered Naver Blog articles in mobile integrated search',
+     urls:ordered.slice(0,10),basis:'mobile_integrated_blog_cards_visual_order',
+     total_distinct_blog_posts:ordered.length,section_heading:null};
+ }
+ return {status:'needs_review',reason:'fewer than ten rendered blog posts in integrated page',
+    urls:[],preview_urls:ordered,basis:'mobile_integrated_blog_cards_visual_order',
+    total_distinct_blog_posts:ordered.length,section_heading:null};
 }'''
 
 def collect_search(page, query: str, evidence_dir: Path) -> dict:
@@ -179,6 +174,8 @@ def collect_search(page, query: str, evidence_dir: Path) -> dict:
             'urls': data.get('urls', []), 'candidate_urls': data.get('candidate_urls', []),
             'candidate_total': data.get('candidate_total', 0), 'section_heading': data.get('heading'),
             'candidate_count': data.get('candidate_count', 1),
+            'basis': data.get('basis'), 'observed_blog_posts': data.get('total_distinct_blog_posts',0),
+            'preview_urls': data.get('preview_urls', []),
             'evidence_file': safe + '.png'}
     if item['status'] == 'auto_observed' and (len(item['urls']) != 10 or not all(blog_article(u) for u in item['urls'])):
         item.update(status='needs_review', reason='post link validation failed', urls=[])
