@@ -36,3 +36,7 @@ Implement the design end-to-end (P0–P5), not just a mock-up or static HTML. Pr
 - Extract related-search candidates only from visible, grounded Naver related-search areas; do not fabricate suggestions or treat them as approved search queries.
 - Every configured variant in a keyword group must be fresh VERIFIED before treating absence as confirmed. The publishing policy remains EXACTLY two people per distinct keyword, two distinct keyword teams total where evidence permits.
 - The baseline 24-query version does not retroactively validate an old 12-query saved snapshot. Preserve timestamp/evidence truth and all historical audit data.
+
+## Team publication keyword whitelist (2026-11-12 operator correction)
+
+Team recommendations MUST be chosen ONLY from `KT바로유심`, `LG모두의 원칩`, `태블릿소유자회원번호`, `다이소 유심`. Other eight-group baseline queries, including payment arrears, remain observation-only. Preserve two 2-person teams using two distinct whitelisted keywords when sufficient VERIFIED evidence exists. Do not show old non-whitelisted assignments even as recommendations in the public dashboard. Vercel site must show `오늘은 이 글을 발행하세요`, not an unrelated 59man SERP analysis app.

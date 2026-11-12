@@ -294,6 +294,28 @@ class SchedulerTests(unittest.TestCase):
                             for row in result["assignments"]))
         self.assertEqual(len(set(owner for team in teams.values() for owner in team)), 4)
 
+    def test_only_four_core_keywords_eligible_for_team_publication(self):
+        from automation.scheduler import PUBLISH_GROUPS
+        self.assertEqual(set(PUBLISH_GROUPS),
+                         {"KT바로유심", "LG모두의 원칩", "태블릿소유자회원번호", "다이소 유심"})
+        queries = run_queries()
+        for group_name in ("선불폰 개통", "요금미납 선불폰",
+                           "편의점 선불유심", "앤텔레콤 396"):
+            set_group(queries, group_name, ten())
+        groups = aggregate_groups(queries, at=NOW)
+        result = recommend(groups, at=NOW)
+        self.assertEqual(result["status"], "PENDING")
+        self.assertEqual(result["assignments"], [])
+        self.assertEqual(result["publish_keywords"], list(PUBLISH_GROUPS))
+        set_group(queries, "KT바로유심", ten())
+        set_group(queries, "다이소 유심", ten())
+        result = recommend(aggregate_groups(queries, at=NOW), at=NOW)
+        self.assertEqual(len(result["assignments"]), 2)
+        self.assertEqual({item["keyword"] for item in result["assignments"]},
+                         {"KT바로유심", "다이소 유심"})
+        self.assertEqual(len({person for item in result["assignments"]
+                              for person in item["people"]}), 4)
+
     def test_current_local_scenario_pairs_daiso_and_lg(self):
         groups = {}
         for keyword in GROUPS:

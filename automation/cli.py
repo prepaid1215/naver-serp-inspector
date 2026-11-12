@@ -14,7 +14,7 @@ from automation.models import (
     parse_time,
     validate_run,
 )
-from automation.scheduler import aggregate_groups, recommend
+from automation.scheduler import PUBLISH_GROUPS, aggregate_groups, recommend
 from automation.storage import (
     append_run,
     atomic_write_json,
@@ -72,7 +72,7 @@ def build_report(run: dict) -> str:
 
     for index, group in enumerate(rec.get("assignments") or [], 1):
         owners = group.get("people") or []
-        if len(owners) != 2:
+        if len(owners) != 2 or group.get("keyword") not in PUBLISH_GROUPS:
             continue
         lines.append(f"{index}팀 · {group['keyword']} — {' + '.join(owners)}")
         title_by_owner = {row.get("owner"): row for row in group.get("titles", [])}
