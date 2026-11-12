@@ -1,11 +1,11 @@
 {
   "schema": "naver-blog-ops-v2",
-  "run_id": "20261112T160228+0900-mobile",
-  "captured_at_kst": "2026-11-12T16:04:59.973627+09:00",
+  "run_id": "20261112T160900+0900-mobile",
+  "captured_at_kst": "2026-11-12T16:12:01.833960+09:00",
   "freshness_minutes": 45,
   "collector": {
-    "kind": "playwright_mobile_emulation",
-    "headed_browser": false,
+    "kind": "windows_local_headed_mobile_emulation",
+    "headed_browser": true,
     "viewport": "390x844",
     "user_agent_family": "Android Chrome",
     "rank_policy": "verified_integrated_feed_blog_cards_observed_order",
@@ -35,13 +35,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:02:30.223960+09:00",
+          "observed_at": "2026-11-12T16:09:02.013280+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "1dc4b7c73a43fb92c954af281c86b4852e7b9e651f94795e2790bce817f68900",
+            "screenshot_sha256": "9a7730b4539373d29ef8bdb66a000d9c206aa820d1581858b40115baad2c5823",
             "screenshot_artifact_name": "kt바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -55,13 +55,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:02:30.223960+09:00",
+          "observed_at": "2026-11-12T16:09:02.013280+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "1dc4b7c73a43fb92c954af281c86b4852e7b9e651f94795e2790bce817f68900",
+            "screenshot_sha256": "9a7730b4539373d29ef8bdb66a000d9c206aa820d1581858b40115baad2c5823",
             "screenshot_artifact_name": "kt바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -146,17 +146,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:02:30.223960+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:09:02.013280+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "1dc4b7c73a43fb92c954af281c86b4852e7b9e651f94795e2790bce817f68900",
+            "screenshot_sha256": "9a7730b4539373d29ef8bdb66a000d9c206aa820d1581858b40115baad2c5823",
             "screenshot_artifact_name": "kt바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -165,7 +165,14 @@
               "ugc_cards": 16,
               "blog_cards": 10,
               "excluded_ai_or_ad_cards": 0,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 6
@@ -271,13 +278,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:02:44.583093+09:00",
+          "observed_at": "2026-11-12T16:09:19.112191+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "bf17c54f7b2d8664a8595b7dad1c3adf607aa70e33b4de602dfa89aabfe94abf",
+            "screenshot_sha256": "10a1121e1be48da4630da5d5a443f58b5990b5eec636fded368858a2b029ff0e",
             "screenshot_artifact_name": "바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -291,13 +298,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:02:44.583093+09:00",
+          "observed_at": "2026-11-12T16:09:19.112191+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "bf17c54f7b2d8664a8595b7dad1c3adf607aa70e33b4de602dfa89aabfe94abf",
+            "screenshot_sha256": "10a1121e1be48da4630da5d5a443f58b5990b5eec636fded368858a2b029ff0e",
             "screenshot_artifact_name": "바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -382,17 +389,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:02:44.583093+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:09:19.112191+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "bf17c54f7b2d8664a8595b7dad1c3adf607aa70e33b4de602dfa89aabfe94abf",
+            "screenshot_sha256": "10a1121e1be48da4630da5d5a443f58b5990b5eec636fded368858a2b029ff0e",
             "screenshot_artifact_name": "바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -401,7 +408,14 @@
               "ugc_cards": 16,
               "blog_cards": 10,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 6
@@ -507,13 +521,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:02:57.617344+09:00",
+          "observed_at": "2026-11-12T16:09:35.879164+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "744a0db1b25ae2916058a5a096d018fa026e51563d0858b829e5e7ff9ec28385",
+            "screenshot_sha256": "7cecd83c561b728ff0414c3ddf0d0c195fff4438c99bb8a9dc384f3032b20e02",
             "screenshot_artifact_name": "kt바로유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -527,13 +541,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:02:57.617344+09:00",
+          "observed_at": "2026-11-12T16:09:35.879164+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "744a0db1b25ae2916058a5a096d018fa026e51563d0858b829e5e7ff9ec28385",
+            "screenshot_sha256": "7cecd83c561b728ff0414c3ddf0d0c195fff4438c99bb8a9dc384f3032b20e02",
             "screenshot_artifact_name": "kt바로유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -618,17 +632,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:02:57.617344+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:09:35.879164+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "744a0db1b25ae2916058a5a096d018fa026e51563d0858b829e5e7ff9ec28385",
+            "screenshot_sha256": "7cecd83c561b728ff0414c3ddf0d0c195fff4438c99bb8a9dc384f3032b20e02",
             "screenshot_artifact_name": "kt바로유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -637,7 +651,14 @@
               "ugc_cards": 17,
               "blog_cards": 10,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 7
@@ -743,13 +764,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:03:10.578056+09:00",
+          "observed_at": "2026-11-12T16:09:51.172127+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "584a9d29abfebdc28d4de154a5c55f3dcfe14bb9bb5ebc32c29896d2b4814ced",
+            "screenshot_sha256": "51f15ef949342d1fc2892464b998995d49813f0154e8c648fca60fe1aa5c33f7",
             "screenshot_artifact_name": "lg모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -763,13 +784,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:03:10.578056+09:00",
+          "observed_at": "2026-11-12T16:09:51.172127+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "584a9d29abfebdc28d4de154a5c55f3dcfe14bb9bb5ebc32c29896d2b4814ced",
+            "screenshot_sha256": "51f15ef949342d1fc2892464b998995d49813f0154e8c648fca60fe1aa5c33f7",
             "screenshot_artifact_name": "lg모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -854,17 +875,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:10.578056+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:09:51.172127+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "584a9d29abfebdc28d4de154a5c55f3dcfe14bb9bb5ebc32c29896d2b4814ced",
+            "screenshot_sha256": "51f15ef949342d1fc2892464b998995d49813f0154e8c648fca60fe1aa5c33f7",
             "screenshot_artifact_name": "lg모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -873,7 +894,14 @@
               "ugc_cards": 19,
               "blog_cards": 16,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 3
@@ -979,13 +1007,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:03:23.382831+09:00",
+          "observed_at": "2026-11-12T16:10:06.134515+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "15bddc3032fe4a47621d2ab2875080979c9f55e8a082b8e91a69b0773a42946f",
+            "screenshot_sha256": "74635746c0a645bf436b9758a8c08af41ecae307bf4a0286e4d2b8d9dfa573bc",
             "screenshot_artifact_name": "모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -999,13 +1027,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:03:23.382831+09:00",
+          "observed_at": "2026-11-12T16:10:06.134515+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "15bddc3032fe4a47621d2ab2875080979c9f55e8a082b8e91a69b0773a42946f",
+            "screenshot_sha256": "74635746c0a645bf436b9758a8c08af41ecae307bf4a0286e4d2b8d9dfa573bc",
             "screenshot_artifact_name": "모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1090,17 +1118,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:23.382831+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:10:06.134515+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "15bddc3032fe4a47621d2ab2875080979c9f55e8a082b8e91a69b0773a42946f",
+            "screenshot_sha256": "74635746c0a645bf436b9758a8c08af41ecae307bf4a0286e4d2b8d9dfa573bc",
             "screenshot_artifact_name": "모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -1109,7 +1137,14 @@
               "ugc_cards": 19,
               "blog_cards": 13,
               "excluded_ai_or_ad_cards": 0,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 6
@@ -1215,13 +1250,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:03:36.189375+09:00",
+          "observed_at": "2026-11-12T16:10:21.427026+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "1ff4dc27cf9d9249ff2b48145391fd76086feda1cf0da290c3bdf054d996d4cc",
+            "screenshot_sha256": "ead40aad94edae3babc204d484fdfb0459412ac72295a00da5392f6af88f9844",
             "screenshot_artifact_name": "lg원칩-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1235,13 +1270,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:03:36.189375+09:00",
+          "observed_at": "2026-11-12T16:10:21.427026+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "1ff4dc27cf9d9249ff2b48145391fd76086feda1cf0da290c3bdf054d996d4cc",
+            "screenshot_sha256": "ead40aad94edae3babc204d484fdfb0459412ac72295a00da5392f6af88f9844",
             "screenshot_artifact_name": "lg원칩-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1326,17 +1361,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:36.189375+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:10:21.427026+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "1ff4dc27cf9d9249ff2b48145391fd76086feda1cf0da290c3bdf054d996d4cc",
+            "screenshot_sha256": "ead40aad94edae3babc204d484fdfb0459412ac72295a00da5392f6af88f9844",
             "screenshot_artifact_name": "lg원칩-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -1345,7 +1380,14 @@
               "ugc_cards": 18,
               "blog_cards": 15,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 3
@@ -1451,13 +1493,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:03:48.961761+09:00",
+          "observed_at": "2026-11-12T16:10:35.964111+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "4eb086edaa88eac15cb8ad2b4bfb49a894c9afc6d7dd4fa7695eb2a2c456e886",
+            "screenshot_sha256": "45816fe8243bd94645d6230cbf18a006cd170b05c1bb6557a7239ee90c9b6f12",
             "screenshot_artifact_name": "태블릿소유자회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1471,13 +1513,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:03:48.961761+09:00",
+          "observed_at": "2026-11-12T16:10:35.964111+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "4eb086edaa88eac15cb8ad2b4bfb49a894c9afc6d7dd4fa7695eb2a2c456e886",
+            "screenshot_sha256": "45816fe8243bd94645d6230cbf18a006cd170b05c1bb6557a7239ee90c9b6f12",
             "screenshot_artifact_name": "태블릿소유자회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1562,17 +1604,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:48.961761+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:10:35.964111+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "4eb086edaa88eac15cb8ad2b4bfb49a894c9afc6d7dd4fa7695eb2a2c456e886",
+            "screenshot_sha256": "45816fe8243bd94645d6230cbf18a006cd170b05c1bb6557a7239ee90c9b6f12",
             "screenshot_artifact_name": "태블릿소유자회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -1581,7 +1623,14 @@
               "ugc_cards": 21,
               "blog_cards": 14,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 7
@@ -1687,13 +1736,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:04:01.808940+09:00",
+          "observed_at": "2026-11-12T16:10:51.111132+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "9d67605db0794a85fefd1e2e2a80e3a5b093ad02e9f7e4d24266188c70dc1389",
+            "screenshot_sha256": "2739308e4d6ad7a0b7a2e5783373340aca45d1e8cb793c14c5600ce3a1f96cde",
             "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1707,13 +1756,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:04:01.808940+09:00",
+          "observed_at": "2026-11-12T16:10:51.111132+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "9d67605db0794a85fefd1e2e2a80e3a5b093ad02e9f7e4d24266188c70dc1389",
+            "screenshot_sha256": "2739308e4d6ad7a0b7a2e5783373340aca45d1e8cb793c14c5600ce3a1f96cde",
             "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1798,17 +1847,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:01.808940+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:10:51.111132+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "9d67605db0794a85fefd1e2e2a80e3a5b093ad02e9f7e4d24266188c70dc1389",
+            "screenshot_sha256": "2739308e4d6ad7a0b7a2e5783373340aca45d1e8cb793c14c5600ce3a1f96cde",
             "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -1817,7 +1866,14 @@
               "ugc_cards": 21,
               "blog_cards": 14,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 7
@@ -1923,13 +1979,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:04:14.645861+09:00",
+          "observed_at": "2026-11-12T16:11:06.408103+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
             "viewport": "390x844",
-            "screenshot_sha256": "0548563e783de17c6c766be26a6d0169b3aadefaf4ad1ba2ad53cb38cf59db65",
+            "screenshot_sha256": "4b2e914bd743f0274cf217582e24bd508fcc727a0b8181faa86c397bb10d8f5b",
             "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1943,13 +1999,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:04:14.645861+09:00",
+          "observed_at": "2026-11-12T16:11:06.408103+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
             "viewport": "390x844",
-            "screenshot_sha256": "0548563e783de17c6c766be26a6d0169b3aadefaf4ad1ba2ad53cb38cf59db65",
+            "screenshot_sha256": "4b2e914bd743f0274cf217582e24bd508fcc727a0b8181faa86c397bb10d8f5b",
             "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2034,17 +2090,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:14.645861+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:11:06.408103+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
             "viewport": "390x844",
-            "screenshot_sha256": "0548563e783de17c6c766be26a6d0169b3aadefaf4ad1ba2ad53cb38cf59db65",
+            "screenshot_sha256": "4b2e914bd743f0274cf217582e24bd508fcc727a0b8181faa86c397bb10d8f5b",
             "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -2053,7 +2109,14 @@
               "ugc_cards": 21,
               "blog_cards": 13,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 8
@@ -2159,13 +2222,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:04:27.451602+09:00",
+          "observed_at": "2026-11-12T16:11:21.367588+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "c1985220df1255c9567cc356d7d9cae645d6ea09240ae10b4dd986670765834f",
+            "screenshot_sha256": "6952dd1d67c010580b101fef3c3867d291aa5d261161dcc03c4c2a136c6d7ef1",
             "screenshot_artifact_name": "다이소-유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2179,13 +2242,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:04:27.451602+09:00",
+          "observed_at": "2026-11-12T16:11:21.367588+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "c1985220df1255c9567cc356d7d9cae645d6ea09240ae10b4dd986670765834f",
+            "screenshot_sha256": "6952dd1d67c010580b101fef3c3867d291aa5d261161dcc03c4c2a136c6d7ef1",
             "screenshot_artifact_name": "다이소-유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2270,17 +2333,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:27.451602+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:11:21.367588+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "c1985220df1255c9567cc356d7d9cae645d6ea09240ae10b4dd986670765834f",
+            "screenshot_sha256": "6952dd1d67c010580b101fef3c3867d291aa5d261161dcc03c4c2a136c6d7ef1",
             "screenshot_artifact_name": "다이소-유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -2289,7 +2352,14 @@
               "ugc_cards": 17,
               "blog_cards": 11,
               "excluded_ai_or_ad_cards": 0,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 6
@@ -2395,13 +2465,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:04:39.954481+09:00",
+          "observed_at": "2026-11-12T16:11:36.123166+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "b5d45920fdbe3d2ba3256719e13ba3ac6532712550dccca805c7585c7de24d19",
+            "screenshot_sha256": "b029732a292560503b85965dce77ae4d3c05ba9730cb8ee142efd14fdc71a8b9",
             "screenshot_artifact_name": "다이소-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2415,13 +2485,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:04:39.954481+09:00",
+          "observed_at": "2026-11-12T16:11:36.123166+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "b5d45920fdbe3d2ba3256719e13ba3ac6532712550dccca805c7585c7de24d19",
+            "screenshot_sha256": "b029732a292560503b85965dce77ae4d3c05ba9730cb8ee142efd14fdc71a8b9",
             "screenshot_artifact_name": "다이소-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2506,17 +2576,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:39.954481+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:11:36.123166+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "b5d45920fdbe3d2ba3256719e13ba3ac6532712550dccca805c7585c7de24d19",
+            "screenshot_sha256": "b029732a292560503b85965dce77ae4d3c05ba9730cb8ee142efd14fdc71a8b9",
             "screenshot_artifact_name": "다이소-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -2525,7 +2595,14 @@
               "ugc_cards": 18,
               "blog_cards": 12,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 6
@@ -2631,13 +2708,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-12T16:04:52.941732+09:00",
+          "observed_at": "2026-11-12T16:11:51.457392+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "e9b6fbdb854215cd0aba5d690182a4347eb3d14c29213cf04cca04ac012e9a12",
+            "screenshot_sha256": "5d8fe7b3730df93f21eaa7fdfacdc5601e05f4ff1fe3531918aa0949c5cb015e",
             "screenshot_artifact_name": "다이소-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2651,13 +2728,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-12T16:04:52.941732+09:00",
+          "observed_at": "2026-11-12T16:11:51.457392+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "e9b6fbdb854215cd0aba5d690182a4347eb3d14c29213cf04cca04ac012e9a12",
+            "screenshot_sha256": "5d8fe7b3730df93f21eaa7fdfacdc5601e05f4ff1fe3531918aa0949c5cb015e",
             "screenshot_artifact_name": "다이소-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2742,17 +2819,17 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:52.941732+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "observed_at": "2026-11-12T16:11:51.457392+09:00",
+          "reason": "실제 브라우저 화면·캡처와 추출 순서를 대조해 블로그 카드 10개를 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "e9b6fbdb854215cd0aba5d690182a4347eb3d14c29213cf04cca04ac012e9a12",
+            "screenshot_sha256": "5d8fe7b3730df93f21eaa7fdfacdc5601e05f4ff1fe3531918aa0949c5cb015e",
             "screenshot_artifact_name": "다이소-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
-            "verification_method": "automated_feed_crosscheck",
+            "verification_method": "local_headed_visual_crosscheck",
             "feed_audit": {
               "order_consistent": true,
               "non_overlapping": true,
@@ -2761,7 +2838,14 @@
               "ugc_cards": 19,
               "blog_cards": 12,
               "excluded_ai_or_ad_cards": 1,
-              "duplicate_cards_dropped": 0
+              "duplicate_cards_dropped": 0,
+              "screen_hit_test": true,
+              "screen_order": true,
+              "title_matches_screen": true,
+              "screenshot_size_matches": true,
+              "screenshot_crops_nonblank": true,
+              "stable_rerun": true,
+              "checked_cards": 10
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
             "feed_interleaved_cafe_cards": 7
@@ -2875,17 +2959,17 @@
         {
           "query": "KT바로유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:02:30.223960+09:00"
+          "observed_at": "2026-11-12T16:09:02.013280+09:00"
         },
         {
           "query": "바로유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:02:44.583093+09:00"
+          "observed_at": "2026-11-12T16:09:19.112191+09:00"
         },
         {
           "query": "KT바로유심 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:02:57.617344+09:00"
+          "observed_at": "2026-11-12T16:09:35.879164+09:00"
         }
       ],
       "matches": {
@@ -2983,17 +3067,17 @@
         {
           "query": "LG모두의 원칩",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:10.578056+09:00"
+          "observed_at": "2026-11-12T16:09:51.172127+09:00"
         },
         {
           "query": "모두의 원칩",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:23.382831+09:00"
+          "observed_at": "2026-11-12T16:10:06.134515+09:00"
         },
         {
           "query": "LG원칩 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:36.189375+09:00"
+          "observed_at": "2026-11-12T16:10:21.427026+09:00"
         }
       ],
       "matches": {
@@ -3115,17 +3199,17 @@
         {
           "query": "태블릿소유자회원번호",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:03:48.961761+09:00"
+          "observed_at": "2026-11-12T16:10:35.964111+09:00"
         },
         {
           "query": "태블릿 소유자 회원번호",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:01.808940+09:00"
+          "observed_at": "2026-11-12T16:10:51.111132+09:00"
         },
         {
           "query": "태블릿소유자회원번호 입력",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:14.645861+09:00"
+          "observed_at": "2026-11-12T16:11:06.408103+09:00"
         }
       ],
       "matches": {
@@ -3255,17 +3339,17 @@
         {
           "query": "다이소 유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:27.451602+09:00"
+          "observed_at": "2026-11-12T16:11:21.367588+09:00"
         },
         {
           "query": "다이소 선불유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:39.954481+09:00"
+          "observed_at": "2026-11-12T16:11:36.123166+09:00"
         },
         {
           "query": "다이소 유심 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-12T16:04:52.941732+09:00"
+          "observed_at": "2026-11-12T16:11:51.457392+09:00"
         }
       ],
       "matches": {
@@ -3384,7 +3468,7 @@
   },
   "errors": [],
   "evidence": {
-    "local_directory": "monitor-evidence/2026-11-12_160228",
+    "local_directory": "monitor-evidence\\2026-11-12_160900",
     "contains_raw_html": false,
     "public_upload_default": false
   }
