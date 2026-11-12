@@ -8,6 +8,8 @@
   const FEED = 'INTEGRATED_FEED_BLOG_CARDS_TOP10';
   const ARTICLES = 'INTEGRATED_BLOG_ARTICLES_TOP10';
   const OWNERS = ['건호', '영은', '하루', '수진'];
+  const BASE_GROUP_NAMES = ['KT바로유심', 'LG모두의 원칩', '태블릿소유자회원번호',
+    '다이소 유심', '선불폰 개통', '요금미납 선불폰', '편의점 선불유심', '앤텔레콤 396'];
   const OWNER_BY_ID = {
     carrotmobile_: '건호', lifeon5g_: '건호', esim99_: '영은', esim99: '영은',
     esim87_: '영은', ntelecom59: '하루', jjuny1253: '수진'
@@ -32,7 +34,7 @@
   function statusLabel(status) {
     return ({
       VERIFIED: '검증 완료', CANDIDATE: '후보', PARTIAL: '부분 관측', BLOCKED: '접근 제한',
-      ERROR: '수집 오류', STALE: '45분 경과', UNKNOWN: '미확인', READY: '4명 추천', PENDING: '배정 보류'
+      ERROR: '수집 오류', STALE: '45분 경과', UNKNOWN: '미확인', READY: '2팀 추천', PENDING: '배정 보류'
     })[status] || status || '미확인';
   }
   function effective(observation) {
@@ -61,12 +63,16 @@
     const stale = statuses.filter(status => status === 'STALE').length;
     const freshGroups = Object.values(data.groups || {}).filter(groupIsFresh).length;
     const assignments = (data.recommendation?.assignments || []).filter(row => groupIsFresh(data.groups?.[row.keyword]));
-    $('verified-count').textContent = `${verified}/12`;
+    const total = records.length;
+    const groupTotal = Object.keys(data.groups || {}).length;
+    $('verified-count').textContent = verified + '/' + total;
     $('pending-count').textContent = String(records.length - verified - stale);
     $('stale-count').textContent = String(stale);
-    $('group-count').textContent = `${freshGroups}/4`;
+    $('group-count').textContent = freshGroups + '/' + groupTotal;
+    $('group-detail-heading').textContent = groupTotal + '개 키워드 묶음의 담당자별 노출';
+    $('query-detail-heading').textContent = total + '개 검색어의 원본 근거';
     $('team-count').textContent = `${data.recommendation?.assignment_mode === 'TWO_PERSON_KEYWORD_TEAMS' ? assignments.filter(row => (row.people || []).length === 2).length : 0}/2`;
-    $('success-rate').textContent = `${Math.round((verified / 12) * 100)}%`;
+    $('success-rate').textContent = (total ? Math.round((verified / total) * 100) : 0) + '%';
     $('updated').textContent = formatTime(data.captured_at_kst);
     $('slot').textContent = data.recommendation?.slot_at_kst ? `발행 ${formatTime(data.recommendation.slot_at_kst)}` : '배정 시각 없음';
   }
@@ -273,15 +279,94 @@
     rows.forEach(row => {
       const verifiedGroups = Object.values(row.summary || {}).filter(item => item.complete).length;
       const teams = row.recommendation?.assignments?.length || 0;
-      element('li', root, `${formatTime(row.at)} · 검증 키워드 ${verifiedGroups}/4 · ${teams}팀 · ${statusLabel(row.recommendation?.status || 'PENDING')}`);
+      element('li', root, `${formatTime(row.at)} · 검증 키워드 ${verifiedGroups}/${Object.keys(currentData?.groups || {}).length} · ${teams}팀 · ${statusLabel(row.recommendation?.status || 'PENDING')}`);
     });
     if (!rows.length) element('li', root, '조건에 맞는 이력이 없습니다.', 'muted');
+  }
+
+  function makeRequestUrl(group, query) {
+    const title = '[SERP 키워드 추가] ' + query;
+    const body = 'group: ' + group + '\nquery: ' + query + '\n\n' +
+      '검색어를 이 묶음에 추가해 주세요. 저장소 운영자가 serp-approved 라벨을 붙이기 전에는 자동 수집하지 않습니다.';
+    return 'https://github.com/prepaid1215/naver-serp-inspector/issues/new?' +
+      new URLSearchParams({title, body}).toString();
+  }
+
+  function normalizedRequest(value) {
+    const query = String(value || '').trim().replace(/\s+/g, ' ');
+    return query.length >= 2 && query.length <= 60 ? query : '';
+  }
+
+  function openKeywordRequest(group, query) {
+    const cleaned = normalizedRequest(query);
+    const known = [...new Set([...BASE_GROUP_NAMES, ...Object.keys(currentData?.groups || {})])];
+    const message = $('keyword-request-message');
+    if (!cleaned || !known.includes(group)) {
+      message.textContent = '2~60자의 키워드를 입력하고, 키워드 묶음을 선택하세요.';
+      return;
+    }
+    if (Object.keys(currentData?.queries || {}).some(term => term.toLowerCase() === cleaned.toLowerCase())) {
+      message.textContent = '이미 조사 목록에 등록된 키워드입니다.';
+      return;
+    }
+    const link = document.createElement('a');
+    link.href = makeRequestUrl(group, cleaned);
+    link.target = '_blank'; link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    message.textContent = 'GitHub 승인 요청 화면을 열었습니다. Submit new issue를 눌러야 접수됩니다. 승인 전에는 정기 조사 목록에 추가되지 않습니다.';
+  }
+
+  function populateKeywordRequestGroups(data) {
+    const select = $('keyword-request-group');
+    const previous = select.value;
+    clear(select);
+    const names = [...new Set([...BASE_GROUP_NAMES, ...Object.keys(data.groups || {})])];
+    names.forEach(group => element('option', select, group).value = group);
+    if (previous && [...select.options].some(option => option.value === previous)) {
+      select.value = previous;
+    }
+  }
+
+  function renderRelatedProposals(data) {
+    const root = $('related-proposals');
+    clear(root);
+    const raw = Array.isArray(data.related_candidates) ? data.related_candidates : [];
+    const valid = raw.filter(item =>
+      item && typeof item.query === 'string' && typeof item.group === 'string' &&
+      BASE_GROUP_NAMES.includes(item.group)).slice(0, 30);
+    $('related-proposal-count').textContent = valid.length + '개' +
+      (raw.length > 30 ? ' (상위 30개 표시)' : '');
+    if (!valid.length) {
+      element('p', root, '이번 수집에서 실제 연관검색어 영역을 확인하지 못했거나 후보가 없습니다.', 'muted');
+      return;
+    }
+    for (const entry of valid) {
+      const card = element('div', root, undefined, 'related-proposal');
+      const info = element('div', card, undefined, 'related-proposal-info');
+      element('strong', info, entry.query);
+      element('small', info, entry.group + ' · 발견 검색어: ' + (entry.sources || []).join(', '));
+      const controls = element('div', card, undefined, 'related-proposal-actions');
+      const search = element('a', controls, '네이버 검색');
+      search.href = 'https://m.search.naver.com/search.naver?where=nexearch&query=' +
+        encodeURIComponent(entry.query);
+      search.target = '_blank'; search.rel = 'noopener noreferrer';
+      const approve = element('button', controls, '추가 승인 요청');
+      approve.type = 'button';
+      approve.addEventListener('click', () => {
+        $('keyword-request-input').value = entry.query;
+        $('keyword-request-group').value = entry.group;
+        openKeywordRequest(entry.group, entry.query);
+      });
+    }
   }
 
   function render(data, history) {
     currentData = data; currentHistory = history;
     renderStats(data); renderRecommendations(data); renderGroups(data); renderQueries(data);
     populateFilters(data); renderHistory();
+    populateKeywordRequestGroups(data); renderRelatedProposals(data);
     $('errors').textContent = (data.errors || []).join(' · ');
     const manual = $('manual-query'); clear(manual);
     Object.keys(data.queries || {}).forEach(query => element('option', manual, query).value = query);
@@ -378,6 +463,20 @@
     } catch (error) { message.textContent = error.message; }
   }
 
+  $('keyword-request-form').addEventListener('submit', event => {
+    event.preventDefault();
+    openKeywordRequest($('keyword-request-group').value, $('keyword-request-input').value);
+  });
+  $('keyword-open-naver').addEventListener('click', () => {
+    const query = normalizedRequest($('keyword-request-input').value);
+    if (!query) {
+      $('keyword-request-message').textContent = '네이버에서 검색할 키워드를 2~60자로 입력하세요.';
+      return;
+    }
+    window.open('https://m.search.naver.com/search.naver?where=nexearch&query=' +
+      encodeURIComponent(query), '_blank', 'noopener,noreferrer');
+    $('keyword-request-message').textContent = '네이버 검색 화면을 열었습니다. 자동 추적은 별도의 승인 요청이 필요합니다.';
+  });
   $('refresh').addEventListener('click', load);
   ['history-keyword', 'history-owner', 'history-status'].forEach(id => $(id).addEventListener('change', renderHistory));
   $('manual-form').addEventListener('submit', exportManual);

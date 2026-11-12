@@ -9,6 +9,24 @@
 </head>
 <body>
 <main>
+  <section class="quick-keyword" aria-label="키워드 직접 입력">
+    <div class="quick-keyword-heading">
+      <strong>추가로 조사할 키워드가 있나요?</strong>
+      <span>직접 입력 · 네이버 검색 · 승인 요청</span>
+    </div>
+    <form id="keyword-request-form" class="quick-keyword-form">
+      <label class="visually-hidden" for="keyword-request-input">추가할 키워드</label>
+      <input id="keyword-request-input" maxlength="60" minlength="2" placeholder="예: 선불폰 요금미납 개통" required autocomplete="off"/>
+      <label class="visually-hidden" for="keyword-request-group">키워드 묶음</label>
+      <select id="keyword-request-group" aria-label="포함할 키워드 묶음" required></select>
+      <button class="primary" type="submit">추가 승인 요청</button>
+      <button type="button" id="keyword-open-naver">네이버 검색</button>
+    </form>
+    <p class="quick-keyword-note" id="keyword-request-message" aria-live="polite">
+      승인 요청은 GitHub에서 확인합니다. 승인된 검색어만 다음 자동 수집에 포함됩니다.
+    </p>
+  </section>
+
   <header class="simple-hero">
     <span class="simple-kicker">59만모바일 · 블로그 발행 안내</span>
     <h1>오늘은 이 글을 발행하세요</h1>
@@ -30,6 +48,11 @@
   <section id="recommendations" class="simple-recommendations" aria-live="polite">
     <p class="muted">검색 결과를 확인하고 있습니다.</p>
   </section>
+  <details class="related-proposals">
+    <summary>네이버에서 발견한 연관검색어 후보 <span id="related-proposal-count">0개</span></summary>
+    <p class="muted">실제 검색 화면의 연관검색어 영역에서 추출한 후보입니다. 일반 블로그 제목이나 AI가 만들어낸 단어는 추가하지 않습니다. 승인 전에는 자동 검색·발행 추천에 사용하지 않습니다.</p>
+    <div id="related-proposals" class="related-proposal-list"></div>
+  </details>
   <p class="simple-footnote">검색 순번은 네이버 모바일 통합검색에서 관측한 블로그 카드 순서입니다. 네이버의 공식 순위가 아닙니다. 제목은 자동 생성된 초안이며 최종 발행은 운영자가 결정합니다.</p>
 
   <details class="advanced" id="analysis-details">
@@ -41,18 +64,18 @@
       </div>
 
       <section class="stats" aria-label="검색 분석 요약">
-        <article class="stat"><span>최신 VERIFIED 검색어</span><strong id="verified-count">0/12</strong></article>
-        <article class="stat"><span>후보·부분·미확인</span><strong id="pending-count">12</strong></article>
+        <article class="stat"><span>최신 VERIFIED 검색어</span><strong id="verified-count">0/24</strong></article>
+        <article class="stat"><span>후보·부분·미확인</span><strong id="pending-count">24</strong></article>
         <article class="stat"><span>45분 경과</span><strong id="stale-count">0</strong></article>
-        <article class="stat"><span>검증 완료 키워드</span><strong id="group-count">0/4</strong></article>
-        <article class="stat"><span>발행 추천 인원</span><strong id="team-count">0/4</strong></article>
+        <article class="stat"><span>검증 완료 키워드</span><strong id="group-count">0/8</strong></article>
+        <article class="stat"><span>발행 추천 인원</span><strong id="team-count">0/2</strong></article>
         <article class="stat"><span>검증 성공률</span><strong id="success-rate">0%</strong></article>
       </section>
 
-      <div class="section-heading"><h2>4개 키워드의 담당자별 노출</h2></div>
+      <div class="section-heading"><h2 id="group-detail-heading">키워드별 담당자 노출</h2></div>
       <section id="keyword-cards" class="keyword-grid"></section>
 
-      <div class="section-heading"><h2>12개 검색어의 원본 근거</h2></div>
+      <div class="section-heading"><h2 id="query-detail-heading">검색어별 원본 근거</h2></div>
       <section id="query-details" class="query-list"></section>
 
       <div class="section-heading"><h2>조사 및 배정 이력</h2><span id="updated" class="muted">수집 전</span></div>

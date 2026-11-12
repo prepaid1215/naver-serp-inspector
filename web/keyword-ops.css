@@ -183,3 +183,25 @@ main { width: min(950px, 100%); }
   .team-members { grid-template-columns: 1fr; }
   .team-publish-card h3 { font-size: 17px; }
 }
+
+/* Operator keyword intake is first in the page hierarchy. */
+.quick-keyword { margin-bottom: 14px; padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-radius: 15px; }
+.quick-keyword-heading { display: flex; flex-wrap: wrap; gap: 9px; align-items: baseline; margin-bottom: 11px; }
+.quick-keyword-heading strong { font-size: 15px; color: #10243f; }
+.quick-keyword-heading span, .quick-keyword-note { color: var(--muted); font-size: 12px; }
+.quick-keyword-form { display: flex; flex-wrap: wrap; gap: 8px; }
+.quick-keyword-form input, .quick-keyword-form select { border: 1px solid #bfcbdf; background: #fff; color: #14253a; border-radius: 9px; padding: 10px 12px; min-height: 43px; }
+.quick-keyword-form input { flex: 3 1 230px; min-width: 120px; }
+.quick-keyword-form select { flex: 1 1 160px; min-width: 140px; }
+.quick-keyword-form button { min-height: 43px; }
+.quick-keyword-note { margin: 10px 0 0; line-height: 1.5; }
+.related-proposals { margin: 17px 0; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: white; }
+.related-proposals summary { cursor: pointer; color: #26436d; font-weight: 750; }
+.related-proposals > p { margin: 11px 0; }
+.related-proposal-list { display: grid; gap: 8px; }
+.related-proposal { padding: 10px 0; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; }
+.related-proposal-info { display: grid; gap: 3px; min-width: 0; }
+.related-proposal-info small { color: var(--muted); font-size: 11px; }
+.related-proposal-actions { display: flex; gap: 8px; align-items: center; }
+.related-proposal-actions a, .related-proposal-actions button { font-size: 12px; padding: 7px 10px; min-height: 34px; }
+@media (max-width: 720px) { .quick-keyword-form { flex-direction: column; } .quick-keyword-form input, .quick-keyword-form select { flex: 0 0 auto; width: 100%; } }

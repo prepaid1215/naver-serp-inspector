@@ -53,7 +53,7 @@ try:
         page.clock.set_fixed_time(captured + timedelta(hours=3))
         page.goto(f"http://127.0.0.1:{server.server_port}/keyword-ops.html")
         expect(page.locator("#message")).to_contain_text("검색 자료", timeout=10_000)
-        expect(page.locator("#verified-count")).to_have_text("0/12")
+        expect(page.locator("#verified-count")).to_have_text(f"0/{len(latest['queries'])}")
         expect(page.locator("#team-count")).to_have_text("0/2")
         expect(page.locator("#recommendations")).to_contain_text("최신 검색 결과가 없어 현재 발행은 보류합니다.")
 
@@ -61,7 +61,7 @@ try:
         page.clock.set_fixed_time(captured + timedelta(minutes=10))
         page.reload()
         expect(page.locator("#message")).to_contain_text("검색 자료", timeout=10_000)
-        expect(page.locator("#verified-count")).to_have_text(f"{verified_total}/12")
+        expect(page.locator("#verified-count")).to_have_text(f"{verified_total}/{len(latest['queries'])}")
         if latest["recommendation"].get("assignment_mode") != "TWO_PERSON_KEYWORD_TEAMS":
             expect(page.locator("#recommendations")).to_contain_text("이전 1인 배정 자료입니다.")
 
@@ -99,6 +99,13 @@ try:
             body=json.dumps(fixture, ensure_ascii=False)))
         page.reload()
         expect(page.locator("#message")).to_contain_text("GitHub main 최신 검색 결과")
+        # A custom keyword form is always visible at the very top.
+        expect(page.locator("#keyword-request-form")).to_be_visible()
+        page.locator("#keyword-request-input").fill("새 선불폰 검색어")
+        page.locator("#keyword-request-group").select_option("KT바로유심")
+        expect(page.locator("#keyword-request-input")).to_have_value("새 선불폰 검색어")
+        assert page.evaluate("() => (document.querySelector('.quick-keyword').compareDocumentPosition(document.querySelector('.simple-hero')) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0")
+
         expect(page.locator("#recommendations .team-publish-card")).to_have_count(2)
         expect(page.locator("#recommendations .team-member")).to_have_count(4)
         expect(page.locator("#team-count")).to_have_text("2/2")
@@ -111,7 +118,17 @@ try:
         expect(page.locator("#recommendations .simple-blog-id").first).to_have_attribute(
             "href", re.compile(r"^https://blog\.naver\.com/[a-z0-9_-]+$"))
         expect(page.locator("#keyword-cards")).to_contain_text("블로그")
-        expect(page.locator("#query-details .query-detail")).to_have_count(12)
+        # Observe but do not approve a candidate automatically.
+        fixture["related_candidates"] = [{"group": "KT바로유심", "query": "KT 바로유심 구매",
+            "sources": ["KT바로유심"], "status": "PROPOSED"}]
+        page.route(raw_latest, lambda route: route.fulfill(status=200,
+            content_type="application/json", body=json.dumps(fixture, ensure_ascii=False)))
+        page.reload()
+        page.locator(".related-proposals summary").click()
+        expect(page.locator("#related-proposals")).to_contain_text("KT 바로유심 구매")
+        expect(page.locator("#related-proposal-count")).to_contain_text("1개")
+
+        expect(page.locator("#query-details .query-detail")).to_have_count(len(latest["queries"]))
         expect(page.locator("#query-details")).to_contain_text("피드 블로그 카드 순번")
         expect(page.locator("#query-details")).to_contain_text("통합검색 블로그 글 후보")
         dimensions = page.evaluate(

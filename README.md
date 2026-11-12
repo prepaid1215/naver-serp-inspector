@@ -161,3 +161,7 @@ python tests/browser_keyword_ops.py # 390px 관제판과 수동 증거 내보내
 ## 관제판 최신 데이터 갱신
 
 GitHub Actions가 main에 검색 결과 JSON을 저장할 때 GITHUB_TOKEN으로 만든 커밋은 일반적으로 GitHub Pages 배포 워크플로를 다시 실행하지 않습니다. 관제판은 GitHub main의 raw.githubusercontent.com JSON을 먼저 읽고, 연결에 실패하면 Pages의 보관본으로 대체하며 이전 자료일 수 있음을 표시합니다. 캐시 우회 쿼리와 45분 유효성 검사는 유지합니다.
+
+## 네이버 SERP 기본 검색어 24개 및 승인된 연관검색어
+
+8개 묶음×3개 변형 검색어를 기본값으로 수집합니다. 관제판 최상단에서 신규 검색어를 입력하면 네이버에서 즉시 검색하거나 GitHub Issue로 추가 승인 요청을 제출할 수 있습니다. 운영자가 Issue에 serp-approved 라벨을 적용한 후에만 config/approved-keywords.json에 추가되어 다음 자동 수집에 반영됩니다. 실제 연관검색어 영역에서 발견한 관련 검색어는 미승인 후보로 표시하며, 승인 전에는 추적하지 않습니다.

@@ -27,6 +27,7 @@ from automation.models import (
     parse_time,
 )
 from automation.owners import PEOPLE
+from automation.related_keywords import aggregate_related_candidates, related_from_page
 from automation.scheduler import aggregate_groups, recommend
 from automation.storage import append_run, atomic_write_json, normalize_history, read_json
 
@@ -92,7 +93,7 @@ def collect_query(page, query: str, evidence_dir: Path, *, local: bool = False) 
         evidence=evidence,
         local_audit=local_audit,
     )
-    return {"query": query, "surfaces": surfaces}
+    return {"query": query, "surfaces": surfaces, "related_queries": related_from_page(raw.get("related_queries"), query)}
 
 
 def _halted_record(query: str, observed_at: str, reason: str) -> dict:
@@ -201,6 +202,7 @@ def collect_all(
         "people": PEOPLE,
         "queries": queries,
         "groups": groups,
+        "related_candidates": aggregate_related_candidates(queries),
         "recommendation": recommendation,
         "errors": errors,
         "evidence": {
