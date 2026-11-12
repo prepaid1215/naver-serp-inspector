@@ -8,6 +8,7 @@ from pathlib import Path
 from automation.collector import DATA_DIR, EVIDENCE_DIR, collect_all
 from automation.models import (
     SCHEMA,
+    DECISION_SURFACE,
     SURFACE_SECTION,
     migrate_legacy_run,
     parse_time,
@@ -49,7 +50,7 @@ def command_validate(args) -> int:
         return 1
     counts: dict[str, int] = {}
     for record in value["queries"].values():
-        status = record["surfaces"][SURFACE_SECTION]["status"]
+        status = record["surfaces"][DECISION_SURFACE]["status"]
         counts[status] = counts.get(status, 0) + 1
     print("VALID", value["run_id"], counts)
     return 0

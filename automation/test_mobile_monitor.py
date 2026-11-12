@@ -8,6 +8,7 @@ from automation.models import (
     GROUPS,
     KST,
     SURFACE_ARTICLES,
+    SURFACE_FEED,
     SURFACE_SECTION,
     effective_status,
     make_observation,
@@ -33,23 +34,32 @@ def observation(urls: list[str], *, status: str = "VERIFIED", minutes_old: int =
     evidence = {
         "source_url": "https://m.search.naver.com/search.naver?query=test",
         "viewport": "390x844",
-        "verification_method": "human_visual_review",
-        "section_name": "블로그",
+        "verification_method": "automated_feed_crosscheck",
         "screenshot_sha256": "a" * 64,
-        "reviewed_by": "test-reviewer",
+        "feed_audit": {
+            "order_consistent": True,
+            "non_overlapping": True,
+            "no_excluded_cards": True,
+            "post_unique": True,
+        },
     }
+    rows = (
+        [{"post_url": row["post_url"], "feed_rank": row["rank"] * 2 - 1} for row in canonical_posts(urls)]
+        if status not in {"UNKNOWN", "BLOCKED", "ERROR"}
+        else []
+    )
     return make_observation(
-        surface=SURFACE_SECTION,
+        surface=SURFACE_FEED,
         status=status,
         observed_at=(NOW - timedelta(minutes=minutes_old)).isoformat(),
-        results=canonical_posts(urls) if status not in {"UNKNOWN", "BLOCKED", "ERROR"} else [],
+        results=rows,
         evidence=evidence,
     )
 
 
 def run_queries(default_status: str = "UNKNOWN") -> dict[str, dict]:
     return {
-        query: {"query": query, "surfaces": {SURFACE_SECTION: observation([], status=default_status)}}
+        query: {"query": query, "surfaces": {SURFACE_FEED: observation([], status=default_status)}}
         for variants in GROUPS.values()
         for query in variants
     }
@@ -59,7 +69,7 @@ def set_group(queries: dict, keyword: str, urls: list[str], status: str = "VERIF
     for query in GROUPS[keyword]:
         queries[query] = {
             "query": query,
-            "surfaces": {SURFACE_SECTION: observation(urls, status=status)},
+            "surfaces": {SURFACE_FEED: observation(urls, status=status)},
         }
 
 
@@ -113,6 +123,75 @@ class EvidenceTests(unittest.TestCase):
         )
         self.assertEqual(surfaces[SURFACE_ARTICLES]["status"], "CANDIDATE")
         self.assertEqual(surfaces[SURFACE_SECTION]["status"], "UNKNOWN")
+
+    def test_per_post_card_feed_explains_missing_section_without_substituting_rank(self):
+        raw = {
+            "blocked": False,
+            "article_rows": [{"post_url": url} for url in ten()],
+            "article_total": 16,
+            "section": None,
+            "feed_layout": "per_post_cards",
+            "feed_interleaved_cafe_cards": 3,
+        }
+        surfaces = observations_from_browser(
+            raw,
+            observed_at=NOW.isoformat(),
+            source_url="https://m.search.naver.com/search.naver?query=x",
+            evidence={},
+        )
+        section = surfaces[SURFACE_SECTION]
+        self.assertEqual(section["status"], "UNKNOWN")
+        self.assertEqual(section["reason_code"], "SECTION_NOT_PRESENT")
+        self.assertEqual(section["results"], [])
+        article = surfaces[SURFACE_ARTICLES]
+        self.assertEqual(article["status"], "CANDIDATE")
+        self.assertEqual(article["evidence"]["feed_layout"], "per_post_cards")
+        self.assertEqual(article["evidence"]["feed_interleaved_cafe_cards"], 3)
+        self.assertEqual(surfaces[SURFACE_FEED]["status"], "PARTIAL")
+
+    def test_feed_cards_verified_only_with_ten_blog_cards_and_passing_audit(self):
+        cards = [
+            {"feed_rank": 1 + index + (index > 2), "kind": "blog", "post_url": url}
+            for index, url in enumerate(ten())
+        ]
+        audit = {flag: True for flag in ("order_consistent", "non_overlapping", "no_excluded_cards", "post_unique")}
+        raw = {
+            "blocked": False, "article_rows": cards, "article_total": 10, "section": None,
+            "feed_layout": "per_post_cards", "feed_cards": cards, "feed_audit": audit,
+        }
+        kwargs = dict(
+            observed_at=NOW.isoformat(),
+            source_url="https://m.search.naver.com/search.naver?query=x",
+            evidence={"screenshot_sha256": "d" * 64},
+        )
+        feed = observations_from_browser(raw, **kwargs)[SURFACE_FEED]
+        self.assertEqual(feed["status"], "VERIFIED")
+        self.assertEqual(validate_observation(feed), [])
+        self.assertEqual(feed["results"][3]["rank"], 4)
+        self.assertEqual(feed["results"][3]["feed_rank"], 5)
+        self.assertEqual(feed["evidence"]["verification_method"], "automated_feed_crosscheck")
+
+        failed = dict(raw, feed_audit={**audit, "order_consistent": False})
+        self.assertEqual(observations_from_browser(failed, **kwargs)[SURFACE_FEED]["status"], "CANDIDATE")
+        few = dict(raw, feed_cards=cards[:9])
+        partial = observations_from_browser(few, **kwargs)[SURFACE_FEED]
+        self.assertEqual(partial["status"], "PARTIAL")
+        self.assertEqual(validate_observation(partial), [])
+        unknown = dict(raw, feed_layout="unstructured")
+        self.assertEqual(observations_from_browser(unknown, **kwargs)[SURFACE_FEED]["status"], "UNKNOWN")
+        no_shot = observations_from_browser(raw, observed_at=NOW.isoformat(), source_url="x", evidence={})
+        self.assertEqual(no_shot[SURFACE_FEED]["status"], "CANDIDATE")
+
+    def test_old_section_verified_is_not_used_as_feed_metric(self):
+        queries = run_queries()
+        for query in GROUPS["KT바로유심"]:
+            queries[query] = {"query": query, "surfaces": {SURFACE_SECTION: manual_verified_observation(
+                urls=ten((1, "esim99_")), observed_at=NOW.isoformat(),
+                source_url="https://m.search.naver.com/search.naver?query=x",
+                screenshot_sha256="c" * 64, reviewed_by="operator")}}
+        groups = aggregate_groups(queries, at=NOW)
+        self.assertFalse(groups["KT바로유심"]["complete"])
+        self.assertEqual(recommend(groups, at=NOW)["status"], "PENDING")
 
     def test_verified_requires_visual_audit_fields(self):
         invalid = make_observation(
@@ -174,7 +253,7 @@ class SchedulerTests(unittest.TestCase):
         queries = run_queries()
         set_group(queries, "KT바로유심", ten((3, "esim99_"), (7, "ntelecom59")))
         last = GROUPS["KT바로유심"][-1]
-        queries[last] = {"query": last, "surfaces": {SURFACE_SECTION: observation([], status="UNKNOWN")}}
+        queries[last] = {"query": last, "surfaces": {SURFACE_FEED: observation([], status="UNKNOWN")}}
         groups = aggregate_groups(queries, at=NOW)
         self.assertFalse(groups["KT바로유심"]["complete"])
         self.assertEqual(groups["KT바로유심"]["missing"], [])
@@ -194,7 +273,7 @@ class SchedulerTests(unittest.TestCase):
         for query in GROUPS["KT바로유심"]:
             before[query] = {
                 "query": query,
-                "surfaces": {SURFACE_SECTION: observation(ten((4, "esim99_")), minutes_old=180)},
+                "surfaces": {SURFACE_FEED: observation(ten((4, "esim99_")), minutes_old=180)},
             }
         set_group(current, "KT바로유심", ten())
         groups = aggregate_groups(current, {"queries": before}, at=NOW)

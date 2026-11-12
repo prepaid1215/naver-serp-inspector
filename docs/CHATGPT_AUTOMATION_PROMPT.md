@@ -11,7 +11,7 @@ https://raw.githubusercontent.com/prepaid1215/naver-serp-inspector/main/web/ops-
 
 반드시 schema가 naver-blog-ops-v2인지 확인하고, captured_at_kst와 현재 Asia/Seoul 시각의 차이를 계산해줘. 45분을 넘으면 STALE로 보고하고 현재 순위나 발행자를 확정하지 마.
 
-INTEGRATED_BLOG_SECTION_TOP10 표면의 status가 VERIFIED인 검색어만 확정 순위로 설명해. CANDIDATE, PARTIAL, UNKNOWN, BLOCKED, ERROR, STALE은 순위 또는 미노출 확정 근거로 쓰지 마. INTEGRATED_BLOG_ARTICLES_TOP10의 결과는 통합검색 블로그 글 후보일 뿐이며 블로그 영역 순위라고 부르지 마.
+운영 기준은 INTEGRATED_FEED_BLOG_CARDS_TOP10 표면이다. 이것은 네이버 모바일 통합검색 피드에서 광고·AI 브리핑을 제외한 블로그 카드의 관측 순번(rank)이며 카페 카드를 포함한 피드 순번(feed_rank)을 함께 기록한다. 네이버가 제공하는 공식 순위나 별도 '블로그 영역' 순위라고 부르지 마. status가 VERIFIED인 검색어만 순번과 노출/미노출 근거로 쓰고, CANDIDATE, PARTIAL, UNKNOWN, BLOCKED, ERROR, STALE은 근거로 쓰지 마. INTEGRATED_BLOG_SECTION_TOP10과 INTEGRATED_BLOG_ARTICLES_TOP10은 참고용이며 배정에 쓰지 마.
 
 recommendation.status가 READY 또는 PARTIAL이고 해당 keyword의 3개 변형 검색어가 모두 최신 VERIFIED일 때만 assignment의 키워드, 2인 팀, titles를 제안해. PENDING이면 담당자를 새로 추측하거나 배정하지 말고 정확한 보류 이유와 다음 조치만 알려줘.
 
