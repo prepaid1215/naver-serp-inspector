@@ -4,7 +4,7 @@
 기존 08:55, 10:55, 13:55 KST 일정을 유지한다. 새 작업은 만들지 않는다.
 
 - GitHub의 main/web/ops-data/latest.json을 직접 읽는다.
-- schema naver-blog-ops-v2, 수집 및 관측 시각(45분 이내), 각 키워드 변형 검색어 3개의 INTEGRATED_FEED_BLOG_CARDS_TOP10 상태를 검사한다.
+- schema naver-blog-ops-v2, 수집 및 관측 시각(45분 이내), 각 키워드 묶음에 등록된 **모든 변형 검색어**의 INTEGRATED_FEED_BLOG_CARDS_TOP10 상태를 검사한다. 기본값은 8묶음 24개, 승인된 추가 검색어가 있으면 실제 수집 목록으로 판정한다.
 - 이 지표는 네이버 공식 순위가 아닌 모바일 통합검색의 블로그 카드 관측 순번이다.
 - recommendation.assignments의 people, titles, owner_reasons를 확인해 **서로 다른 두 키워드에 2명씩 묶은 2개 팀**을 표시한다. 각 팀 내부에서 2명의 제목과 선택 근거는 서로 다르게 보여준다.
 - 우선순위는 미노출 → 8~10번째 노출 보강 → 일부 변형 미노출/하위권 보강 → 4~7번째 순위 보강 → 상위권 다른 검색 의도 확장이다.
@@ -15,3 +15,5 @@
 - **발행할 블로그 ID를 반드시 함께 표시한다.** 각 `assignments[].titles[]`에서 `owner`, `blog_id`, `blog_reason` 및 `blog_url`을 읽는다. 동일한 담당자에게 등록 블로그가 여러 개면 최신 추천에 지정된 ID 하나만 안내하며, 다른 ID로 임의 변경하지 않는다. 이전 데이터에 `blog_id`가 없으면 '블로그 미지정(새 수집 필요)'이라고 쓴다. 블로그 주소를 열 수 있는 형태로 제공한다.
 
 - 팀 규칙: `recommendation.assignment_mode == TWO_PERSON_KEYWORD_TEAMS`, `assignments` 최대 2개, 각 `people` 정확히 2명, 팀 간 중복 담당자 없음, 팀 간 서로 다른 `keyword`인지 확인한다. 2팀이 준비되면 4명 모두 안내한다. 1팀이면 나머지 2명은 근거 부족으로 보류한다. 이전 1인 배정 데이터는 새 수집 전까지 사용하지 않는다.
+
+- 관제판에서 발견한 related_candidates는 미승인 후보입니다. 상단 키워드 직접 입력과 GitHub Issue 요청도 관리자가 serp-approved 라벨을 적용하기 전에는 조사 근거가 아닙니다. 실제 latest.json에 저장된 queries/group의 검색어와 시각을 사용하며, 과거 12개 스냅샷을 새로운 24개 수집 완료로 보고하지 않습니다.
