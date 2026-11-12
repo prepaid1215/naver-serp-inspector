@@ -266,18 +266,21 @@ class EvidenceTests(unittest.TestCase):
 
 
 class SchedulerTests(unittest.TestCase):
-    def test_sample_verified_ranks_recommend_geonho_and_sujin_with_unique_titles(self):
+    def test_single_verified_keyword_assigns_all_four_with_unique_titles(self):
         queries = run_queries()
         set_group(queries, "KT바로유심", ten((3, "esim99_"), (7, "ntelecom59")))
-        groups = aggregate_groups(queries, at=NOW)
-        result = recommend(groups, at=NOW)
+        result = recommend(aggregate_groups(queries, at=NOW), at=NOW)
+        self.assertEqual(result["status"], "READY")
+        self.assertEqual(result["unassigned"], [])
+        self.assertEqual(len(result["assignments"]), 1)
         assignment = result["assignments"][0]
         self.assertEqual(assignment["keyword"], "KT바로유심")
-        self.assertEqual(assignment["people"], ["건호", "수진"])
-        self.assertEqual(len({row["title"] for row in assignment["titles"]}), 2)
-        self.assertNotEqual(assignment["titles"][0]["intent"], assignment["titles"][1]["intent"])
+        self.assertEqual(assignment["people"], ["건호", "영은", "하루", "수진"])
+        self.assertEqual(len({x["title"] for x in assignment["titles"]}), 4)
+        self.assertIn("상위 10개", assignment["owner_reasons"]["건호"])
+        self.assertIn("상위권", assignment["owner_reasons"]["영은"])
 
-    def test_two_keywords_create_two_non_overlapping_teams(self):
+    def test_two_verified_keywords_distribute_all_four_without_duplicates(self):
         queries = run_queries()
         set_group(queries, "KT바로유심", ten((3, "esim99_"), (7, "ntelecom59")))
         set_group(queries, "LG모두의 원칩", ten((2, "carrotmobile_"), (8, "jjuny1253")))
@@ -286,6 +289,64 @@ class SchedulerTests(unittest.TestCase):
         self.assertEqual(teams["KT바로유심"], ["건호", "수진"])
         self.assertEqual(teams["LG모두의 원칩"], ["영은", "하루"])
         self.assertEqual(len({person for team in teams.values() for person in team}), 4)
+        self.assertEqual(result["status"], "READY")
+
+    def test_owner_specific_priorities_match_local_serp_scenario(self):
+        groups = {}
+        for keyword in GROUPS:
+            groups[keyword] = {
+                "complete": True, "status": "VERIFIED", "queries": list(GROUPS[keyword]),
+                "missing": [], "matches": {
+                    person: [{"query": GROUPS[keyword][0], "rank": 2}]
+                    for person in ("건호", "영은", "하루", "수진")
+                },
+            }
+        # All four appear in KT, but 건호 barely holds 10th in one variant.
+        groups["KT바로유심"]["matches"]["건호"] = [
+            {"query": "바로유심", "rank": 10}
+        ]
+        # 하루 is absent from all three LG variants.
+        groups["LG모두의 원칩"]["matches"]["하루"] = []
+        groups["LG모두의 원칩"]["missing"] = ["하루"]
+        # 영은 and 수진 are absent from all three Daiso variants.
+        for owner in ("영은", "수진"):
+            groups["다이소 유심"]["matches"][owner] = []
+        groups["다이소 유심"]["missing"] = ["영은", "수진"]
+        # 수진 is also missing from Tablet, but Daiso needs two people.
+        groups["태블릿소유자회원번호"]["matches"]["수진"] = []
+        groups["태블릿소유자회원번호"]["missing"] = ["수진"]
+        result = recommend(groups, at=NOW)
+        by_owner = {owner: (item["keyword"], item["owner_reasons"][owner])
+                    for item in result["assignments"] for owner in item["people"]}
+        self.assertEqual(result["status"], "READY")
+        self.assertEqual({k: v[0] for k, v in by_owner.items()}, {
+            "건호": "KT바로유심", "영은": "다이소 유심",
+            "하루": "LG모두의 원칩", "수진": "다이소 유심"
+        })
+        self.assertIn("10번째", by_owner["건호"][1])
+        self.assertIn("상위 10개", by_owner["하루"][1])
+
+    def test_recent_recommendations_break_same_priority_ties(self):
+        queries = run_queries()
+        for key in ("KT바로유심", "LG모두의 원칩"):
+            set_group(queries, key, ten())
+        groups = aggregate_groups(queries, at=NOW)
+        history = {"entries": [{"recommendation": {"assignments": [
+            {"keyword": "KT바로유심", "people": ["건호", "영은", "하루", "수진"], "titles": []}
+        ]}}]}
+        result = recommend(groups, history=history, at=NOW)
+        self.assertEqual({row["keyword"] for row in result["assignments"]}, {"LG모두의 원칩"})
+
+    def test_weak_variants_do_not_become_missing_when_any_variant_is_visible(self):
+        queries = run_queries()
+        for q in GROUPS["KT바로유심"]:
+            urls = ten((10, "carrotmobile_")) if q == "바로유심" else ten((4, "esim99"))
+            queries[q] = {"query": q, "surfaces": {SURFACE_FEED: observation(urls)}}
+        result = recommend(aggregate_groups(queries, at=NOW), at=NOW)
+        assignment = result["assignments"][0]
+        self.assertIn("건호", assignment["people"])
+        self.assertIn("10번째", assignment["owner_reasons"]["건호"])
+        self.assertEqual(result["status"], "READY")
 
     def test_one_unknown_variant_prevents_missing_and_assignment(self):
         queries = run_queries()

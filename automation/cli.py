@@ -58,37 +58,32 @@ def command_validate(args) -> int:
 
 
 def build_report(run: dict) -> str:
-    """Plain-text summary: who is exposed, who publishes what, and why."""
+    """Just what each person should publish and why, without raw SERP dumps."""
+    from automation.owners import PEOPLE
 
+    recommendation = run.get("recommendation") or {}
+    assignments = recommendation.get("assignments") or []
     lines = [
         f"수집 {run.get('captured_at_kst')} · {run.get('collector', {}).get('kind', '')}",
-        "※ 순번은 네이버 공식 순위가 아닌 관측값(블로그 카드 순번 / 피드 순번)",
+        "※ 네이버 공식 순위가 아닌 모바일 통합검색 피드 블로그 카드 관측 기준",
+        f"다음 발행 {recommendation.get('slot_at_kst', '')}",
         "",
     ]
-    for keyword, group in (run.get("groups") or {}).items():
-        state = "검증 완료" if group.get("complete") else "검증 불가 → 미노출 확정·배정 보류"
-        lines.append(f"[{keyword}] {state}")
-        if not group.get("complete"):
-            lines.append("  " + group.get("decision_note", ""))
+    decisions = {}
+    for item in assignments:
+        titles = {row.get("owner"): row for row in item.get("titles", [])}
+        for owner in item.get("people", []):
+            decisions[owner] = (item, titles.get(owner, {}))
+    for owner in PEOPLE:
+        if owner not in decisions:
+            lines.append(f"{owner}: 발행 보류 — 최신 검증된 키워드가 부족합니다.")
             continue
-        for owner, rows in (group.get("matches") or {}).items():
-            if rows:
-                shown = ", ".join(
-                    f"{row['query']} 블로그 {row['rank']}번째(피드 {row.get('feed_rank', '?')}번째)" for row in rows
-                )
-                lines.append(f"  {owner}: 노출 · {shown}")
-            else:
-                lines.append(f"  {owner}: 상위 10개 블로그 카드에 미노출")
-    recommendation = run.get("recommendation") or {}
-    lines += ["", f"발행 제안 [{recommendation.get('status')}] {recommendation.get('slot_at_kst', '')}"]
-    for item in recommendation.get("assignments", []):
-        lines.append(f"  {item['keyword']} → {' + '.join(item['people'])} ({item['reason']})")
-        for title in item.get("titles", []):
-            lines.append(f"    - {title['owner']} [{title['intent']}] {title['title']}")
-    if not recommendation.get("assignments"):
-        lines.append("  " + recommendation.get("note", "배정 근거 없음"))
-    for error in run.get("errors", []):
-        lines.append(f"! {error}")
+        item, title = decisions[owner]
+        lines.append(f"{owner}: {item['keyword']}")
+        lines.append("  제목: " + title.get("title", "제목 추천 대기"))
+        lines.append("  이유: " + (item.get("owner_reasons") or {}).get(owner, item.get("reason", "검증 자료 기준 추천")))
+    if not assignments:
+        lines.append(recommendation.get("note", "현재 발행 추천을 보류합니다."))
     return "\n".join(lines)
 
 
