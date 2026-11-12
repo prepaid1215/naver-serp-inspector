@@ -1,0 +1,37 @@
+{
+  "schema": "naver-mobile-integrated-blog-top10-v1",
+  "captured_at_kst": null,
+  "source": "not yet collected",
+  "trust": "No observed rankings yet",
+  "people": {
+    "건호": [
+      "carrotmobile_",
+      "lifeon5g_"
+    ],
+    "영은": [
+      "esim99_",
+      "esim99",
+      "esim87_"
+    ],
+    "하루": [
+      "ntelecom59"
+    ],
+    "수진": [
+      "jjuny1253"
+    ]
+  },
+  "groups": {},
+  "queries": {},
+  "recommendation": {
+    "ready": false,
+    "assignments": [],
+    "unassigned": [
+      "건호",
+      "영은",
+      "하루",
+      "수진"
+    ],
+    "note": "첫 자동 수집 전"
+  },
+  "errors": []
+}
