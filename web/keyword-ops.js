@@ -71,33 +71,88 @@
 
   function renderRecommendations(data) {
     const root = $('recommendations'); clear(root);
-    const valid = (data.recommendation?.assignments || []).filter(row => groupIsFresh(data.groups?.[row.keyword]));
-    if (!valid.length) {
-      badge(root, 'PENDING');
-      element('h3', root, '발행자 자동 배정 보류');
-      element('p', root, data.recommendation?.note || '최신 VERIFIED 검색 결과가 부족합니다.', 'muted');
+    const decision = data.recommendation || {};
+    const assignments = decision.assignments || [];
+    const current = assignments.filter(row => groupIsFresh(data.groups?.[row.keyword]));
+    const isCurrent = current.length > 0 && ['READY', 'PARTIAL'].includes(decision.status);
+    const shown = isCurrent ? current : assignments;
+    $('recommendation-heading').textContent = isCurrent ? '이번에 발행할 글' : '최근 분석 결과';
+    $('decision-status').textContent = isCurrent
+      ? '검색을 확인했습니다. 아래 글을 추천합니다.'
+      : '최근 검색이 아닙니다. 발행 전 재확인이 필요합니다.';
+    $('decision-status').className = isCurrent ? 'decision-ready' : 'decision-pending';
+
+    if (!isCurrent) {
+      const warning = element('div', root, undefined, 'simple-alert');
+      element('b', warning, '최신 검색 결과가 없어 현재 발행은 보류합니다.');
+      element('p', warning, '자동 검색이 다시 완료되면 다음 발행 글을 확정해 표시합니다. 아래에 보이는 지난 추천은 참고용입니다.');
+    }
+    if (!shown.length) {
+      const empty = element('div', root, undefined, 'simple-empty');
+      element('h3', empty, '지금 추천할 글이 없습니다.');
+      element('p', empty, data.errors?.length
+        ? '검색 수집에 오류가 있습니다. 자세한 근거에서 상태를 확인해 주세요.'
+        : '충분한 검색 결과가 확인되면 담당자와 제목을 자동으로 안내합니다.');
+      element('p', empty, decision.note || '', 'muted');
+      element('span', empty, '발행자 자동 배정 보류', 'visually-hidden');
       return;
     }
-    const grid = element('div', root, undefined, 'recommendation-grid');
-    valid.forEach((assignment, index) => {
-      const card = element('article', grid, undefined, 'recommendation');
-      const head = element('div', card, undefined, 'rec-head');
-      element('b', head, `${index + 1}조 · ${assignment.keyword}`);
-      badge(head, 'VERIFIED');
-      element('h3', card, assignment.people.join(' · '));
-      element('p', card, assignment.reason, 'muted');
-      (assignment.titles || []).forEach(row => {
-        const draft = element('div', card, undefined, 'title-draft');
-        element('b', draft, `${row.owner} · ${row.intent}`);
-        element('span', draft, row.title);
-        element('small', draft, ' · 규칙 기반 초안', 'muted');
-      });
-      const controls = element('div', card, undefined, 'readonly-actions');
-      ['발행 예정', '발행 완료', '보류'].forEach(label => {
-        const button = element('button', controls, label);
-        button.type = 'button'; button.disabled = true;
-        button.title = '공유 저장 백엔드가 없어 읽기 전용입니다.';
-      });
+
+    shown.forEach((assignment, index) => {
+      const group = data.groups?.[assignment.keyword] || {};
+      const card = element('article', root, undefined,
+        'simple-publish-card' + (isCurrent ? '' : ' past'));
+      const top = element('div', card, undefined, 'publish-card-top');
+      element('span', top, '추천 ' + (index + 1) + ' · ' + assignment.keyword, 'publish-keyword');
+      if (isCurrent) badge(top, 'VERIFIED');
+      else element('span', top, '과거 추천 · 발행 보류', 'past-tag');
+
+      const owners = (assignment.people || []).join(' · ');
+      element('h3', card, owners + '님, 이 글을 발행하세요');
+
+      const reason = element('div', card, undefined, 'publish-reason');
+      element('b', reason, '왜 추천하나요?');
+      const appeared = (group.exposed || []).join('·');
+      const absent = (group.missing || []).join('·');
+      let explanation = '';
+      if (appeared && absent) {
+        explanation = (isCurrent ? '최근' : '마지막') + ' 조사에서 ‘' + assignment.keyword + '’ 관련 검색어 3개를 비교했습니다. '
+          + appeared + '님의 글은 블로그 카드 상위 10개에 나타났지만, ' + absent + '님의 글은 보이지 않았습니다. '
+          + '따라서 ' + owners + '님이 이 키워드를 맡는 것이 좋습니다.';
+      } else {
+        explanation = '이 키워드의 세 가지 검색어에서 ' + owners + '님의 글이 블로그 카드 상위 10개에 나타나지 않아 발행을 제안합니다.';
+      }
+      element('p', reason, explanation);
+      if (group.exits?.length) {
+        element('p', reason, '이전에 관측되던 글의 노출 이탈도 감지되어 우선 확인 대상으로 선정했습니다.', 'muted');
+      }
+
+      element('p', card, '담당자별 추천 제목', 'publish-title-heading');
+      const titles = element('div', card, undefined, 'simple-title-list');
+      for (const row of (assignment.titles || [])) {
+        const line = element('div', titles, undefined, 'simple-title-item');
+        element('strong', line, row.owner);
+        const name = element('div', line);
+        element('span', name, row.title, 'simple-draft-title');
+        if (row.intent) element('small', name, row.intent + ' 중심', 'muted');
+      }
+      if (!(assignment.titles || []).length) element('p', titles, '추천 제목 생성 대기', 'muted');
+
+      const foot = element('div', card, undefined, 'publish-card-foot');
+      element('span', foot, '제목은 규칙 기반 초안 · 실제 발행 전 확인', 'muted');
+      if ((assignment.titles || []).length) {
+        const copy = element('button', foot, '제목 복사', 'simple-copy');
+        copy.type = 'button';
+        copy.addEventListener('click', async () => {
+          try {
+            const lines = (assignment.titles || []).map(row => row.owner + ': ' + row.title);
+            await navigator.clipboard.writeText([assignment.keyword, ...lines].join('\n'));
+            copy.textContent = '복사 완료';
+          } catch (_) {
+            copy.textContent = '복사 실패';
+          }
+        });
+      }
     });
   }
 
