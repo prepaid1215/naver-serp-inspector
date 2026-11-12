@@ -55,8 +55,8 @@ try:
         expect(page.locator("#message")).to_contain_text("최신 저장 자료", timeout=10_000)
         expect(page.locator("#verified-count")).to_have_text(f"{verified_total}/12")
         if latest["recommendation"]["assignments"] and verified_total == 12:
-            expect(page.locator("#recommendations")).to_contain_text("왜 추천하나요?")
-            expect(page.locator("#decision-status")).to_contain_text("추천을 확인했습니다.")
+            expect(page.locator("#recommendations")).to_contain_text("이유")
+            expect(page.locator("#decision-status")).to_contain_text("추천")
             expect(page.locator("#recommendations")).to_contain_text("이 글을 발행하세요")
             expect(page.locator("#keyword-cards")).to_contain_text("블로그")
         expect(page.locator("#query-details .query-detail")).to_have_count(12)
