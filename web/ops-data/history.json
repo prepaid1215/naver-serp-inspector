@@ -70,5 +70,41 @@
       ],
       "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
     }
+  },
+  {
+    "at": "2026-11-12T11:21:27.110774+09:00",
+    "summary": {
+      "KT바로유심": {
+        "complete": false,
+        "exposed": [],
+        "missing": []
+      },
+      "LG모두의 원칩": {
+        "complete": false,
+        "exposed": [],
+        "missing": []
+      },
+      "태블릿소유자회원번호": {
+        "complete": false,
+        "exposed": [],
+        "missing": []
+      },
+      "다이소 유심": {
+        "complete": false,
+        "exposed": [],
+        "missing": []
+      }
+    },
+    "recommendation": {
+      "ready": false,
+      "assignments": [],
+      "unassigned": [
+        "건호",
+        "영은",
+        "하루",
+        "수진"
+      ],
+      "note": "확인되지 않은 키워드는 미노출로 취급하지 않음"
+    }
   }
 ]
