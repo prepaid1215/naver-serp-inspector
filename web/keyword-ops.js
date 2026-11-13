@@ -517,10 +517,25 @@
     $('run-search-message').textContent = message;
   }
 
+  // A signed, HttpOnly, Secure cookie keeps each PC signed in for 30 days.
+  // Never put the administrator secret into localStorage or browser JS files.
+  let runAuthenticated = false;
+  function updateRunAuthUI(configured, authenticated) {
+    runAuthenticated = Boolean(configured && authenticated);
+    $('run-search-button').disabled = !configured;
+    $('run-search-button').textContent = runAuthenticated ? '새 검색 실행' : '이 컴퓨터에 로그인';
+    $('run-secret-label').hidden = runAuthenticated;
+    $('run-search-secret').hidden = runAuthenticated;
+    $('run-search-secret').required = !runAuthenticated;
+    if (runAuthenticated) $('run-search-secret').value = '';
+    $('run-logout').hidden = !runAuthenticated;
+  }
+
   async function configureRunControl() {
     // GitHub Pages cannot host a Vercel serverless function.
     if (window.location.hostname.endsWith('.github.io')) {
       $('run-search-form').hidden = true;
+      $('run-logout').hidden = true;
       $('run-search-vercel-link').hidden = false;
       runMessage('보안이 필요한 실행 기능은 Vercel 관제판에서 사용하세요.');
       return;
@@ -529,10 +544,12 @@
       const response = await fetch('/api/serp-run', {cache: 'no-store'});
       if (!response.ok) throw new Error('서버 응답 오류');
       const data = await response.json();
-      $('run-search-button').disabled = !data.configured;
-      runMessage(data.configured
-        ? '관리자 실행 코드를 입력하면 GitHub Actions 검색 수집을 직접 시작합니다.'
-        : '관리자 설정이 필요합니다. Vercel에 SERP_GITHUB_TOKEN, SERP_RUN_SECRET을 등록하세요.');
+      updateRunAuthUI(data.configured, data.authenticated);
+      runMessage(!data.configured
+        ? '관리자 설정이 필요합니다. Vercel에 SERP_GITHUB_TOKEN, SERP_RUN_SECRET을 등록하세요.'
+        : data.authenticated
+          ? '이 컴퓨터는 로그인 상태입니다. 새 검색 실행 버튼으로 바로 수집을 시작할 수 있습니다.'
+          : '처음 한 번 관리자 코드를 입력해 로그인하세요. 이 컴퓨터에는 30일간 로그인 상태가 유지됩니다.');
     } catch (_) {
       $('run-search-button').disabled = true;
       runMessage('검색 실행 서버를 확인할 수 없습니다. Vercel에서 연결 상태를 확인하세요.');
@@ -541,33 +558,61 @@
 
   async function requestNewSerpSearch(event) {
     event.preventDefault();
-    const secretInput = $('run-search-secret');
-    const secret = secretInput.value;
-    // Do not retain the operator code in storage or the page after use.
-    secretInput.value = '';
+    const password = $('run-search-secret').value;
+    const loggingIn = !runAuthenticated;
+    $('run-search-secret').value = '';
     const button = $('run-search-button');
     button.disabled = true;
-    runMessage('GitHub Actions 실행 요청 중…');
+    runMessage(loggingIn ? '이 컴퓨터에 로그인하는 중…' : 'GitHub Actions 새 검색 실행 요청 중…');
     try {
       const response = await fetch('/api/serp-run', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-SERP-Run-Secret': secret,
+          ...(loggingIn ? {'X-SERP-Run-Secret': password} : {}),
         },
-        body: '{}',
+        credentials: 'same-origin',
+        body: JSON.stringify({action: loggingIn ? 'login' : 'dispatch'}),
         cache: 'no-store',
       });
       const result = await response.json();
-      if (response.status === 202 && result.accepted) {
+      if (loggingIn && response.ok && result.authenticated) {
+        updateRunAuthUI(true, true);
+        runMessage('로그인이 저장됐습니다. 이 컴퓨터에서 30일간 코드를 다시 입력할 필요가 없습니다. 이제 새 검색 실행을 누르세요.');
+      } else if (!loggingIn && response.status === 202 && result.accepted) {
         runMessage('실행 요청 접수 완료. GitHub Actions 수집이 끝나면 발행 추천이 자동으로 바뀝니다.');
+      } else if (!loggingIn && response.status === 409 && result.running) {
+        runMessage('이미 네이버 검색이 진행 중입니다. 새 검색 결과를 기다리고 있습니다.');
+      } else if (response.status === 401 && !loggingIn) {
+        updateRunAuthUI(true, false);
+        runMessage('로그인 기간이 만료됐습니다. 관리자 코드를 다시 입력하세요.');
       } else {
-        runMessage(result.error || '검색 실행 요청을 처리하지 못했습니다.');
+        runMessage(result.error || '요청을 처리하지 못했습니다.');
       }
     } catch (_) {
-      runMessage('검색 실행 서버에 연결하지 못했습니다. GitHub 실행 기록을 확인하세요.');
+      runMessage('서버에 연결하지 못했습니다. Vercel 또는 GitHub 실행 기록을 확인하세요.');
     } finally {
       button.disabled = false;
+    }
+  }
+
+  async function logoutRunControl() {
+    $('run-logout').disabled = true;
+    try {
+      const response = await fetch('/api/serp-run', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'same-origin',
+        body: JSON.stringify({action: 'logout'}),
+        cache: 'no-store',
+      });
+      if (!response.ok) throw new Error('logout failed');
+      updateRunAuthUI(true, false);
+      runMessage('이 컴퓨터에서 로그아웃했습니다. 다시 실행하려면 관리자 코드를 입력하세요.');
+    } catch (_) {
+      runMessage('로그아웃 처리에 실패했습니다. 다시 시도하세요.');
+    } finally {
+      $('run-logout').disabled = false;
     }
   }
 
@@ -587,6 +632,7 @@
   });
   $('refresh').addEventListener('click', () => void load());
   $('run-search-form').addEventListener('submit', requestNewSerpSearch);
+  $('run-logout').addEventListener('click', () => void logoutRunControl());
   void configureRunControl();
   setInterval(autoCheckIfVisible, AUTO_CHECK_MS);
   document.addEventListener('visibilitychange', autoCheckIfVisible);

@@ -43,11 +43,13 @@
       <a class="button" href="https://github.com/prepaid1215/naver-serp-inspector/actions/workflows/mobile-blog-monitor.yml" target="_blank" rel="noopener noreferrer">GitHub 실행 기록</a>
     </div>
     <form id="run-search-form" class="serp-run-form">
-      <label for="run-search-secret">관리자 실행 코드</label>
+      <label id="run-secret-label" for="run-search-secret">관리자 실행 코드</label>
       <input id="run-search-secret" type="password" autocomplete="off" spellcheck="false" placeholder="Vercel에서 설정한 관리자 코드" minlength="24" required/>
-      <button class="primary" id="run-search-button" type="submit" disabled>새 검색 실행</button>
+      <button class="primary" id="run-search-button" type="submit" disabled>이 컴퓨터에 로그인</button>
+      <button id="run-logout" type="button" hidden>이 컴퓨터 로그아웃</button>
     </form>
     <p id="run-search-message" class="muted" role="status" aria-live="polite">서버 연결 상태 확인 중…</p>
+    <p class="muted serp-run-session-help">각 팀원은 자기 컴퓨터에서 관리자 코드를 한 번 입력하면 30일간 로그인 상태가 유지됩니다. Chrome/Google 계정이 서로 달라도 됩니다. 공용 PC에서는 로그아웃하세요.</p>
     <a id="run-search-vercel-link" class="button" href="https://59man-serp-v1-download.vercel.app/" hidden>Vercel 관제판에서 검색 실행</a>
   </section>
 
