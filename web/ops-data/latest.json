@@ -1,7 +1,7 @@
 {
   "schema": "naver-blog-ops-v2",
-  "run_id": "20261113T095229+0900-mobile",
-  "captured_at_kst": "2026-11-13T09:57:31.706224+09:00",
+  "run_id": "20261113T101254+0900-mobile",
+  "captured_at_kst": "2026-11-13T10:18:07.915878+09:00",
   "freshness_minutes": 45,
   "collector": {
     "kind": "playwright_mobile_emulation",
@@ -35,13 +35,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:52:30.420420+09:00",
+          "observed_at": "2026-11-13T10:12:55.395445+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "927d7c1a3d49a505817d956f7d8350ea985972c0e7e5810d2a2e93191bf3d2c6",
+            "screenshot_sha256": "fedfbf8db72bb872c25b2e3b242ca16a0207305905e8a9461ac7f58baf774597",
             "screenshot_artifact_name": "kt바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -54,21 +54,21 @@
         },
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
-          "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:52:30.420420+09:00",
-          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
+          "status": "PARTIAL",
+          "observed_at": "2026-11-13T10:12:55.395445+09:00",
+          "reason": "모바일 통합검색에서 블로그 게시글 후보를 10개 미만으로 관측",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "927d7c1a3d49a505817d956f7d8350ea985972c0e7e5810d2a2e93191bf3d2c6",
+            "screenshot_sha256": "fedfbf8db72bb872c25b2e3b242ca16a0207305905e8a9461ac7f58baf774597",
             "screenshot_artifact_name": "kt바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
             "verification_method": "rendered_article_visual_order",
-            "observed_distinct_posts": 10,
+            "observed_distinct_posts": 9,
             "feed_layout": "per_post_cards",
-            "feed_interleaved_cafe_cards": 6
+            "feed_interleaved_cafe_cards": 7
           },
           "results": [
             {
@@ -101,41 +101,34 @@
             },
             {
               "rank": 5,
-              "blog_id": "ntelecom59",
-              "post_id": "224469206009",
-              "post_url": "https://blog.naver.com/ntelecom59/224469206009",
-              "owner": "하루"
-            },
-            {
-              "rank": 6,
               "blog_id": "lifeon5g_",
               "post_id": "224470702366",
               "post_url": "https://blog.naver.com/lifeon5g_/224470702366",
               "owner": "건호"
             },
             {
-              "rank": 7,
+              "rank": 6,
               "blog_id": "nrc1122",
               "post_id": "224470195185",
               "post_url": "https://blog.naver.com/nrc1122/224470195185",
               "owner": null
             },
             {
-              "rank": 8,
+              "rank": 7,
               "blog_id": "phone4050",
               "post_id": "224465888739",
               "post_url": "https://blog.naver.com/phone4050/224465888739",
               "owner": null
             },
             {
-              "rank": 9,
+              "rank": 8,
               "blog_id": "rabo4050",
               "post_id": "224464861329",
               "post_url": "https://blog.naver.com/rabo4050/224464861329",
               "owner": null
             },
             {
-              "rank": 10,
+              "rank": 9,
               "blog_id": "esim99",
               "post_id": "224470025873",
               "post_url": "https://blog.naver.com/esim99/224470025873",
@@ -145,14 +138,14 @@
         },
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
-          "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:52:30.420420+09:00",
-          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
-          "reason_code": "FEED_CROSSCHECK_PASSED",
+          "status": "PARTIAL",
+          "observed_at": "2026-11-13T10:12:55.395445+09:00",
+          "reason": "피드에서 블로그 카드를 10개 미만으로 관측",
+          "reason_code": "FEED_BLOG_CARDS_LT_10",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "927d7c1a3d49a505817d956f7d8350ea985972c0e7e5810d2a2e93191bf3d2c6",
+            "screenshot_sha256": "fedfbf8db72bb872c25b2e3b242ca16a0207305905e8a9461ac7f58baf774597",
             "screenshot_artifact_name": "kt바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -163,12 +156,12 @@
               "no_excluded_cards": true,
               "post_unique": true,
               "ugc_cards": 16,
-              "blog_cards": 10,
+              "blog_cards": 9,
               "excluded_ai_or_ad_cards": 0,
               "duplicate_cards_dropped": 0
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
-            "feed_interleaved_cafe_cards": 6
+            "feed_interleaved_cafe_cards": 7
           },
           "results": [
             {
@@ -209,56 +202,47 @@
             },
             {
               "rank": 5,
-              "blog_id": "ntelecom59",
-              "post_id": "224469206009",
-              "post_url": "https://blog.naver.com/ntelecom59/224469206009",
-              "owner": "하루",
-              "feed_rank": 10,
-              "title": "KT 바로유심 편의점에서 구매하세요｜8,800원 가격부터 선불폰 셀프개통까지"
-            },
-            {
-              "rank": 6,
               "blog_id": "lifeon5g_",
               "post_id": "224470702366",
               "post_url": "https://blog.naver.com/lifeon5g_/224470702366",
               "owner": "건호",
-              "feed_rank": 12,
+              "feed_rank": 10,
               "title": "CU·GS25 편의점 KT 바로유심으로 당일 개통하기｜선불폰 온라인 신규가입 순서"
             },
             {
-              "rank": 7,
+              "rank": 6,
               "blog_id": "nrc1122",
               "post_id": "224470195185",
               "post_url": "https://blog.naver.com/nrc1122/224470195185",
               "owner": null,
-              "feed_rank": 13,
+              "feed_rank": 12,
               "title": "KT 바로유심 어디서 살까? 편의점 구매와 개통 순서"
             },
             {
-              "rank": 8,
+              "rank": 7,
               "blog_id": "phone4050",
               "post_id": "224465888739",
               "post_url": "https://blog.naver.com/phone4050/224465888739",
               "owner": null,
-              "feed_rank": 14,
+              "feed_rank": 13,
               "title": "KT 바로유심 선불폰 개통 방법 | CU·GS25·이마트24 편의점 구매 후 셀프 신청"
             },
             {
-              "rank": 9,
+              "rank": 8,
               "blog_id": "rabo4050",
               "post_id": "224464861329",
               "post_url": "https://blog.naver.com/rabo4050/224464861329",
               "owner": null,
-              "feed_rank": 15,
+              "feed_rank": 14,
               "title": "KT 바로유심으로 선불폰 당일 직접 개통하기 | CU·GS25·이마트24에서 구매부터 신청까지"
             },
             {
-              "rank": 10,
+              "rank": 9,
               "blog_id": "esim99",
               "post_id": "224470025873",
               "post_url": "https://blog.naver.com/esim99/224470025873",
               "owner": "영은",
-              "feed_rank": 16,
+              "feed_rank": 15,
               "title": "편의점에서 바로유심 샀다면? KT 선불폰 개통 준비물과 신청 순서"
             }
           ]
@@ -266,20 +250,20 @@
       },
       "related_queries": [
         "kt 바로유심 편의점",
-        "KT 바로유심 개통",
+        "KT바로유심 개통",
         "kt바로유심 가격",
         "kt 바로유심 nfc",
-        "kt바로유심 알뜰폰",
-        "kt바로유심셀프개통",
         "KT바로유심 선불폰",
+        "kt바로유심셀프개통",
         "kt 바로유심 개통 방법",
-        "kt 바로유심 재사용",
+        "kt바로유심 알뜰폰",
         "kt 바로배송 유심",
+        "kt 바로유심 재사용",
         "kt바로유심구매",
         "kt 바로유심 편의점 재고 확인",
         "kt 바로유심 편의점 가격",
         "kt 바로유심 이벤트",
-        "kt바로유심칩"
+        "kt 바로유심 판매처"
       ]
     },
     "바로유심": {
@@ -288,13 +272,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:52:44.003677+09:00",
+          "observed_at": "2026-11-13T10:13:09.575089+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "94d21e1e12f85b96570b169e77bbed98f4f3996edfd80432b44f3a827f279728",
+            "screenshot_sha256": "657a0a92d94c01df3f141cb846e358ad7a8c6db7401d4055c98238b779eece6b",
             "screenshot_artifact_name": "바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -308,13 +292,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:52:44.003677+09:00",
+          "observed_at": "2026-11-13T10:13:09.575089+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "94d21e1e12f85b96570b169e77bbed98f4f3996edfd80432b44f3a827f279728",
+            "screenshot_sha256": "657a0a92d94c01df3f141cb846e358ad7a8c6db7401d4055c98238b779eece6b",
             "screenshot_artifact_name": "바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -399,13 +383,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:52:44.003677+09:00",
+          "observed_at": "2026-11-13T10:13:09.575089+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "94d21e1e12f85b96570b169e77bbed98f4f3996edfd80432b44f3a827f279728",
+            "screenshot_sha256": "657a0a92d94c01df3f141cb846e358ad7a8c6db7401d4055c98238b779eece6b",
             "screenshot_artifact_name": "바로유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -541,13 +525,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:52:56.830530+09:00",
+          "observed_at": "2026-11-13T10:13:22.716521+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "6495798d5280cf154e701e30c85405ffa79d45ff8b2e5792bb8b288b8dbe95d0",
+            "screenshot_sha256": "0a55d0de0923abc12c40cd4dd0f7ac66ebc4dac6e2cfb619320ad3eb1ce494b7",
             "screenshot_artifact_name": "kt바로유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -561,13 +545,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:52:56.830530+09:00",
+          "observed_at": "2026-11-13T10:13:22.716521+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "6495798d5280cf154e701e30c85405ffa79d45ff8b2e5792bb8b288b8dbe95d0",
+            "screenshot_sha256": "0a55d0de0923abc12c40cd4dd0f7ac66ebc4dac6e2cfb619320ad3eb1ce494b7",
             "screenshot_artifact_name": "kt바로유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -652,13 +636,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:52:56.830530+09:00",
+          "observed_at": "2026-11-13T10:13:22.716521+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT%EB%B0%94%EB%A1%9C%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "6495798d5280cf154e701e30c85405ffa79d45ff8b2e5792bb8b288b8dbe95d0",
+            "screenshot_sha256": "0a55d0de0923abc12c40cd4dd0f7ac66ebc4dac6e2cfb619320ad3eb1ce494b7",
             "screenshot_artifact_name": "kt바로유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -773,7 +757,7 @@
       "related_queries": [
         "kt바로유심셀프개통",
         "kt 바로유심 개통 방법",
-        "KT 바로유심 개통선불",
+        "kt 바로유심 선불폰 개통",
         "kt 바로유심 개통 시간",
         "kt 바로유심 개통 안됨",
         "KT 바로유심 개통 후불",
@@ -789,13 +773,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:53:09.833680+09:00",
+          "observed_at": "2026-11-13T10:13:36.148602+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "553c93f60e6a4d69dbf20ba28581e9095dcd629f286cedf832493f05bf26185a",
+            "screenshot_sha256": "16de1a08d58c5fa0e313ef349ed741cd588b774cf8d9347bb5ed022cf3b17d6f",
             "screenshot_artifact_name": "lg모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -809,13 +793,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:53:09.833680+09:00",
+          "observed_at": "2026-11-13T10:13:36.148602+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "553c93f60e6a4d69dbf20ba28581e9095dcd629f286cedf832493f05bf26185a",
+            "screenshot_sha256": "16de1a08d58c5fa0e313ef349ed741cd588b774cf8d9347bb5ed022cf3b17d6f",
             "screenshot_artifact_name": "lg모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -834,52 +818,52 @@
             },
             {
               "rank": 2,
+              "blog_id": "k_bc1994",
+              "post_id": "224473065413",
+              "post_url": "https://blog.naver.com/k_bc1994/224473065413",
+              "owner": null
+            },
+            {
+              "rank": 3,
               "blog_id": "ntelecom59",
               "post_id": "224475298783",
               "post_url": "https://blog.naver.com/ntelecom59/224475298783",
               "owner": "하루"
             },
             {
-              "rank": 3,
+              "rank": 4,
               "blog_id": "esim99_",
               "post_id": "224475298410",
               "post_url": "https://blog.naver.com/esim99_/224475298410",
               "owner": "영은"
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "fcealice",
               "post_id": "224474782585",
               "post_url": "https://blog.naver.com/fcealice/224474782585",
               "owner": null
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "ntelecom_ria",
               "post_id": "224473353730",
               "post_url": "https://blog.naver.com/ntelecom_ria/224473353730",
               "owner": null
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "nrc1122",
               "post_id": "224474228484",
               "post_url": "https://blog.naver.com/nrc1122/224474228484",
               "owner": null
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "esim99",
               "post_id": "224474194361",
               "post_url": "https://blog.naver.com/esim99/224474194361",
               "owner": "영은"
-            },
-            {
-              "rank": 8,
-              "blog_id": "gmlakddl987",
-              "post_id": "224474289243",
-              "post_url": "https://blog.naver.com/gmlakddl987/224474289243",
-              "owner": null
             },
             {
               "rank": 9,
@@ -900,13 +884,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:09.833680+09:00",
+          "observed_at": "2026-11-13T10:13:36.148602+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "553c93f60e6a4d69dbf20ba28581e9095dcd629f286cedf832493f05bf26185a",
+            "screenshot_sha256": "16de1a08d58c5fa0e313ef349ed741cd588b774cf8d9347bb5ed022cf3b17d6f",
             "screenshot_artifact_name": "lg모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -936,66 +920,66 @@
             },
             {
               "rank": 2,
+              "blog_id": "k_bc1994",
+              "post_id": "224473065413",
+              "post_url": "https://blog.naver.com/k_bc1994/224473065413",
+              "owner": null,
+              "feed_rank": 3,
+              "title": "모두의 원칩 NFC 지원될까? 선불폰 개통 전 확인할 사항"
+            },
+            {
+              "rank": 3,
               "blog_id": "ntelecom59",
               "post_id": "224475298783",
               "post_url": "https://blog.naver.com/ntelecom59/224475298783",
               "owner": "하루",
-              "feed_rank": 3,
+              "feed_rank": 4,
               "title": "모두의원칩 개통할 때 얼마 필요할까? LG선불폰 첫 충전금액부터 신청까지"
             },
             {
-              "rank": 3,
+              "rank": 4,
               "blog_id": "esim99_",
               "post_id": "224475298410",
               "post_url": "https://blog.naver.com/esim99_/224475298410",
               "owner": "영은",
-              "feed_rank": 4,
+              "feed_rank": 5,
               "title": "다이소 유심과 LG 모두의 원칩 차이점｜가격·NFC·선불폰 개통 비교"
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "fcealice",
               "post_id": "224474782585",
               "post_url": "https://blog.naver.com/fcealice/224474782585",
               "owner": null,
-              "feed_rank": 5,
+              "feed_rank": 6,
               "title": "LG 모두의 유심 원칩 셀프개통, 선불폰 5G 요금제 선택부터 신규가입까지"
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "ntelecom_ria",
               "post_id": "224473353730",
               "post_url": "https://blog.naver.com/ntelecom_ria/224473353730",
               "owner": null,
-              "feed_rank": 6,
+              "feed_rank": 8,
               "title": "LG모두의원칩으로 자급제폰 선불유심 개통, 판매 편의점부터 신규가입 방법까지"
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "nrc1122",
               "post_id": "224474228484",
               "post_url": "https://blog.naver.com/nrc1122/224474228484",
               "owner": null,
-              "feed_rank": 8,
+              "feed_rank": 9,
               "title": "LG 모두의 원칩 선불폰 개통 안면인증부터 요금제 선택까지 해본 과정"
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "esim99",
               "post_id": "224474194361",
               "post_url": "https://blog.naver.com/esim99/224474194361",
               "owner": "영은",
-              "feed_rank": 9,
-              "title": "LG 모두의 원칩 셀프개통 어렵지 않아요｜선불폰 유심 구매부터 개통 완료까지"
-            },
-            {
-              "rank": 8,
-              "blog_id": "gmlakddl987",
-              "post_id": "224474289243",
-              "post_url": "https://blog.naver.com/gmlakddl987/224474289243",
-              "owner": null,
               "feed_rank": 10,
-              "title": "LG 5G 선불폰 요금제, 모두의 원칩 구매부터 셀프개통까지"
+              "title": "LG 모두의 원칩 셀프개통 어렵지 않아요｜선불폰 유심 구매부터 개통 완료까지"
             },
             {
               "rank": 9,
@@ -1019,13 +1003,12 @@
         }
       },
       "related_queries": [
-        "lg모두의 원칩 다이소",
-        "lg 모두의 원칩 cu",
-        "LG 모두의 원칩 편의점",
+        "LG 모두의원칩 다이소",
+        "lg 모두의 원칩 편의점",
         "lg 모두의 유심 원칩",
-        "LG 모두의 원칩 선불폰",
         "LG 모두의 원칩 개통",
         "lg 모두의 원칩 셀프개통",
+        "lg모두의 원칩 편의점 CU",
         "LG 모두의원칩 판매처",
         "lg모두의원칩재사용"
       ]
@@ -1036,13 +1019,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:53:22.708066+09:00",
+          "observed_at": "2026-11-13T10:13:49.511860+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "59f57182a2dfd1999535f642b3fae5b78a63e796586f6d4745499024148fb304",
+            "screenshot_sha256": "1756f2a692175672a0f954e95e2774bf7545a0b4dbae43da12fd6b9d49bd0f8c",
             "screenshot_artifact_name": "모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1056,13 +1039,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:53:22.708066+09:00",
+          "observed_at": "2026-11-13T10:13:49.511860+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "59f57182a2dfd1999535f642b3fae5b78a63e796586f6d4745499024148fb304",
+            "screenshot_sha256": "1756f2a692175672a0f954e95e2774bf7545a0b4dbae43da12fd6b9d49bd0f8c",
             "screenshot_artifact_name": "모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1074,10 +1057,10 @@
           "results": [
             {
               "rank": 1,
-              "blog_id": "esim99_",
-              "post_id": "224475298410",
-              "post_url": "https://blog.naver.com/esim99_/224475298410",
-              "owner": "영은"
+              "blog_id": "k_bc1994",
+              "post_id": "224473065413",
+              "post_url": "https://blog.naver.com/k_bc1994/224473065413",
+              "owner": null
             },
             {
               "rank": 2,
@@ -1088,58 +1071,58 @@
             },
             {
               "rank": 3,
+              "blog_id": "esim99_",
+              "post_id": "224475298410",
+              "post_url": "https://blog.naver.com/esim99_/224475298410",
+              "owner": "영은"
+            },
+            {
+              "rank": 4,
               "blog_id": "ntelecom59",
               "post_id": "224475298783",
               "post_url": "https://blog.naver.com/ntelecom59/224475298783",
               "owner": "하루"
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "fcealice",
               "post_id": "224474782585",
               "post_url": "https://blog.naver.com/fcealice/224474782585",
               "owner": null
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "gmlakddl987",
               "post_id": "224474289243",
               "post_url": "https://blog.naver.com/gmlakddl987/224474289243",
               "owner": null
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "prepaidph",
               "post_id": "224474423801",
               "post_url": "https://blog.naver.com/prepaidph/224474423801",
               "owner": null
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "nrc1122",
               "post_id": "224474228484",
               "post_url": "https://blog.naver.com/nrc1122/224474228484",
               "owner": null
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "ktqkgf5duuld",
               "post_id": "224474152723",
               "post_url": "https://blog.naver.com/ktqkgf5duuld/224474152723",
               "owner": null
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "qblog91",
               "post_id": "224474111675",
               "post_url": "https://blog.naver.com/qblog91/224474111675",
-              "owner": null
-            },
-            {
-              "rank": 10,
-              "blog_id": "junsmall",
-              "post_id": "224474455499",
-              "post_url": "https://blog.naver.com/junsmall/224474455499",
               "owner": null
             }
           ]
@@ -1147,13 +1130,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:22.708066+09:00",
+          "observed_at": "2026-11-13T10:13:49.511860+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AA%A8%EB%91%90%EC%9D%98+%EC%9B%90%EC%B9%A9",
             "viewport": "390x844",
-            "screenshot_sha256": "59f57182a2dfd1999535f642b3fae5b78a63e796586f6d4745499024148fb304",
+            "screenshot_sha256": "1756f2a692175672a0f954e95e2774bf7545a0b4dbae43da12fd6b9d49bd0f8c",
             "screenshot_artifact_name": "모두의-원칩.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1174,12 +1157,12 @@
           "results": [
             {
               "rank": 1,
-              "blog_id": "esim99_",
-              "post_id": "224475298410",
-              "post_url": "https://blog.naver.com/esim99_/224475298410",
-              "owner": "영은",
+              "blog_id": "k_bc1994",
+              "post_id": "224473065413",
+              "post_url": "https://blog.naver.com/k_bc1994/224473065413",
+              "owner": null,
               "feed_rank": 4,
-              "title": "다이소 유심과 LG 모두의 원칩 차이점｜가격·NFC·선불폰 개통 비교"
+              "title": "모두의 원칩 NFC 지원될까? 선불폰 개통 전 확인할 사항"
             },
             {
               "rank": 2,
@@ -1192,75 +1175,75 @@
             },
             {
               "rank": 3,
+              "blog_id": "esim99_",
+              "post_id": "224475298410",
+              "post_url": "https://blog.naver.com/esim99_/224475298410",
+              "owner": "영은",
+              "feed_rank": 6,
+              "title": "다이소 유심과 LG 모두의 원칩 차이점｜가격·NFC·선불폰 개통 비교"
+            },
+            {
+              "rank": 4,
               "blog_id": "ntelecom59",
               "post_id": "224475298783",
               "post_url": "https://blog.naver.com/ntelecom59/224475298783",
               "owner": "하루",
-              "feed_rank": 6,
+              "feed_rank": 7,
               "title": "모두의원칩 개통할 때 얼마 필요할까? LG선불폰 첫 충전금액부터 신청까지"
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "fcealice",
               "post_id": "224474782585",
               "post_url": "https://blog.naver.com/fcealice/224474782585",
               "owner": null,
-              "feed_rank": 7,
+              "feed_rank": 8,
               "title": "LG 모두의 유심 원칩 셀프개통, 선불폰 5G 요금제 선택부터 신규가입까지"
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "gmlakddl987",
               "post_id": "224474289243",
               "post_url": "https://blog.naver.com/gmlakddl987/224474289243",
               "owner": null,
-              "feed_rank": 8,
+              "feed_rank": 12,
               "title": "LG 5G 선불폰 요금제, 모두의 원칩 구매부터 셀프개통까지"
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "prepaidph",
               "post_id": "224474423801",
               "post_url": "https://blog.naver.com/prepaidph/224474423801",
               "owner": null,
-              "feed_rank": 12,
+              "feed_rank": 13,
               "title": "배민B마트 유심 구매 가능한가요? 모두의 원칩 배달과 선불 신규 개통"
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "nrc1122",
               "post_id": "224474228484",
               "post_url": "https://blog.naver.com/nrc1122/224474228484",
               "owner": null,
-              "feed_rank": 13,
+              "feed_rank": 14,
               "title": "LG 모두의 원칩 선불폰 개통 안면인증부터 요금제 선택까지 해본 과정"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "ktqkgf5duuld",
               "post_id": "224474152723",
               "post_url": "https://blog.naver.com/ktqkgf5duuld/224474152723",
               "owner": null,
-              "feed_rank": 14,
+              "feed_rank": 15,
               "title": "모두의 유심 원칩 구매처와 셀프개통 준비물 알아보기"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "qblog91",
               "post_id": "224474111675",
               "post_url": "https://blog.naver.com/qblog91/224474111675",
               "owner": null,
-              "feed_rank": 15,
-              "title": "배민 B마트 모두의 유심 원칩 주문 후 선불폰 바로 개통하기"
-            },
-            {
-              "rank": 10,
-              "blog_id": "junsmall",
-              "post_id": "224474455499",
-              "post_url": "https://blog.naver.com/junsmall/224474455499",
-              "owner": null,
               "feed_rank": 16,
-              "title": "이마트24에서 모두의 원칩을 못 찾았다면? LG 선불유심 다른 구매처 정리"
+              "title": "배민 B마트 모두의 유심 원칩 주문 후 선불폰 바로 개통하기"
             }
           ]
         }
@@ -1289,13 +1272,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:53:35.736535+09:00",
+          "observed_at": "2026-11-13T10:14:03.141268+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "6cd0404180f38eae48f79241574e6754cf805d524b64bea1bde0129bc1c8b7bd",
+            "screenshot_sha256": "ce63f2d9d53666f53223d192181d227fbd7b404006f9f86867ff1c8b0a257f8e",
             "screenshot_artifact_name": "lg원칩-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1309,20 +1292,20 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:53:35.736535+09:00",
+          "observed_at": "2026-11-13T10:14:03.141268+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "6cd0404180f38eae48f79241574e6754cf805d524b64bea1bde0129bc1c8b7bd",
+            "screenshot_sha256": "ce63f2d9d53666f53223d192181d227fbd7b404006f9f86867ff1c8b0a257f8e",
             "screenshot_artifact_name": "lg원칩-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
             "verification_method": "rendered_article_visual_order",
-            "observed_distinct_posts": 13,
+            "observed_distinct_posts": 12,
             "feed_layout": "per_post_cards",
-            "feed_interleaved_cafe_cards": 5
+            "feed_interleaved_cafe_cards": 6
           },
           "results": [
             {
@@ -1355,58 +1338,58 @@
             },
             {
               "rank": 5,
-              "blog_id": "lifeon5g_",
-              "post_id": "224474101421",
-              "post_url": "https://blog.naver.com/lifeon5g_/224474101421",
-              "owner": "건호"
-            },
-            {
-              "rank": 6,
               "blog_id": "jaejaejae9",
               "post_id": "224474092882",
               "post_url": "https://blog.naver.com/jaejaejae9/224474092882",
               "owner": null
             },
             {
-              "rank": 7,
+              "rank": 6,
               "blog_id": "bori24_",
               "post_id": "224474144176",
               "post_url": "https://blog.naver.com/bori24_/224474144176",
               "owner": null
             },
             {
-              "rank": 8,
+              "rank": 7,
               "blog_id": "nrc1122",
-              "post_id": "224474058792",
-              "post_url": "https://blog.naver.com/nrc1122/224474058792",
+              "post_id": "224474228484",
+              "post_url": "https://blog.naver.com/nrc1122/224474228484",
               "owner": null
             },
             {
-              "rank": 9,
+              "rank": 8,
               "blog_id": "emongs03",
               "post_id": "224472110196",
               "post_url": "https://blog.naver.com/emongs03/224472110196",
               "owner": null
             },
             {
-              "rank": 10,
+              "rank": 9,
               "blog_id": "carrotmobile_",
               "post_id": "224472987452",
               "post_url": "https://blog.naver.com/carrotmobile_/224472987452",
               "owner": "건호"
+            },
+            {
+              "rank": 10,
+              "blog_id": "arongtelecom",
+              "post_id": "224471460854",
+              "post_url": "https://blog.naver.com/arongtelecom/224471460854",
+              "owner": null
             }
           ]
         },
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:35.736535+09:00",
+          "observed_at": "2026-11-13T10:14:03.141268+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=LG%EC%9B%90%EC%B9%A9+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "6cd0404180f38eae48f79241574e6754cf805d524b64bea1bde0129bc1c8b7bd",
+            "screenshot_sha256": "ce63f2d9d53666f53223d192181d227fbd7b404006f9f86867ff1c8b0a257f8e",
             "screenshot_artifact_name": "lg원칩-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1417,12 +1400,12 @@
               "no_excluded_cards": true,
               "post_unique": true,
               "ugc_cards": 18,
-              "blog_cards": 13,
+              "blog_cards": 12,
               "excluded_ai_or_ad_cards": 1,
               "duplicate_cards_dropped": 0
             },
             "metric_note": "blog_rank=rank, feed_rank=카페 포함 UGC 카드 순번",
-            "feed_interleaved_cafe_cards": 5
+            "feed_interleaved_cafe_cards": 6
           },
           "results": [
             {
@@ -1463,57 +1446,57 @@
             },
             {
               "rank": 5,
-              "blog_id": "lifeon5g_",
-              "post_id": "224474101421",
-              "post_url": "https://blog.naver.com/lifeon5g_/224474101421",
-              "owner": "건호",
-              "feed_rank": 6,
-              "title": "유플러스 원칩 이마트24 편의점에서 구매했다면?｜LG 선불폰 셀프개통 방법"
-            },
-            {
-              "rank": 6,
               "blog_id": "jaejaejae9",
               "post_id": "224474092882",
               "post_url": "https://blog.naver.com/jaejaejae9/224474092882",
               "owner": null,
-              "feed_rank": 8,
+              "feed_rank": 6,
               "title": "KT 미납 정지폰에 이마트24 LG 원칩 편의점 알뜰유심으로 신규 선불폰 셀프개통하는 방법"
             },
             {
-              "rank": 7,
+              "rank": 6,
               "blog_id": "bori24_",
               "post_id": "224474144176",
               "post_url": "https://blog.naver.com/bori24_/224474144176",
               "owner": null,
-              "feed_rank": 9,
+              "feed_rank": 8,
               "title": "편의점 선불유심 KT 바로유심·LG 원칩 구입처와 셀프개통 정리"
             },
             {
-              "rank": 8,
+              "rank": 7,
               "blog_id": "nrc1122",
-              "post_id": "224474058792",
-              "post_url": "https://blog.naver.com/nrc1122/224474058792",
+              "post_id": "224474228484",
+              "post_url": "https://blog.naver.com/nrc1122/224474228484",
               "owner": null,
-              "feed_rank": 10,
-              "title": "유플러스 선불폰 개통 미납 정지 후 새번호 만들어본 과정"
+              "feed_rank": 9,
+              "title": "LG 모두의 원칩 선불폰 개통 안면인증부터 요금제 선택까지 해본 과정"
             },
             {
-              "rank": 9,
+              "rank": 8,
               "blog_id": "emongs03",
               "post_id": "224472110196",
               "post_url": "https://blog.naver.com/emongs03/224472110196",
               "owner": null,
-              "feed_rank": 12,
+              "feed_rank": 11,
               "title": "LG 모두의 원칩 구입부터 선불폰 개통까지 따라 하기"
             },
             {
-              "rank": 10,
+              "rank": 9,
               "blog_id": "carrotmobile_",
               "post_id": "224472987452",
               "post_url": "https://blog.naver.com/carrotmobile_/224472987452",
               "owner": "건호",
-              "feed_rank": 13,
+              "feed_rank": 12,
               "title": "LG 원칩으로 유플러스 선불폰 개통하기｜이마트24·스토리웨이·B마트 구매부터 셀프 신청까지"
+            },
+            {
+              "rank": 10,
+              "blog_id": "arongtelecom",
+              "post_id": "224471460854",
+              "post_url": "https://blog.naver.com/arongtelecom/224471460854",
+              "owner": null,
+              "feed_rank": 13,
+              "title": "유플러스 선불폰 개통 LG 원칩 유심 구매 후 셀프개통 순서까지"
             }
           ]
         }
@@ -1533,13 +1516,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:53:48.574868+09:00",
+          "observed_at": "2026-11-13T10:14:16.445691+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "532c4d4356bd8a14d64b28dcd2d29b022abe555146d285570504c40c1281cac5",
+            "screenshot_sha256": "0ebbb2dce9cbd80ae5fd01d19030c37792b58b08d2dd0c7ef8652523dc886909",
             "screenshot_artifact_name": "태블릿소유자회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1553,13 +1536,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:53:48.574868+09:00",
+          "observed_at": "2026-11-13T10:14:16.445691+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "532c4d4356bd8a14d64b28dcd2d29b022abe555146d285570504c40c1281cac5",
+            "screenshot_sha256": "0ebbb2dce9cbd80ae5fd01d19030c37792b58b08d2dd0c7ef8652523dc886909",
             "screenshot_artifact_name": "태블릿소유자회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1644,13 +1627,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:48.574868+09:00",
+          "observed_at": "2026-11-13T10:14:16.445691+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "532c4d4356bd8a14d64b28dcd2d29b022abe555146d285570504c40c1281cac5",
+            "screenshot_sha256": "0ebbb2dce9cbd80ae5fd01d19030c37792b58b08d2dd0c7ef8652523dc886909",
             "screenshot_artifact_name": "태블릿소유자회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1764,8 +1747,8 @@
       },
       "related_queries": [
         "앤텔레콤 태블릿 소유자 회원번호",
-        "태블릿 소유자 회원번호 입력",
-        "태블릿 소유자 회원번호 2932491입력",
+        "태블릿 소유자 회원번호2932491입력",
+        "태블릿 소유자 회원번호입력",
         "앤텔레콤태블릿소유자회원번호확인",
         "앤텔레콤 태블릿 소유자"
       ]
@@ -1776,13 +1759,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:54:01.329801+09:00",
+          "observed_at": "2026-11-13T10:14:29.836228+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "39f693a571a52c942a821ace3355751037e8e2443480a6c99c81cb5cbb52ed4c",
+            "screenshot_sha256": "6463c707b74ee0e9f122c9ae58f2a6f943822ee68a9882c3eef4285a4b6ce734",
             "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1796,13 +1779,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:54:01.329801+09:00",
+          "observed_at": "2026-11-13T10:14:29.836228+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "39f693a571a52c942a821ace3355751037e8e2443480a6c99c81cb5cbb52ed4c",
+            "screenshot_sha256": "6463c707b74ee0e9f122c9ae58f2a6f943822ee68a9882c3eef4285a4b6ce734",
             "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -1887,13 +1870,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:01.329801+09:00",
+          "observed_at": "2026-11-13T10:14:29.836228+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF+%EC%86%8C%EC%9C%A0%EC%9E%90+%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8",
             "viewport": "390x844",
-            "screenshot_sha256": "39f693a571a52c942a821ace3355751037e8e2443480a6c99c81cb5cbb52ed4c",
+            "screenshot_sha256": "6463c707b74ee0e9f122c9ae58f2a6f943822ee68a9882c3eef4285a4b6ce734",
             "screenshot_artifact_name": "태블릿-소유자-회원번호.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2007,8 +1990,8 @@
       },
       "related_queries": [
         "앤텔레콤 태블릿 소유자 회원번호",
-        "태블릿 소유자 회원번호 입력",
-        "태블릿 소유자 회원번호 2932491입력",
+        "태블릿 소유자 회원번호2932491입력",
+        "태블릿 소유자 회원번호입력",
         "앤텔레콤태블릿소유자회원번호확인",
         "앤텔레콤 태블릿 소유자"
       ]
@@ -2019,13 +2002,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:54:14.255879+09:00",
+          "observed_at": "2026-11-13T10:14:43.175662+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
             "viewport": "390x844",
-            "screenshot_sha256": "e865ed61eb4855d783ec9240145852da8044eacc246e171c1ba1d03041aac1f9",
+            "screenshot_sha256": "902c66f7c74342f97ad31f2efad10916d37e13032879c07ea7b6956e771e1d71",
             "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2039,13 +2022,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:54:14.255879+09:00",
+          "observed_at": "2026-11-13T10:14:43.175662+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
             "viewport": "390x844",
-            "screenshot_sha256": "e865ed61eb4855d783ec9240145852da8044eacc246e171c1ba1d03041aac1f9",
+            "screenshot_sha256": "902c66f7c74342f97ad31f2efad10916d37e13032879c07ea7b6956e771e1d71",
             "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2130,13 +2113,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:14.255879+09:00",
+          "observed_at": "2026-11-13T10:14:43.175662+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%83%9C%EB%B8%94%EB%A6%BF%EC%86%8C%EC%9C%A0%EC%9E%90%ED%9A%8C%EC%9B%90%EB%B2%88%ED%98%B8+%EC%9E%85%EB%A0%A5",
             "viewport": "390x844",
-            "screenshot_sha256": "e865ed61eb4855d783ec9240145852da8044eacc246e171c1ba1d03041aac1f9",
+            "screenshot_sha256": "902c66f7c74342f97ad31f2efad10916d37e13032879c07ea7b6956e771e1d71",
             "screenshot_artifact_name": "태블릿소유자회원번호-입력.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2256,13 +2239,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:54:27.046836+09:00",
+          "observed_at": "2026-11-13T10:14:56.405212+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "ce3ddc7813060f332e270071d3631acf35d39689ecf143edd4d4b9475836692e",
+            "screenshot_sha256": "d30cef550e3dd26355008f15dc211a880a2feb01b5babcf2d5c65255322b32b9",
             "screenshot_artifact_name": "다이소-유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2276,13 +2259,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:54:27.046836+09:00",
+          "observed_at": "2026-11-13T10:14:56.405212+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "ce3ddc7813060f332e270071d3631acf35d39689ecf143edd4d4b9475836692e",
+            "screenshot_sha256": "d30cef550e3dd26355008f15dc211a880a2feb01b5babcf2d5c65255322b32b9",
             "screenshot_artifact_name": "다이소-유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2308,72 +2291,72 @@
             },
             {
               "rank": 3,
+              "blog_id": "sun_young23",
+              "post_id": "224475320996",
+              "post_url": "https://blog.naver.com/sun_young23/224475320996",
+              "owner": null
+            },
+            {
+              "rank": 4,
               "blog_id": "bulldog1080",
               "post_id": "224474104001",
               "post_url": "https://blog.naver.com/bulldog1080/224474104001",
               "owner": null
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "dtfqqmhdyd",
               "post_id": "224474324863",
               "post_url": "https://blog.naver.com/dtfqqmhdyd/224474324863",
               "owner": null
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "jjuny1253",
               "post_id": "224474303053",
               "post_url": "https://blog.naver.com/jjuny1253/224474303053",
               "owner": "수진"
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "qblog91",
               "post_id": "224474259746",
               "post_url": "https://blog.naver.com/qblog91/224474259746",
               "owner": null
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "esim99",
               "post_id": "224474615597",
               "post_url": "https://blog.naver.com/esim99/224474615597",
               "owner": "영은"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "lifeon5g_",
               "post_id": "224474295093",
               "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
               "owner": "건호"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "ntelecom59",
               "post_id": "224474159568",
               "post_url": "https://blog.naver.com/ntelecom59/224474159568",
               "owner": "하루"
-            },
-            {
-              "rank": 10,
-              "blog_id": "soyemobile_3",
-              "post_id": "224473965418",
-              "post_url": "https://blog.naver.com/soyemobile_3/224473965418",
-              "owner": null
             }
           ]
         },
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:27.046836+09:00",
+          "observed_at": "2026-11-13T10:14:56.405212+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "ce3ddc7813060f332e270071d3631acf35d39689ecf143edd4d4b9475836692e",
+            "screenshot_sha256": "d30cef550e3dd26355008f15dc211a880a2feb01b5babcf2d5c65255322b32b9",
             "screenshot_artifact_name": "다이소-유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2412,75 +2395,75 @@
             },
             {
               "rank": 3,
+              "blog_id": "sun_young23",
+              "post_id": "224475320996",
+              "post_url": "https://blog.naver.com/sun_young23/224475320996",
+              "owner": null,
+              "feed_rank": 6,
+              "title": "다이소 선불폰 개통, 고고비 유심 고르기부터 사용 확인까지"
+            },
+            {
+              "rank": 4,
               "blog_id": "bulldog1080",
               "post_id": "224474104001",
               "post_url": "https://blog.naver.com/bulldog1080/224474104001",
               "owner": null,
-              "feed_rank": 6,
+              "feed_rank": 7,
               "title": "선불유심 구매 어디서 하나요, 편의점·이마트24·다이소에서 개통되는 유심 3가지 한 번에 정리"
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "dtfqqmhdyd",
               "post_id": "224474324863",
               "post_url": "https://blog.naver.com/dtfqqmhdyd/224474324863",
               "owner": null,
-              "feed_rank": 7,
+              "feed_rank": 8,
               "title": "LG 유플러스 알뜰폰(MVNO), 편의점·다이소 유심 차이 한눈에 비교"
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "jjuny1253",
               "post_id": "224474303053",
               "post_url": "https://blog.naver.com/jjuny1253/224474303053",
               "owner": "수진",
-              "feed_rank": 8,
+              "feed_rank": 12,
               "title": "다이소 알뜰폰 유심 5,000원으로 시작하기｜첫 달 총비용 17,100원, 가장 저렴하게 선불폰 여는 법"
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "qblog91",
               "post_id": "224474259746",
               "post_url": "https://blog.naver.com/qblog91/224474259746",
               "owner": null,
-              "feed_rank": 12,
+              "feed_rank": 13,
               "title": "다이소 유심칩으로 선불폰 개통, 방문 없이 셀프 개통하는 방법"
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "esim99",
               "post_id": "224474615597",
               "post_url": "https://blog.naver.com/esim99/224474615597",
               "owner": "영은",
-              "feed_rank": 13,
+              "feed_rank": 14,
               "title": "5천원으로 유심 준비 끝! 다이소 선불폰 개통 신청부터 사용까지"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "lifeon5g_",
               "post_id": "224474295093",
               "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
               "owner": "건호",
-              "feed_rank": 14,
+              "feed_rank": 15,
               "title": "다이소 LG 유심 개통 방법 정리｜5,000원 고고비 선불유심 구매부터 신청까지"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "ntelecom59",
               "post_id": "224474159568",
               "post_url": "https://blog.naver.com/ntelecom59/224474159568",
               "owner": "하루",
-              "feed_rank": 15,
-              "title": "다이소유심 아무거나 사도 될까? LG선불폰 호환 제품 구별법"
-            },
-            {
-              "rank": 10,
-              "blog_id": "soyemobile_3",
-              "post_id": "224473965418",
-              "post_url": "https://blog.naver.com/soyemobile_3/224473965418",
-              "owner": null,
               "feed_rank": 16,
-              "title": "해운대선불폰 편의점에 원칩이 없다면｜다이소 LG 유심 고르는 법과 개통 방법"
+              "title": "다이소유심 아무거나 사도 될까? LG선불폰 호환 제품 구별법"
             }
           ]
         }
@@ -2490,17 +2473,17 @@
         "다이소 유심 개통",
         "다이소 알뜰폰 유심",
         "다이소 고고비 유심",
-        "다이소 해외유심",
+        "다이소 해외 유심",
         "다이소 데이터 유심",
-        "다이소 유심 개통 방법",
-        "다이소 선불유심 개통",
         "다이소 유심 요금제",
         "다이소 유심트레이",
-        "다이소 로밍유심",
-        "다이소 고고비 유심 개통",
-        "다이소 유심 가격",
+        "다이소 선불유심 개통",
+        "다이소 로밍 유심",
         "다이소 알뜰폰 유심 개통",
-        "다이소유심 선불폰"
+        "다이소 유심 개통 방법",
+        "다이소 유심 어댑터",
+        "다이소 고고비 유심 개통",
+        "고고비 다이소 유심가입"
       ]
     },
     "다이소 선불유심": {
@@ -2509,13 +2492,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:54:39.485042+09:00",
+          "observed_at": "2026-11-13T10:15:09.509828+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "5bb010898a07c4eb2f1acc0ed94c1734dc8c1670ec318282ff89460b59f6e115",
+            "screenshot_sha256": "52470a2e4c903b1f9ecaab33e926cfe1fb466569fbc07f95a613235df03afd6f",
             "screenshot_artifact_name": "다이소-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2529,13 +2512,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:54:39.485042+09:00",
+          "observed_at": "2026-11-13T10:15:09.509828+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "5bb010898a07c4eb2f1acc0ed94c1734dc8c1670ec318282ff89460b59f6e115",
+            "screenshot_sha256": "52470a2e4c903b1f9ecaab33e926cfe1fb466569fbc07f95a613235df03afd6f",
             "screenshot_artifact_name": "다이소-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2554,79 +2537,79 @@
             },
             {
               "rank": 2,
+              "blog_id": "sun_young23",
+              "post_id": "224475320996",
+              "post_url": "https://blog.naver.com/sun_young23/224475320996",
+              "owner": null
+            },
+            {
+              "rank": 3,
               "blog_id": "mo1ta2",
               "post_id": "224473272414",
               "post_url": "https://blog.naver.com/mo1ta2/224473272414",
               "owner": null
             },
             {
-              "rank": 3,
+              "rank": 4,
               "blog_id": "bulldog1080",
               "post_id": "224474104001",
               "post_url": "https://blog.naver.com/bulldog1080/224474104001",
               "owner": null
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "lifeon5g_",
               "post_id": "224474295093",
               "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
               "owner": "건호"
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "esim99",
               "post_id": "224474615597",
               "post_url": "https://blog.naver.com/esim99/224474615597",
               "owner": "영은"
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "ntelecom59",
               "post_id": "224474159568",
               "post_url": "https://blog.naver.com/ntelecom59/224474159568",
               "owner": "하루"
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "soyemobile_3",
               "post_id": "224473965418",
               "post_url": "https://blog.naver.com/soyemobile_3/224473965418",
               "owner": null
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "phone4050",
               "post_id": "224472676252",
               "post_url": "https://blog.naver.com/phone4050/224472676252",
               "owner": null
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "carrotmobile_",
               "post_id": "224472954280",
               "post_url": "https://blog.naver.com/carrotmobile_/224472954280",
               "owner": "건호"
-            },
-            {
-              "rank": 10,
-              "blog_id": "otr2601",
-              "post_id": "224472683629",
-              "post_url": "https://blog.naver.com/otr2601/224472683629",
-              "owner": null
             }
           ]
         },
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:39.485042+09:00",
+          "observed_at": "2026-11-13T10:15:09.509828+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "5bb010898a07c4eb2f1acc0ed94c1734dc8c1670ec318282ff89460b59f6e115",
+            "screenshot_sha256": "52470a2e4c903b1f9ecaab33e926cfe1fb466569fbc07f95a613235df03afd6f",
             "screenshot_artifact_name": "다이소-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2656,84 +2639,84 @@
             },
             {
               "rank": 2,
+              "blog_id": "sun_young23",
+              "post_id": "224475320996",
+              "post_url": "https://blog.naver.com/sun_young23/224475320996",
+              "owner": null,
+              "feed_rank": 4,
+              "title": "다이소 선불폰 개통, 고고비 유심 고르기부터 사용 확인까지"
+            },
+            {
+              "rank": 3,
               "blog_id": "mo1ta2",
               "post_id": "224473272414",
               "post_url": "https://blog.naver.com/mo1ta2/224473272414",
               "owner": null,
-              "feed_rank": 4,
+              "feed_rank": 5,
               "title": "본인인증 되는 다이소 선불유심 앤텔레콤 L망으로 셀프 가입하는 방법 정리"
             },
             {
-              "rank": 3,
+              "rank": 4,
               "blog_id": "bulldog1080",
               "post_id": "224474104001",
               "post_url": "https://blog.naver.com/bulldog1080/224474104001",
               "owner": null,
-              "feed_rank": 5,
+              "feed_rank": 6,
               "title": "선불유심 구매 어디서 하나요, 편의점·이마트24·다이소에서 개통되는 유심 3가지 한 번에 정리"
             },
             {
-              "rank": 4,
+              "rank": 5,
               "blog_id": "lifeon5g_",
               "post_id": "224474295093",
               "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
               "owner": "건호",
-              "feed_rank": 6,
+              "feed_rank": 7,
               "title": "다이소 LG 유심 개통 방법 정리｜5,000원 고고비 선불유심 구매부터 신청까지"
             },
             {
-              "rank": 5,
+              "rank": 6,
               "blog_id": "esim99",
               "post_id": "224474615597",
               "post_url": "https://blog.naver.com/esim99/224474615597",
               "owner": "영은",
-              "feed_rank": 7,
+              "feed_rank": 12,
               "title": "5천원으로 유심 준비 끝! 다이소 선불폰 개통 신청부터 사용까지"
             },
             {
-              "rank": 6,
+              "rank": 7,
               "blog_id": "ntelecom59",
               "post_id": "224474159568",
               "post_url": "https://blog.naver.com/ntelecom59/224474159568",
               "owner": "하루",
-              "feed_rank": 12,
+              "feed_rank": 13,
               "title": "다이소유심 아무거나 사도 될까? LG선불폰 호환 제품 구별법"
             },
             {
-              "rank": 7,
+              "rank": 8,
               "blog_id": "soyemobile_3",
               "post_id": "224473965418",
               "post_url": "https://blog.naver.com/soyemobile_3/224473965418",
               "owner": null,
-              "feed_rank": 13,
+              "feed_rank": 14,
               "title": "해운대선불폰 편의점에 원칩이 없다면｜다이소 LG 유심 고르는 법과 개통 방법"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "phone4050",
               "post_id": "224472676252",
               "post_url": "https://blog.naver.com/phone4050/224472676252",
               "owner": null,
-              "feed_rank": 14,
+              "feed_rank": 15,
               "title": "다이소 선불유심 샀는데 어떻게 개통 하나요? 통신사 확인 및 셀프 신청 방법"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "carrotmobile_",
               "post_id": "224472954280",
               "post_url": "https://blog.naver.com/carrotmobile_/224472954280",
               "owner": "건호",
-              "feed_rank": 15,
-              "title": "이마트24 편의점에서 LG 원칩 못 구했다면?｜다이소 선불유심 5,000원으로 셀프개통"
-            },
-            {
-              "rank": 10,
-              "blog_id": "otr2601",
-              "post_id": "224472683629",
-              "post_url": "https://blog.naver.com/otr2601/224472683629",
-              "owner": null,
               "feed_rank": 16,
-              "title": "구매부터 개통까지 10분안에 할 수 있는 다이소 선불유심 알아보자."
+              "title": "이마트24 편의점에서 LG 원칩 못 구했다면?｜다이소 선불유심 5,000원으로 셀프개통"
             }
           ]
         }
@@ -2748,8 +2731,8 @@
         "다이소 선불유심 개통 방법",
         "다이소 선불유심 요금제",
         "다이소 선불유심 구매",
-        "다이소 선불유심 이용법",
         "다이소 선불 유심 nfc",
+        "다이소 선불유심 파는곳",
         "다이소 선불유심 가격",
         "다이소선불유심데이터"
       ]
@@ -2760,13 +2743,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:54:52.447936+09:00",
+          "observed_at": "2026-11-13T10:15:22.909722+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "7be8f3bb295d24e47e3c0c3322b3ea47e47e9b5c891055d3829ff9a58f45c989",
+            "screenshot_sha256": "8338e26dc2550e3bc50904ca88592cb400b7419186548b1dde91fe18092e83b8",
             "screenshot_artifact_name": "다이소-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2780,13 +2763,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:54:52.447936+09:00",
+          "observed_at": "2026-11-13T10:15:22.909722+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "7be8f3bb295d24e47e3c0c3322b3ea47e47e9b5c891055d3829ff9a58f45c989",
+            "screenshot_sha256": "8338e26dc2550e3bc50904ca88592cb400b7419186548b1dde91fe18092e83b8",
             "screenshot_artifact_name": "다이소-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2798,17 +2781,17 @@
           "results": [
             {
               "rank": 1,
-              "blog_id": "jrs007",
-              "post_id": "224464727846",
-              "post_url": "https://blog.naver.com/jrs007/224464727846",
-              "owner": null
-            },
-            {
-              "rank": 2,
               "blog_id": "esim99_",
               "post_id": "224475298410",
               "post_url": "https://blog.naver.com/esim99_/224475298410",
               "owner": "영은"
+            },
+            {
+              "rank": 2,
+              "blog_id": "sun_young23",
+              "post_id": "224475320996",
+              "post_url": "https://blog.naver.com/sun_young23/224475320996",
+              "owner": null
             },
             {
               "rank": 3,
@@ -2871,13 +2854,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:52.447936+09:00",
+          "observed_at": "2026-11-13T10:15:22.909722+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%8B%A4%EC%9D%B4%EC%86%8C+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "7be8f3bb295d24e47e3c0c3322b3ea47e47e9b5c891055d3829ff9a58f45c989",
+            "screenshot_sha256": "8338e26dc2550e3bc50904ca88592cb400b7419186548b1dde91fe18092e83b8",
             "screenshot_artifact_name": "다이소-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -2898,21 +2881,21 @@
           "results": [
             {
               "rank": 1,
-              "blog_id": "jrs007",
-              "post_id": "224464727846",
-              "post_url": "https://blog.naver.com/jrs007/224464727846",
-              "owner": null,
-              "feed_rank": 5,
-              "title": "다이소 선불유심 개통 방법 LG요금제와 미납폰 활용법"
-            },
-            {
-              "rank": 2,
               "blog_id": "esim99_",
               "post_id": "224475298410",
               "post_url": "https://blog.naver.com/esim99_/224475298410",
               "owner": "영은",
-              "feed_rank": 6,
+              "feed_rank": 5,
               "title": "다이소 유심과 LG 모두의 원칩 차이점｜가격·NFC·선불폰 개통 비교"
+            },
+            {
+              "rank": 2,
+              "blog_id": "sun_young23",
+              "post_id": "224475320996",
+              "post_url": "https://blog.naver.com/sun_young23/224475320996",
+              "owner": null,
+              "feed_rank": 6,
+              "title": "다이소 선불폰 개통, 고고비 유심 고르기부터 사용 확인까지"
             },
             {
               "rank": 3,
@@ -2947,7 +2930,7 @@
               "post_id": "224474311363",
               "post_url": "https://blog.naver.com/esim87_/224474311363",
               "owner": "영은",
-              "feed_rank": 10,
+              "feed_rank": 13,
               "title": "다이소에서 산 알뜰폰 유심으로 선불폰 개통 가능할까?"
             },
             {
@@ -2990,10 +2973,10 @@
         }
       },
       "related_queries": [
-        "다이소 선불유심",
         "다이소 선불유심 개통",
         "다이소 유심 개통 방법",
         "다이소 선불유심 셀프개통",
+        "다이소 유심 개통 skt",
         "다이소 유심 개통 고고비",
         "다이소 유심 셀프개통",
         "다이소유심개통시간",
@@ -3007,13 +2990,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:55:05.379954+09:00",
+          "observed_at": "2026-11-13T10:15:36.396519+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "940d72f644dd19a2d0847c825793c3485b670806fd49720b22d75800043261cf",
+            "screenshot_sha256": "4d09011b8d15edf3170005812267c891d4c2df353fff843ad6ae19db0a74090f",
             "screenshot_artifact_name": "선불폰-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3027,13 +3010,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:55:05.379954+09:00",
+          "observed_at": "2026-11-13T10:15:36.396519+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "940d72f644dd19a2d0847c825793c3485b670806fd49720b22d75800043261cf",
+            "screenshot_sha256": "4d09011b8d15edf3170005812267c891d4c2df353fff843ad6ae19db0a74090f",
             "screenshot_artifact_name": "선불폰-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3118,13 +3101,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:05.379954+09:00",
+          "observed_at": "2026-11-13T10:15:36.396519+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "940d72f644dd19a2d0847c825793c3485b670806fd49720b22d75800043261cf",
+            "screenshot_sha256": "4d09011b8d15edf3170005812267c891d4c2df353fff843ad6ae19db0a74090f",
             "screenshot_artifact_name": "선불폰-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3176,7 +3159,7 @@
               "post_id": "224474534317",
               "post_url": "https://blog.naver.com/cutepmh7874/224474534317",
               "owner": null,
-              "feed_rank": 9,
+              "feed_rank": 8,
               "title": "선불폰이란? 개통 방법부터 장단점까지 한눈에 알아보기"
             },
             {
@@ -3185,7 +3168,7 @@
               "post_id": "224474833813",
               "post_url": "https://blog.naver.com/pmu0908/224474833813",
               "owner": null,
-              "feed_rank": 10,
+              "feed_rank": 9,
               "title": "우장산동 선불폰, 회생 중이라도 내 명의로 개통하는 현실적인 방법"
             },
             {
@@ -3242,16 +3225,16 @@
         "편의점 선불폰 개통",
         "앤텔레콤 선불폰 개통",
         "선불폰 개통 비용",
-        "다이소 선불폰 개통",
         "선불폰 유심 개통",
         "선불폰 개통 대리점",
+        "다이소 선불폰 개통",
         "선불폰 개통 대출",
+        "일본 선불폰 개통방법",
         "대리점 선불폰개통방법",
         "편의점 선불폰 개통 방법",
-        "인천 선불폰 개통",
-        "미성년자 선불폰 개통",
         "신불자 선불폰 개통",
-        "선불폰 esim개통"
+        "미성년자 선불폰 개통",
+        "인천 선불폰 개통"
       ]
     },
     "선불폰 셀프개통": {
@@ -3260,13 +3243,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:55:17.969200+09:00",
+          "observed_at": "2026-11-13T10:15:49.354448+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EC%85%80%ED%94%84%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "b2bba0008015fa13d6658a5d995363074d37c0a98cf0197a87daef032f8ebf94",
+            "screenshot_sha256": "4ef8226dce7a61fdc213cae25887fbb82d668f6388ee826fb8d85b24d27ba7ae",
             "screenshot_artifact_name": "선불폰-셀프개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3280,13 +3263,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:55:17.969200+09:00",
+          "observed_at": "2026-11-13T10:15:49.354448+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EC%85%80%ED%94%84%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "b2bba0008015fa13d6658a5d995363074d37c0a98cf0197a87daef032f8ebf94",
+            "screenshot_sha256": "4ef8226dce7a61fdc213cae25887fbb82d668f6388ee826fb8d85b24d27ba7ae",
             "screenshot_artifact_name": "선불폰-셀프개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3298,16 +3281,16 @@
           "results": [
             {
               "rank": 1,
-              "blog_id": "jin50078b",
-              "post_id": "224475027148",
-              "post_url": "https://blog.naver.com/jin50078b/224475027148",
+              "blog_id": "jaejaejae9",
+              "post_id": "224475182126",
+              "post_url": "https://blog.naver.com/jaejaejae9/224475182126",
               "owner": null
             },
             {
               "rank": 2,
-              "blog_id": "jaejaejae9",
-              "post_id": "224475182126",
-              "post_url": "https://blog.naver.com/jaejaejae9/224475182126",
+              "blog_id": "jin50078b",
+              "post_id": "224475027148",
+              "post_url": "https://blog.naver.com/jin50078b/224475027148",
               "owner": null
             },
             {
@@ -3319,24 +3302,24 @@
             },
             {
               "rank": 4,
+              "blog_id": "kimchoonghwa",
+              "post_id": "224475317129",
+              "post_url": "https://blog.naver.com/kimchoonghwa/224475317129",
+              "owner": null
+            },
+            {
+              "rank": 5,
               "blog_id": "miso202106",
               "post_id": "224475200309",
               "post_url": "https://blog.naver.com/miso202106/224475200309",
               "owner": null
             },
             {
-              "rank": 5,
-              "blog_id": "susanghantel",
-              "post_id": "224474325223",
-              "post_url": "https://blog.naver.com/susanghantel/224474325223",
-              "owner": null
-            },
-            {
               "rank": 6,
-              "blog_id": "lifeon5g_",
-              "post_id": "224474071306",
-              "post_url": "https://blog.naver.com/lifeon5g_/224474071306",
-              "owner": "건호"
+              "blog_id": "ntelecommobile",
+              "post_id": "224474202593",
+              "post_url": "https://blog.naver.com/ntelecommobile/224474202593",
+              "owner": null
             },
             {
               "rank": 7,
@@ -3347,23 +3330,23 @@
             },
             {
               "rank": 8,
+              "blog_id": "lifeon5g_",
+              "post_id": "224474017015",
+              "post_url": "https://blog.naver.com/lifeon5g_/224474017015",
+              "owner": "건호"
+            },
+            {
+              "rank": 9,
               "blog_id": "matgeta",
               "post_id": "224474226238",
               "post_url": "https://blog.naver.com/matgeta/224474226238",
               "owner": null
             },
             {
-              "rank": 9,
-              "blog_id": "ntelecommobile",
-              "post_id": "224474202593",
-              "post_url": "https://blog.naver.com/ntelecommobile/224474202593",
-              "owner": null
-            },
-            {
               "rank": 10,
-              "blog_id": "bori24_",
-              "post_id": "224474128841",
-              "post_url": "https://blog.naver.com/bori24_/224474128841",
+              "blog_id": "weare0101",
+              "post_id": "224474194709",
+              "post_url": "https://blog.naver.com/weare0101/224474194709",
               "owner": null
             }
           ]
@@ -3371,13 +3354,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:17.969200+09:00",
+          "observed_at": "2026-11-13T10:15:49.354448+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EC%85%80%ED%94%84%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "b2bba0008015fa13d6658a5d995363074d37c0a98cf0197a87daef032f8ebf94",
+            "screenshot_sha256": "4ef8226dce7a61fdc213cae25887fbb82d668f6388ee826fb8d85b24d27ba7ae",
             "screenshot_artifact_name": "선불폰-셀프개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3398,15 +3381,6 @@
           "results": [
             {
               "rank": 1,
-              "blog_id": "jin50078b",
-              "post_id": "224475027148",
-              "post_url": "https://blog.naver.com/jin50078b/224475027148",
-              "owner": null,
-              "feed_rank": 3,
-              "title": "매장 방문 없이 인천선불폰 개통하는 방법, 유심과 인증서만 있으면 돼요"
-            },
-            {
-              "rank": 2,
               "blog_id": "jaejaejae9",
               "post_id": "224475182126",
               "post_url": "https://blog.naver.com/jaejaejae9/224475182126",
@@ -3415,40 +3389,49 @@
               "title": "이천선불폰 편의점에서 유심을 샀다면? 셀프개통 다음 단계 5가지"
             },
             {
+              "rank": 2,
+              "blog_id": "jin50078b",
+              "post_id": "224475027148",
+              "post_url": "https://blog.naver.com/jin50078b/224475027148",
+              "owner": null,
+              "feed_rank": 5,
+              "title": "매장 방문 없이 인천선불폰 개통하는 방법, 유심과 인증서만 있으면 돼요"
+            },
+            {
               "rank": 3,
               "blog_id": "carrotmobile_",
               "post_id": "224472991816",
               "post_url": "https://blog.naver.com/carrotmobile_/224472991816",
               "owner": "건호",
-              "feed_rank": 5,
+              "feed_rank": 6,
               "title": "SK·KT·LG 핸드폰 직권해지 후 새 번호 만드세요｜선불폰 셀프개통 방법"
             },
             {
               "rank": 4,
+              "blog_id": "kimchoonghwa",
+              "post_id": "224475317129",
+              "post_url": "https://blog.naver.com/kimchoonghwa/224475317129",
+              "owner": null,
+              "feed_rank": 7,
+              "title": "KT 선불폰 만드는 과정 CU 바로유심 구매부터 셀프개통까지"
+            },
+            {
+              "rank": 5,
               "blog_id": "miso202106",
               "post_id": "224475200309",
               "post_url": "https://blog.naver.com/miso202106/224475200309",
               "owner": null,
-              "feed_rank": 6,
+              "feed_rank": 8,
               "title": "공주선불폰 개통, 새 번호가 필요할 때 유심부터 셀프 신청까지"
             },
             {
-              "rank": 5,
-              "blog_id": "susanghantel",
-              "post_id": "224474325223",
-              "post_url": "https://blog.naver.com/susanghantel/224474325223",
-              "owner": null,
-              "feed_rank": 7,
-              "title": "LG 모두의 유심 원칩 구매처와 선불폰 셀프개통 방법 총정리!"
-            },
-            {
               "rank": 6,
-              "blog_id": "lifeon5g_",
-              "post_id": "224474071306",
-              "post_url": "https://blog.naver.com/lifeon5g_/224474071306",
-              "owner": "건호",
+              "blog_id": "ntelecommobile",
+              "post_id": "224474202593",
+              "post_url": "https://blog.naver.com/ntelecommobile/224474202593",
+              "owner": null,
               "feed_rank": 11,
-              "title": "KT 바로유심 편의점에서 구매했다면?｜KT선불폰 셀프개통 방법"
+              "title": "GS25 유심 구매 전 확인할 점과 선불폰 셀프개통 방법"
             },
             {
               "rank": 7,
@@ -3461,30 +3444,30 @@
             },
             {
               "rank": 8,
+              "blog_id": "lifeon5g_",
+              "post_id": "224474017015",
+              "post_url": "https://blog.naver.com/lifeon5g_/224474017015",
+              "owner": "건호",
+              "feed_rank": 13,
+              "title": "배달·퀵서비스 기사 업무용 투폰 만들기｜선불폰 셀프 개통 방법"
+            },
+            {
+              "rank": 9,
               "blog_id": "matgeta",
               "post_id": "224474226238",
               "post_url": "https://blog.naver.com/matgeta/224474226238",
               "owner": null,
-              "feed_rank": 13,
+              "feed_rank": 14,
               "title": "편의점 선불폰 유심 가격과 무방문 셀프개통 방법"
             },
             {
-              "rank": 9,
-              "blog_id": "ntelecommobile",
-              "post_id": "224474202593",
-              "post_url": "https://blog.naver.com/ntelecommobile/224474202593",
-              "owner": null,
-              "feed_rank": 14,
-              "title": "GS25 유심 구매 전 확인할 점과 선불폰 셀프개통 방법"
-            },
-            {
               "rank": 10,
-              "blog_id": "bori24_",
-              "post_id": "224474128841",
-              "post_url": "https://blog.naver.com/bori24_/224474128841",
+              "blog_id": "weare0101",
+              "post_id": "224474194709",
+              "post_url": "https://blog.naver.com/weare0101/224474194709",
               "owner": null,
               "feed_rank": 15,
-              "title": "앤텔레콤 선불폰 온라인 셀프개통 방법, 신분증 준비부터 새 번호 신청까지"
+              "title": "선불폰 셀프개통 (안면인증·본인인증·유심번호 입력에서 막힐 때)"
             }
           ]
         }
@@ -3493,18 +3476,18 @@
         "선불폰 셀프 개통 방법",
         "프리티 선불폰 셀프개통",
         "다이소 선불폰 셀프개통",
+        "kt 바로유심 선불폰 셀프개통",
         "skt 선불폰 셀프개통",
         "편의점 선불폰 셀프개통",
         "모빙 선불폰 셀프개통",
+        "선불폰 셀프개통 인증",
         "유심선불폰 셀프개통",
         "다이소선불폰 셀프 개통 방법",
         "선불폰 셀프개통 시간",
-        "선불폰셀프개통안될때",
+        "선불폰 셀프개통 안될때",
         "앤텔레콤 선불폰 셀프개통",
-        "선불폰 셀프개통 본인인증",
         "LG 선불폰 셀프개통 방법",
-        "엔텔레콤 선불폰 셀프개통",
-        "유플러스 선불폰 셀프개통"
+        "엔텔레콤선불폰셀프개통"
       ]
     },
     "선불폰 비대면 개통": {
@@ -3513,13 +3496,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:55:30.672078+09:00",
+          "observed_at": "2026-11-13T10:16:02.478347+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EB%B9%84%EB%8C%80%EB%A9%B4+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "1fc4328bdae309658cd1a6f0b13f8a1d17fddd09c50ad79b0e99509febb4db6c",
+            "screenshot_sha256": "f982e98d94e31d1fc65406e76d4f664389def79467df88fc0b85d3fd7ebfb716",
             "screenshot_artifact_name": "선불폰-비대면-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3533,13 +3516,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:55:30.672078+09:00",
+          "observed_at": "2026-11-13T10:16:02.478347+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EB%B9%84%EB%8C%80%EB%A9%B4+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "1fc4328bdae309658cd1a6f0b13f8a1d17fddd09c50ad79b0e99509febb4db6c",
+            "screenshot_sha256": "f982e98d94e31d1fc65406e76d4f664389def79467df88fc0b85d3fd7ebfb716",
             "screenshot_artifact_name": "선불폰-비대면-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3593,30 +3576,30 @@
             },
             {
               "rank": 7,
+              "blog_id": "kimchoonghwa",
+              "post_id": "224475317129",
+              "post_url": "https://blog.naver.com/kimchoonghwa/224475317129",
+              "owner": null
+            },
+            {
+              "rank": 8,
               "blog_id": "cutepmh7874",
               "post_id": "224474534317",
               "post_url": "https://blog.naver.com/cutepmh7874/224474534317",
               "owner": null
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "dlwldnd8905",
               "post_id": "224474606356",
               "post_url": "https://blog.naver.com/dlwldnd8905/224474606356",
               "owner": null
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "dlwldnd92",
               "post_id": "224474576889",
               "post_url": "https://blog.naver.com/dlwldnd92/224474576889",
-              "owner": null
-            },
-            {
-              "rank": 10,
-              "blog_id": "bori24_",
-              "post_id": "224474191671",
-              "post_url": "https://blog.naver.com/bori24_/224474191671",
               "owner": null
             }
           ]
@@ -3624,13 +3607,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:30.672078+09:00",
+          "observed_at": "2026-11-13T10:16:02.478347+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+%EB%B9%84%EB%8C%80%EB%A9%B4+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "1fc4328bdae309658cd1a6f0b13f8a1d17fddd09c50ad79b0e99509febb4db6c",
+            "screenshot_sha256": "f982e98d94e31d1fc65406e76d4f664389def79467df88fc0b85d3fd7ebfb716",
             "screenshot_artifact_name": "선불폰-비대면-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3705,39 +3688,39 @@
             },
             {
               "rank": 7,
+              "blog_id": "kimchoonghwa",
+              "post_id": "224475317129",
+              "post_url": "https://blog.naver.com/kimchoonghwa/224475317129",
+              "owner": null,
+              "feed_rank": 10,
+              "title": "KT 선불폰 만드는 과정 CU 바로유심 구매부터 셀프개통까지"
+            },
+            {
+              "rank": 8,
               "blog_id": "cutepmh7874",
               "post_id": "224474534317",
               "post_url": "https://blog.naver.com/cutepmh7874/224474534317",
               "owner": null,
-              "feed_rank": 10,
+              "feed_rank": 11,
               "title": "선불폰이란? 개통 방법부터 장단점까지 한눈에 알아보기"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "dlwldnd8905",
               "post_id": "224474606356",
               "post_url": "https://blog.naver.com/dlwldnd8905/224474606356",
               "owner": null,
-              "feed_rank": 11,
+              "feed_rank": 12,
               "title": "횡천면 선불폰 연체 있어도 당일 개통 가능한 선불유심 꿀팁"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "dlwldnd92",
               "post_id": "224474576889",
               "post_url": "https://blog.naver.com/dlwldnd92/224474576889",
               "owner": null,
-              "feed_rank": 12,
-              "title": "옥종면 선불폰 막막할 때 직접 개통하며 알게 된 꿀팁 정리"
-            },
-            {
-              "rank": 10,
-              "blog_id": "bori24_",
-              "post_id": "224474191671",
-              "post_url": "https://blog.naver.com/bori24_/224474191671",
-              "owner": null,
               "feed_rank": 13,
-              "title": "핸드폰 직권해지 상태에서도 새 번호를 만들 수 있을까? 선불폰 신청방법"
+              "title": "옥종면 선불폰 막막할 때 직접 개통하며 알게 된 꿀팁 정리"
             }
           ]
         }
@@ -3759,13 +3742,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:55:43.581102+09:00",
+          "observed_at": "2026-11-13T10:16:15.853134+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%9A%94%EA%B8%88%EB%AF%B8%EB%82%A9+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "4493b50b954a13bbc9b0c2f227a369fcac9edab99cf482fdbde8847f836324b2",
+            "screenshot_sha256": "fbdb9e7bf061e5f0a8607bcbe52b9cd66817dd1a77276411aa17af0c666842ac",
             "screenshot_artifact_name": "요금미납-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3779,13 +3762,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:55:43.581102+09:00",
+          "observed_at": "2026-11-13T10:16:15.853134+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%9A%94%EA%B8%88%EB%AF%B8%EB%82%A9+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "4493b50b954a13bbc9b0c2f227a369fcac9edab99cf482fdbde8847f836324b2",
+            "screenshot_sha256": "fbdb9e7bf061e5f0a8607bcbe52b9cd66817dd1a77276411aa17af0c666842ac",
             "screenshot_artifact_name": "요금미납-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -3870,13 +3853,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:43.581102+09:00",
+          "observed_at": "2026-11-13T10:16:15.853134+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%9A%94%EA%B8%88%EB%AF%B8%EB%82%A9+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "4493b50b954a13bbc9b0c2f227a369fcac9edab99cf482fdbde8847f836324b2",
+            "screenshot_sha256": "fbdb9e7bf061e5f0a8607bcbe52b9cd66817dd1a77276411aa17af0c666842ac",
             "screenshot_artifact_name": "요금미납-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4002,13 +3985,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:55:56.264474+09:00",
+          "observed_at": "2026-11-13T10:16:28.999605+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AF%B8%EB%82%A9%EC%A0%95%EC%A7%80+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "1efdedd87d255aa38ebd446616529f807b639a23da652fa0405a77d8bb377fcd",
+            "screenshot_sha256": "ea43d58fe223f4e24a849fff86bf7dcdba0191bfa1f24238da7de4d1bc1b40cb",
             "screenshot_artifact_name": "미납정지-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4022,13 +4005,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:55:56.264474+09:00",
+          "observed_at": "2026-11-13T10:16:28.999605+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AF%B8%EB%82%A9%EC%A0%95%EC%A7%80+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "1efdedd87d255aa38ebd446616529f807b639a23da652fa0405a77d8bb377fcd",
+            "screenshot_sha256": "ea43d58fe223f4e24a849fff86bf7dcdba0191bfa1f24238da7de4d1bc1b40cb",
             "screenshot_artifact_name": "미납정지-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4068,17 +4051,17 @@
             },
             {
               "rank": 5,
-              "blog_id": "nrc1122",
-              "post_id": "224474058792",
-              "post_url": "https://blog.naver.com/nrc1122/224474058792",
-              "owner": null
-            },
-            {
-              "rank": 6,
               "blog_id": "ntelecom59",
               "post_id": "224474217132",
               "post_url": "https://blog.naver.com/ntelecom59/224474217132",
               "owner": "하루"
+            },
+            {
+              "rank": 6,
+              "blog_id": "nrc1122",
+              "post_id": "224474058792",
+              "post_url": "https://blog.naver.com/nrc1122/224474058792",
+              "owner": null
             },
             {
               "rank": 7,
@@ -4113,13 +4096,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:56.264474+09:00",
+          "observed_at": "2026-11-13T10:16:28.999605+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EB%AF%B8%EB%82%A9%EC%A0%95%EC%A7%80+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "1efdedd87d255aa38ebd446616529f807b639a23da652fa0405a77d8bb377fcd",
+            "screenshot_sha256": "ea43d58fe223f4e24a849fff86bf7dcdba0191bfa1f24238da7de4d1bc1b40cb",
             "screenshot_artifact_name": "미납정지-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4176,21 +4159,21 @@
             },
             {
               "rank": 5,
-              "blog_id": "nrc1122",
-              "post_id": "224474058792",
-              "post_url": "https://blog.naver.com/nrc1122/224474058792",
-              "owner": null,
-              "feed_rank": 8,
-              "title": "유플러스 선불폰 개통 미납 정지 후 새번호 만들어본 과정"
-            },
-            {
-              "rank": 6,
               "blog_id": "ntelecom59",
               "post_id": "224474217132",
               "post_url": "https://blog.naver.com/ntelecom59/224474217132",
               "owner": "하루",
-              "feed_rank": 11,
+              "feed_rank": 8,
               "title": "핸드폰 미납정지 상태에서도 LG 5G 사용할 수 있을까? 선불요금제 선택 방법"
+            },
+            {
+              "rank": 6,
+              "blog_id": "nrc1122",
+              "post_id": "224474058792",
+              "post_url": "https://blog.naver.com/nrc1122/224474058792",
+              "owner": null,
+              "feed_rank": 11,
+              "title": "유플러스 선불폰 개통 미납 정지 후 새번호 만들어본 과정"
             },
             {
               "rank": 7,
@@ -4239,13 +4222,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:56:08.803419+09:00",
+          "observed_at": "2026-11-13T10:16:41.806077+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%9C%B4%EB%8C%80%ED%8F%B0+%EC%A0%95%EC%A7%80+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "af6e2ba44ac983c219fa0c18cdd693056443ed140db9ce2d1770527300dd4757",
+            "screenshot_sha256": "105dad43186c02766051dbdec3762bf500ec931cdc0ff88f6f8b0a858cb91737",
             "screenshot_artifact_name": "휴대폰-정지-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4259,13 +4242,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:56:08.803419+09:00",
+          "observed_at": "2026-11-13T10:16:41.806077+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%9C%B4%EB%8C%80%ED%8F%B0+%EC%A0%95%EC%A7%80+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "af6e2ba44ac983c219fa0c18cdd693056443ed140db9ce2d1770527300dd4757",
+            "screenshot_sha256": "105dad43186c02766051dbdec3762bf500ec931cdc0ff88f6f8b0a858cb91737",
             "screenshot_artifact_name": "휴대폰-정지-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4350,13 +4333,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:08.803419+09:00",
+          "observed_at": "2026-11-13T10:16:41.806077+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%9C%B4%EB%8C%80%ED%8F%B0+%EC%A0%95%EC%A7%80+%EC%84%A0%EB%B6%88%ED%8F%B0",
             "viewport": "390x844",
-            "screenshot_sha256": "af6e2ba44ac983c219fa0c18cdd693056443ed140db9ce2d1770527300dd4757",
+            "screenshot_sha256": "105dad43186c02766051dbdec3762bf500ec931cdc0ff88f6f8b0a858cb91737",
             "screenshot_artifact_name": "휴대폰-정지-선불폰.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4476,13 +4459,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:56:21.728051+09:00",
+          "observed_at": "2026-11-13T10:16:55.314567+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%8E%B8%EC%9D%98%EC%A0%90+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "c8578adbfd1e94bbfd85612ed17ba84110a3bce010f49de6c521757b059c51a3",
+            "screenshot_sha256": "43b38e21c4faf66af12b989f346f33dcf63c8701adae7b5747863a8cf03d2b69",
             "screenshot_artifact_name": "편의점-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4496,13 +4479,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:56:21.728051+09:00",
+          "observed_at": "2026-11-13T10:16:55.314567+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%8E%B8%EC%9D%98%EC%A0%90+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "c8578adbfd1e94bbfd85612ed17ba84110a3bce010f49de6c521757b059c51a3",
+            "screenshot_sha256": "43b38e21c4faf66af12b989f346f33dcf63c8701adae7b5747863a8cf03d2b69",
             "screenshot_artifact_name": "편의점-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4528,23 +4511,23 @@
             },
             {
               "rank": 3,
-              "blog_id": "arongtelecom",
-              "post_id": "224474065519",
-              "post_url": "https://blog.naver.com/arongtelecom/224474065519",
-              "owner": null
-            },
-            {
-              "rank": 4,
               "blog_id": "matgeta",
               "post_id": "224474226238",
               "post_url": "https://blog.naver.com/matgeta/224474226238",
               "owner": null
             },
             {
-              "rank": 5,
+              "rank": 4,
               "blog_id": "bori24_",
               "post_id": "224474144176",
               "post_url": "https://blog.naver.com/bori24_/224474144176",
+              "owner": null
+            },
+            {
+              "rank": 5,
+              "blog_id": "arongtelecom",
+              "post_id": "224474065519",
+              "post_url": "https://blog.naver.com/arongtelecom/224474065519",
               "owner": null
             },
             {
@@ -4587,13 +4570,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:21.728051+09:00",
+          "observed_at": "2026-11-13T10:16:55.314567+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%8E%B8%EC%9D%98%EC%A0%90+%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC",
             "viewport": "390x844",
-            "screenshot_sha256": "c8578adbfd1e94bbfd85612ed17ba84110a3bce010f49de6c521757b059c51a3",
+            "screenshot_sha256": "43b38e21c4faf66af12b989f346f33dcf63c8701adae7b5747863a8cf03d2b69",
             "screenshot_artifact_name": "편의점-선불유심.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4632,30 +4615,30 @@
             },
             {
               "rank": 3,
-              "blog_id": "arongtelecom",
-              "post_id": "224474065519",
-              "post_url": "https://blog.naver.com/arongtelecom/224474065519",
-              "owner": null,
-              "feed_rank": 6,
-              "title": "미납 휴대폰 개통, 편의점 유심 선불폰 개통으로 시작"
-            },
-            {
-              "rank": 4,
               "blog_id": "matgeta",
               "post_id": "224474226238",
               "post_url": "https://blog.naver.com/matgeta/224474226238",
               "owner": null,
-              "feed_rank": 7,
+              "feed_rank": 6,
               "title": "편의점 선불폰 유심 가격과 무방문 셀프개통 방법"
             },
             {
-              "rank": 5,
+              "rank": 4,
               "blog_id": "bori24_",
               "post_id": "224474144176",
               "post_url": "https://blog.naver.com/bori24_/224474144176",
               "owner": null,
-              "feed_rank": 8,
+              "feed_rank": 7,
               "title": "편의점 선불유심 KT 바로유심·LG 원칩 구입처와 셀프개통 정리"
+            },
+            {
+              "rank": 5,
+              "blog_id": "arongtelecom",
+              "post_id": "224474065519",
+              "post_url": "https://blog.naver.com/arongtelecom/224474065519",
+              "owner": null,
+              "feed_rank": 8,
+              "title": "미납 휴대폰 개통, 편의점 유심 선불폰 개통으로 시작"
             },
             {
               "rank": 6,
@@ -4709,8 +4692,8 @@
         "sk 선불유심",
         "베트남 유심",
         "skt 선불유심",
-        "모두의원칩",
         "일본 유심",
+        "모두의원칩",
         "한국 데이터 유심",
         "선불유심칩",
         "편의점 선불유심 셀프개통",
@@ -4726,13 +4709,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:56:34.496419+09:00",
+          "observed_at": "2026-11-13T10:17:08.505637+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%8E%B8%EC%9D%98%EC%A0%90+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "970ca28c75484d5c67ecf3015b839e6dbac3f99d5cfe2951a3c9525ca5284fe6",
+            "screenshot_sha256": "8e6863f20da0cb559c79795f91df48372d2be3bfcf8ac93e7e50f65f099f7118",
             "screenshot_artifact_name": "편의점-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4745,19 +4728,19 @@
         },
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
-          "status": "PARTIAL",
-          "observed_at": "2026-11-13T09:56:34.496419+09:00",
-          "reason": "모바일 통합검색에서 블로그 게시글 후보를 10개 미만으로 관측",
+          "status": "CANDIDATE",
+          "observed_at": "2026-11-13T10:17:08.505637+09:00",
+          "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%8E%B8%EC%9D%98%EC%A0%90+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "970ca28c75484d5c67ecf3015b839e6dbac3f99d5cfe2951a3c9525ca5284fe6",
+            "screenshot_sha256": "8e6863f20da0cb559c79795f91df48372d2be3bfcf8ac93e7e50f65f099f7118",
             "screenshot_artifact_name": "편의점-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
             "verification_method": "rendered_article_visual_order",
-            "observed_distinct_posts": 9,
+            "observed_distinct_posts": 10,
             "feed_layout": "per_post_cards",
             "feed_interleaved_cafe_cards": 5
           },
@@ -4806,20 +4789,27 @@
             },
             {
               "rank": 7,
+              "blog_id": "arongtelecom",
+              "post_id": "224474065519",
+              "post_url": "https://blog.naver.com/arongtelecom/224474065519",
+              "owner": null
+            },
+            {
+              "rank": 8,
               "blog_id": "u0kyxm7htrb",
               "post_id": "224474078862",
               "post_url": "https://blog.naver.com/u0kyxm7htrb/224474078862",
               "owner": null
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "min0429999",
               "post_id": "224473303111",
               "post_url": "https://blog.naver.com/min0429999/224473303111",
               "owner": null
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "toobes57",
               "post_id": "224474005369",
               "post_url": "https://blog.naver.com/toobes57/224474005369",
@@ -4829,14 +4819,14 @@
         },
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
-          "status": "PARTIAL",
-          "observed_at": "2026-11-13T09:56:34.496419+09:00",
-          "reason": "피드에서 블로그 카드를 10개 미만으로 관측",
-          "reason_code": "FEED_BLOG_CARDS_LT_10",
+          "status": "VERIFIED",
+          "observed_at": "2026-11-13T10:17:08.505637+09:00",
+          "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
+          "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%ED%8E%B8%EC%9D%98%EC%A0%90+%EC%9C%A0%EC%8B%AC+%EA%B0%9C%ED%86%B5",
             "viewport": "390x844",
-            "screenshot_sha256": "970ca28c75484d5c67ecf3015b839e6dbac3f99d5cfe2951a3c9525ca5284fe6",
+            "screenshot_sha256": "8e6863f20da0cb559c79795f91df48372d2be3bfcf8ac93e7e50f65f099f7118",
             "screenshot_artifact_name": "편의점-유심-개통.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4846,8 +4836,8 @@
               "non_overlapping": true,
               "no_excluded_cards": true,
               "post_unique": true,
-              "ugc_cards": 14,
-              "blog_cards": 9,
+              "ugc_cards": 15,
+              "blog_cards": 10,
               "excluded_ai_or_ad_cards": 1,
               "duplicate_cards_dropped": 0
             },
@@ -4888,7 +4878,7 @@
               "post_id": "224474319422",
               "post_url": "https://blog.naver.com/lifeon5g_/224474319422",
               "owner": "건호",
-              "feed_rank": 7,
+              "feed_rank": 9,
               "title": "편의점 선불폰 유심 구매·개통 가이드｜CU·GS25·이마트24 종류와 가격"
             },
             {
@@ -4911,29 +4901,38 @@
             },
             {
               "rank": 7,
+              "blog_id": "arongtelecom",
+              "post_id": "224474065519",
+              "post_url": "https://blog.naver.com/arongtelecom/224474065519",
+              "owner": null,
+              "feed_rank": 12,
+              "title": "미납 휴대폰 개통, 편의점 유심 선불폰 개통으로 시작"
+            },
+            {
+              "rank": 8,
               "blog_id": "u0kyxm7htrb",
               "post_id": "224474078862",
               "post_url": "https://blog.naver.com/u0kyxm7htrb/224474078862",
               "owner": null,
-              "feed_rank": 12,
+              "feed_rank": 13,
               "title": "바로유심 개통 편의점 유심 구매와 셀프 신청 방법 알아보기"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "min0429999",
               "post_id": "224473303111",
               "post_url": "https://blog.naver.com/min0429999/224473303111",
               "owner": null,
-              "feed_rank": 13,
+              "feed_rank": 14,
               "title": "업무용 서브폰 만들기, 쓰던 공기계에 편의점 유심 개통부터 요금제 비용까지"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "toobes57",
               "post_id": "224474005369",
               "post_url": "https://blog.naver.com/toobes57/224474005369",
               "owner": null,
-              "feed_rank": 14,
+              "feed_rank": 15,
               "title": "편의점 선불유심 KT LG 차이와 구매 후 개통 방법"
             }
           ]
@@ -4948,13 +4947,13 @@
         "편의점 유심 개통 시간",
         "미성년자편의점 유심 개통 skt",
         "미납 편의점 유심 개통",
+        "편의점유심개통요금제",
         "편의점 유심 개통 주말",
-        "편의점 유심 개통 요금제",
         "아이폰 편의점 유심 개통 방법",
-        "알뜰폰 편의점 유심 개통 방법",
         "유플러스 편의점 유심 개통",
-        "편의점 유심 개통 skt",
-        "외국인 편의점 유심 개통"
+        "외국인 편의점 유심 개통",
+        "알뜰폰 편의점 유심 개통 방법",
+        "편의점 유심 개통 skt"
       ]
     },
     "선불유심 구매": {
@@ -4963,13 +4962,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:56:47.029804+09:00",
+          "observed_at": "2026-11-13T10:17:21.647473+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC+%EA%B5%AC%EB%A7%A4",
             "viewport": "390x844",
-            "screenshot_sha256": "488ea9ca3ae284936bc50ab19b8ed885e62574cb947704337e4e9063963484ba",
+            "screenshot_sha256": "288f69ca910afdbd068014c7911459f18343f72d987240cd0228c2e7fae09f08",
             "screenshot_artifact_name": "선불유심-구매.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -4983,13 +4982,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:56:47.029804+09:00",
+          "observed_at": "2026-11-13T10:17:21.647473+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC+%EA%B5%AC%EB%A7%A4",
             "viewport": "390x844",
-            "screenshot_sha256": "488ea9ca3ae284936bc50ab19b8ed885e62574cb947704337e4e9063963484ba",
+            "screenshot_sha256": "288f69ca910afdbd068014c7911459f18343f72d987240cd0228c2e7fae09f08",
             "screenshot_artifact_name": "선불유심-구매.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5022,17 +5021,17 @@
             },
             {
               "rank": 4,
-              "blog_id": "dlwldnd8905",
-              "post_id": "224474606356",
-              "post_url": "https://blog.naver.com/dlwldnd8905/224474606356",
+              "blog_id": "kimchoonghwa",
+              "post_id": "224475317129",
+              "post_url": "https://blog.naver.com/kimchoonghwa/224475317129",
               "owner": null
             },
             {
               "rank": 5,
-              "blog_id": "lifeon5g_",
-              "post_id": "224474319422",
-              "post_url": "https://blog.naver.com/lifeon5g_/224474319422",
-              "owner": "건호"
+              "blog_id": "dlwldnd8905",
+              "post_id": "224474606356",
+              "post_url": "https://blog.naver.com/dlwldnd8905/224474606356",
+              "owner": null
             },
             {
               "rank": 6,
@@ -5043,30 +5042,30 @@
             },
             {
               "rank": 7,
+              "blog_id": "lifeon5g_",
+              "post_id": "224474319422",
+              "post_url": "https://blog.naver.com/lifeon5g_/224474319422",
+              "owner": "건호"
+            },
+            {
+              "rank": 8,
               "blog_id": "rty33333",
               "post_id": "224474971386",
               "post_url": "https://blog.naver.com/rty33333/224474971386",
               "owner": null
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "r2r03iem9",
               "post_id": "224474126674",
               "post_url": "https://blog.naver.com/r2r03iem9/224474126674",
               "owner": null
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "arongtelecom",
               "post_id": "224474065519",
               "post_url": "https://blog.naver.com/arongtelecom/224474065519",
-              "owner": null
-            },
-            {
-              "rank": 10,
-              "blog_id": "usimple_",
-              "post_id": "224472959448",
-              "post_url": "https://blog.naver.com/usimple_/224472959448",
               "owner": null
             }
           ]
@@ -5074,13 +5073,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:47.029804+09:00",
+          "observed_at": "2026-11-13T10:17:21.647473+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%EC%9C%A0%EC%8B%AC+%EA%B5%AC%EB%A7%A4",
             "viewport": "390x844",
-            "screenshot_sha256": "488ea9ca3ae284936bc50ab19b8ed885e62574cb947704337e4e9063963484ba",
+            "screenshot_sha256": "288f69ca910afdbd068014c7911459f18343f72d987240cd0228c2e7fae09f08",
             "screenshot_artifact_name": "선불유심-구매.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5128,21 +5127,21 @@
             },
             {
               "rank": 4,
+              "blog_id": "kimchoonghwa",
+              "post_id": "224475317129",
+              "post_url": "https://blog.naver.com/kimchoonghwa/224475317129",
+              "owner": null,
+              "feed_rank": 6,
+              "title": "KT 선불폰 만드는 과정 CU 바로유심 구매부터 셀프개통까지"
+            },
+            {
+              "rank": 5,
               "blog_id": "dlwldnd8905",
               "post_id": "224474606356",
               "post_url": "https://blog.naver.com/dlwldnd8905/224474606356",
               "owner": null,
-              "feed_rank": 6,
-              "title": "횡천면 선불폰 연체 있어도 당일 개통 가능한 선불유심 꿀팁"
-            },
-            {
-              "rank": 5,
-              "blog_id": "lifeon5g_",
-              "post_id": "224474319422",
-              "post_url": "https://blog.naver.com/lifeon5g_/224474319422",
-              "owner": "건호",
               "feed_rank": 7,
-              "title": "편의점 선불폰 유심 구매·개통 가이드｜CU·GS25·이마트24 종류와 가격"
+              "title": "횡천면 선불폰 연체 있어도 당일 개통 가능한 선불유심 꿀팁"
             },
             {
               "rank": 6,
@@ -5155,39 +5154,39 @@
             },
             {
               "rank": 7,
+              "blog_id": "lifeon5g_",
+              "post_id": "224474319422",
+              "post_url": "https://blog.naver.com/lifeon5g_/224474319422",
+              "owner": "건호",
+              "feed_rank": 12,
+              "title": "편의점 선불폰 유심 구매·개통 가이드｜CU·GS25·이마트24 종류와 가격"
+            },
+            {
+              "rank": 8,
               "blog_id": "rty33333",
               "post_id": "224474971386",
               "post_url": "https://blog.naver.com/rty33333/224474971386",
               "owner": null,
-              "feed_rank": 12,
+              "feed_rank": 13,
               "title": "세컨폰이 필요할 때, 아이폰 선불유심 개통 방법"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "blog_id": "r2r03iem9",
               "post_id": "224474126674",
               "post_url": "https://blog.naver.com/r2r03iem9/224474126674",
               "owner": null,
-              "feed_rank": 13,
+              "feed_rank": 14,
               "title": "선불유심 편의점 구매처 종류와 셀프개통 준비물 확인하기"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "blog_id": "arongtelecom",
               "post_id": "224474065519",
               "post_url": "https://blog.naver.com/arongtelecom/224474065519",
               "owner": null,
-              "feed_rank": 14,
-              "title": "미납 휴대폰 개통, 편의점 유심 선불폰 개통으로 시작"
-            },
-            {
-              "rank": 10,
-              "blog_id": "usimple_",
-              "post_id": "224472959448",
-              "post_url": "https://blog.naver.com/usimple_/224472959448",
-              "owner": null,
               "feed_rank": 15,
-              "title": "부천 고강동선불폰 유심값과 첫 충전 비용 정리"
+              "title": "미납 휴대폰 개통, 편의점 유심 선불폰 개통으로 시작"
             }
           ]
         }
@@ -5201,11 +5200,11 @@
         "일본 유심",
         "나트랑유심",
         "알뜰폰 유심",
-        "오사카유심",
         "헬로모바일 유심",
+        "오사카유심",
         "푸꾸옥 유심",
-        "도시락유심",
         "상하이 유심",
+        "도시락유심",
         "중국 유심",
         "대만유심"
       ]
@@ -5216,13 +5215,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:56:59.945611+09:00",
+          "observed_at": "2026-11-13T10:17:34.986912+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%95%A4%ED%85%94%EB%A0%88%EC%BD%A4+396",
             "viewport": "390x844",
-            "screenshot_sha256": "b8bd301a220463d88f4ec82e3b0c5f4163b64d0e8963e3765f9cb27f0e18f68b",
+            "screenshot_sha256": "e7002b0b87bdf0d2b2ba5a29b50c818b1c38661fb55daccd6f0b037c2e616af0",
             "screenshot_artifact_name": "앤텔레콤-396.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5236,13 +5235,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:56:59.945611+09:00",
+          "observed_at": "2026-11-13T10:17:34.986912+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%95%A4%ED%85%94%EB%A0%88%EC%BD%A4+396",
             "viewport": "390x844",
-            "screenshot_sha256": "b8bd301a220463d88f4ec82e3b0c5f4163b64d0e8963e3765f9cb27f0e18f68b",
+            "screenshot_sha256": "e7002b0b87bdf0d2b2ba5a29b50c818b1c38661fb55daccd6f0b037c2e616af0",
             "screenshot_artifact_name": "앤텔레콤-396.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5327,13 +5326,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:59.945611+09:00",
+          "observed_at": "2026-11-13T10:17:34.986912+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%95%A4%ED%85%94%EB%A0%88%EC%BD%A4+396",
             "viewport": "390x844",
-            "screenshot_sha256": "b8bd301a220463d88f4ec82e3b0c5f4163b64d0e8963e3765f9cb27f0e18f68b",
+            "screenshot_sha256": "e7002b0b87bdf0d2b2ba5a29b50c818b1c38661fb55daccd6f0b037c2e616af0",
             "screenshot_artifact_name": "앤텔레콤-396.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5446,7 +5445,7 @@
         }
       },
       "related_queries": [
-        "앤텔레콤 396요금제",
+        "앤텔레콤 396 요금제",
         "앤텔레콤 선불폰 개통 방법",
         "앤텔레콤 L망",
         "앤텔레콤 K망",
@@ -5459,13 +5458,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:57:12.250087+09:00",
+          "observed_at": "2026-11-13T10:17:47.628514+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT+396+%EC%9A%94%EA%B8%88%EC%A0%9C",
             "viewport": "390x844",
-            "screenshot_sha256": "64d3bcceba97715a73bea8f4f94798a6cc8eb3fd74696a7367779833a4ef401b",
+            "screenshot_sha256": "54417d076c8782ffdf0fc7982e48215fe18420b2f299282c40ea202c599aec7b",
             "screenshot_artifact_name": "kt-396-요금제.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5479,13 +5478,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:57:12.250087+09:00",
+          "observed_at": "2026-11-13T10:17:47.628514+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT+396+%EC%9A%94%EA%B8%88%EC%A0%9C",
             "viewport": "390x844",
-            "screenshot_sha256": "64d3bcceba97715a73bea8f4f94798a6cc8eb3fd74696a7367779833a4ef401b",
+            "screenshot_sha256": "54417d076c8782ffdf0fc7982e48215fe18420b2f299282c40ea202c599aec7b",
             "screenshot_artifact_name": "kt-396-요금제.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5553,16 +5552,16 @@
             },
             {
               "rank": 9,
-              "blog_id": "ntelecom59",
-              "post_id": "224470665186",
-              "post_url": "https://blog.naver.com/ntelecom59/224470665186",
-              "owner": "하루"
-            },
-            {
-              "rank": 10,
               "blog_id": "nrc1122",
               "post_id": "224471157798",
               "post_url": "https://blog.naver.com/nrc1122/224471157798",
+              "owner": null
+            },
+            {
+              "rank": 10,
+              "blog_id": "qblog89",
+              "post_id": "224469291364",
+              "post_url": "https://blog.naver.com/qblog89/224469291364",
               "owner": null
             }
           ]
@@ -5570,13 +5569,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:57:12.250087+09:00",
+          "observed_at": "2026-11-13T10:17:47.628514+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=KT+396+%EC%9A%94%EA%B8%88%EC%A0%9C",
             "viewport": "390x844",
-            "screenshot_sha256": "64d3bcceba97715a73bea8f4f94798a6cc8eb3fd74696a7367779833a4ef401b",
+            "screenshot_sha256": "54417d076c8782ffdf0fc7982e48215fe18420b2f299282c40ea202c599aec7b",
             "screenshot_artifact_name": "kt-396-요금제.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5669,21 +5668,21 @@
             },
             {
               "rank": 9,
-              "blog_id": "ntelecom59",
-              "post_id": "224470665186",
-              "post_url": "https://blog.naver.com/ntelecom59/224470665186",
-              "owner": "하루",
-              "feed_rank": 11,
-              "title": "합정선불폰 앤텔레콤 개통, KT 396·459 요금제 중 어떤 걸 선택해야 할까?"
-            },
-            {
-              "rank": 10,
               "blog_id": "nrc1122",
               "post_id": "224471157798",
               "post_url": "https://blog.naver.com/nrc1122/224471157798",
               "owner": null,
-              "feed_rank": 12,
+              "feed_rank": 11,
               "title": "KT 선불폰 개통하면서 396 459 859를 끝까지 비교해봤습니다"
+            },
+            {
+              "rank": 10,
+              "blog_id": "qblog89",
+              "post_id": "224469291364",
+              "post_url": "https://blog.naver.com/qblog89/224469291364",
+              "owner": null,
+              "feed_rank": 12,
+              "title": "KT선불폰 데이터 무제한, 3Mbps 속도로 어떤 앱까지 쓸 수 있을까?"
             }
           ]
         }
@@ -5696,13 +5695,13 @@
         "INTEGRATED_BLOG_SECTION_TOP10": {
           "surface": "INTEGRATED_BLOG_SECTION_TOP10",
           "status": "UNKNOWN",
-          "observed_at": "2026-11-13T09:57:24.933904+09:00",
+          "observed_at": "2026-11-13T10:18:00.631133+09:00",
           "reason": "블로그 글이 게시글별 카드로 카페 글과 섞여 노출되며 별도 블로그 영역 제목·경계가 없음",
           "reason_code": "SECTION_NOT_PRESENT",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+396+%EC%9A%94%EA%B8%88%EC%A0%9C",
             "viewport": "390x844",
-            "screenshot_sha256": "5806d9dab5a926daebf00c1f34e6e43f5bac9e2d84394058e72219c78ed8dd01",
+            "screenshot_sha256": "8f35da853cc8952f4e749173ff95b62c00af927b15f34c2ab877b13fb37439fe",
             "screenshot_artifact_name": "선불폰-396-요금제.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5716,13 +5715,13 @@
         "INTEGRATED_BLOG_ARTICLES_TOP10": {
           "surface": "INTEGRATED_BLOG_ARTICLES_TOP10",
           "status": "CANDIDATE",
-          "observed_at": "2026-11-13T09:57:24.933904+09:00",
+          "observed_at": "2026-11-13T10:18:00.631133+09:00",
           "reason": "모바일 통합검색 전체에서 보이는 네이버 블로그 게시글 10개 후보",
           "reason_code": "ARTICLE_ORDER_ONLY",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+396+%EC%9A%94%EA%B8%88%EC%A0%9C",
             "viewport": "390x844",
-            "screenshot_sha256": "5806d9dab5a926daebf00c1f34e6e43f5bac9e2d84394058e72219c78ed8dd01",
+            "screenshot_sha256": "8f35da853cc8952f4e749173ff95b62c00af927b15f34c2ab877b13fb37439fe",
             "screenshot_artifact_name": "선불폰-396-요금제.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5807,13 +5806,13 @@
         "INTEGRATED_FEED_BLOG_CARDS_TOP10": {
           "surface": "INTEGRATED_FEED_BLOG_CARDS_TOP10",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:57:24.933904+09:00",
+          "observed_at": "2026-11-13T10:18:00.631133+09:00",
           "reason": "통합검색 피드의 블로그 카드 10개를 화면 순서로 검증(관측 순번이며 네이버 공식 순위 아님)",
           "reason_code": "FEED_CROSSCHECK_PASSED",
           "evidence": {
             "source_url": "https://m.search.naver.com/search.naver?where=nexearch&query=%EC%84%A0%EB%B6%88%ED%8F%B0+396+%EC%9A%94%EA%B8%88%EC%A0%9C",
             "viewport": "390x844",
-            "screenshot_sha256": "5806d9dab5a926daebf00c1f34e6e43f5bac9e2d84394058e72219c78ed8dd01",
+            "screenshot_sha256": "8f35da853cc8952f4e749173ff95b62c00af927b15f34c2ab877b13fb37439fe",
             "screenshot_artifact_name": "선불폰-396-요금제.png",
             "browser": "playwright-chromium",
             "device": "mobile-emulation",
@@ -5936,8 +5935,8 @@
   },
   "groups": {
     "KT바로유심": {
-      "status": "VERIFIED",
-      "complete": true,
+      "status": "UNKNOWN",
+      "complete": false,
       "queries": [
         "KT바로유심",
         "바로유심",
@@ -5946,30 +5945,22 @@
       "query_states": [
         {
           "query": "KT바로유심",
-          "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:52:30.420420+09:00"
+          "status": "PARTIAL",
+          "observed_at": "2026-11-13T10:12:55.395445+09:00"
         },
         {
           "query": "바로유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:52:44.003677+09:00"
+          "observed_at": "2026-11-13T10:13:09.575089+09:00"
         },
         {
           "query": "KT바로유심 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:52:56.830530+09:00"
+          "observed_at": "2026-11-13T10:13:22.716521+09:00"
         }
       ],
       "matches": {
         "건호": [
-          {
-            "query": "KT바로유심",
-            "rank": 6,
-            "blog_id": "lifeon5g_",
-            "post_id": "224470702366",
-            "post_url": "https://blog.naver.com/lifeon5g_/224470702366",
-            "feed_rank": 12
-          },
           {
             "query": "바로유심",
             "rank": 6,
@@ -5989,14 +5980,6 @@
         ],
         "영은": [
           {
-            "query": "KT바로유심",
-            "rank": 10,
-            "blog_id": "esim99",
-            "post_id": "224470025873",
-            "post_url": "https://blog.naver.com/esim99/224470025873",
-            "feed_rank": 16
-          },
-          {
             "query": "바로유심",
             "rank": 10,
             "blog_id": "esim99",
@@ -6007,14 +5990,6 @@
         ],
         "하루": [
           {
-            "query": "KT바로유심",
-            "rank": 5,
-            "blog_id": "ntelecom59",
-            "post_id": "224469206009",
-            "post_url": "https://blog.naver.com/ntelecom59/224469206009",
-            "feed_rank": 10
-          },
-          {
             "query": "KT바로유심 개통",
             "rank": 9,
             "blog_id": "ntelecom59",
@@ -6024,14 +5999,6 @@
           }
         ],
         "수진": [
-          {
-            "query": "KT바로유심",
-            "rank": 1,
-            "blog_id": "jjuny1253",
-            "post_id": "224475272944",
-            "post_url": "https://blog.naver.com/jjuny1253/224475272944",
-            "feed_rank": 4
-          },
           {
             "query": "바로유심",
             "rank": 3,
@@ -6051,21 +6018,16 @@
         ]
       },
       "owner_states": {
-        "건호": "EXPOSED",
-        "영은": "EXPOSED",
-        "하루": "EXPOSED",
-        "수진": "EXPOSED"
+        "건호": "UNKNOWN",
+        "영은": "UNKNOWN",
+        "하루": "UNKNOWN",
+        "수진": "UNKNOWN"
       },
-      "exposed": [
-        "건호",
-        "영은",
-        "하루",
-        "수진"
-      ],
+      "exposed": [],
       "missing": [],
       "dropped": [],
       "exits": [],
-      "decision_note": "등록된 모든 변형 검색어가 최신 VERIFIED"
+      "decision_note": "변형 검색어 중 미검증 항목이 있어 미노출 확정 금지"
     },
     "LG모두의 원칩": {
       "status": "VERIFIED",
@@ -6079,62 +6041,54 @@
         {
           "query": "LG모두의 원칩",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:09.833680+09:00"
+          "observed_at": "2026-11-13T10:13:36.148602+09:00"
         },
         {
           "query": "모두의 원칩",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:22.708066+09:00"
+          "observed_at": "2026-11-13T10:13:49.511860+09:00"
         },
         {
           "query": "LG원칩 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:35.736535+09:00"
+          "observed_at": "2026-11-13T10:14:03.141268+09:00"
         }
       ],
       "matches": {
         "건호": [
           {
             "query": "LG원칩 개통",
-            "rank": 5,
-            "blog_id": "lifeon5g_",
-            "post_id": "224474101421",
-            "post_url": "https://blog.naver.com/lifeon5g_/224474101421",
-            "feed_rank": 6
-          },
-          {
-            "query": "LG원칩 개통",
-            "rank": 10,
+            "rank": 9,
             "blog_id": "carrotmobile_",
             "post_id": "224472987452",
             "post_url": "https://blog.naver.com/carrotmobile_/224472987452",
-            "feed_rank": 13
+            "feed_rank": 12
           }
         ],
         "영은": [
           {
             "query": "LG모두의 원칩",
+            "rank": 4,
+            "blog_id": "esim99_",
+            "post_id": "224475298410",
+            "post_url": "https://blog.naver.com/esim99_/224475298410",
+            "feed_rank": 5
+          },
+          {
+            "query": "LG모두의 원칩",
+            "rank": 8,
+            "blog_id": "esim99",
+            "post_id": "224474194361",
+            "post_url": "https://blog.naver.com/esim99/224474194361",
+            "feed_rank": 10
+          },
+          {
+            "query": "모두의 원칩",
             "rank": 3,
             "blog_id": "esim99_",
             "post_id": "224475298410",
             "post_url": "https://blog.naver.com/esim99_/224475298410",
-            "feed_rank": 4
-          },
-          {
-            "query": "LG모두의 원칩",
-            "rank": 7,
-            "blog_id": "esim99",
-            "post_id": "224474194361",
-            "post_url": "https://blog.naver.com/esim99/224474194361",
-            "feed_rank": 9
-          },
-          {
-            "query": "모두의 원칩",
-            "rank": 1,
-            "blog_id": "esim99_",
-            "post_id": "224475298410",
-            "post_url": "https://blog.naver.com/esim99_/224475298410",
-            "feed_rank": 4
+            "feed_rank": 6
           },
           {
             "query": "LG원칩 개통",
@@ -6148,19 +6102,19 @@
         "하루": [
           {
             "query": "LG모두의 원칩",
-            "rank": 2,
-            "blog_id": "ntelecom59",
-            "post_id": "224475298783",
-            "post_url": "https://blog.naver.com/ntelecom59/224475298783",
-            "feed_rank": 3
-          },
-          {
-            "query": "모두의 원칩",
             "rank": 3,
             "blog_id": "ntelecom59",
             "post_id": "224475298783",
             "post_url": "https://blog.naver.com/ntelecom59/224475298783",
-            "feed_rank": 6
+            "feed_rank": 4
+          },
+          {
+            "query": "모두의 원칩",
+            "rank": 4,
+            "blog_id": "ntelecom59",
+            "post_id": "224475298783",
+            "post_url": "https://blog.naver.com/ntelecom59/224475298783",
+            "feed_rank": 7
           },
           {
             "query": "LG원칩 개통",
@@ -6211,17 +6165,17 @@
         {
           "query": "태블릿소유자회원번호",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:53:48.574868+09:00"
+          "observed_at": "2026-11-13T10:14:16.445691+09:00"
         },
         {
           "query": "태블릿 소유자 회원번호",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:01.329801+09:00"
+          "observed_at": "2026-11-13T10:14:29.836228+09:00"
         },
         {
           "query": "태블릿소유자회원번호 입력",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:14.255879+09:00"
+          "observed_at": "2026-11-13T10:14:43.175662+09:00"
         }
       ],
       "matches": {
@@ -6343,44 +6297,44 @@
         {
           "query": "다이소 유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:27.046836+09:00"
+          "observed_at": "2026-11-13T10:14:56.405212+09:00"
         },
         {
           "query": "다이소 선불유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:39.485042+09:00"
+          "observed_at": "2026-11-13T10:15:09.509828+09:00"
         },
         {
           "query": "다이소 유심 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:54:52.447936+09:00"
+          "observed_at": "2026-11-13T10:15:22.909722+09:00"
         }
       ],
       "matches": {
         "건호": [
           {
             "query": "다이소 유심",
-            "rank": 8,
-            "blog_id": "lifeon5g_",
-            "post_id": "224474295093",
-            "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
-            "feed_rank": 14
-          },
-          {
-            "query": "다이소 선불유심",
-            "rank": 4,
-            "blog_id": "lifeon5g_",
-            "post_id": "224474295093",
-            "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
-            "feed_rank": 6
-          },
-          {
-            "query": "다이소 선불유심",
             "rank": 9,
+            "blog_id": "lifeon5g_",
+            "post_id": "224474295093",
+            "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
+            "feed_rank": 15
+          },
+          {
+            "query": "다이소 선불유심",
+            "rank": 5,
+            "blog_id": "lifeon5g_",
+            "post_id": "224474295093",
+            "post_url": "https://blog.naver.com/lifeon5g_/224474295093",
+            "feed_rank": 7
+          },
+          {
+            "query": "다이소 선불유심",
+            "rank": 10,
             "blog_id": "carrotmobile_",
             "post_id": "224472954280",
             "post_url": "https://blog.naver.com/carrotmobile_/224472954280",
-            "feed_rank": 15
+            "feed_rank": 16
           },
           {
             "query": "다이소 유심 개통",
@@ -6410,11 +6364,11 @@
           },
           {
             "query": "다이소 유심",
-            "rank": 7,
+            "rank": 8,
             "blog_id": "esim99",
             "post_id": "224474615597",
             "post_url": "https://blog.naver.com/esim99/224474615597",
-            "feed_rank": 13
+            "feed_rank": 14
           },
           {
             "query": "다이소 선불유심",
@@ -6426,19 +6380,19 @@
           },
           {
             "query": "다이소 선불유심",
-            "rank": 5,
+            "rank": 6,
             "blog_id": "esim99",
             "post_id": "224474615597",
             "post_url": "https://blog.naver.com/esim99/224474615597",
-            "feed_rank": 7
+            "feed_rank": 12
           },
           {
             "query": "다이소 유심 개통",
-            "rank": 2,
+            "rank": 1,
             "blog_id": "esim99_",
             "post_id": "224475298410",
             "post_url": "https://blog.naver.com/esim99_/224475298410",
-            "feed_rank": 6
+            "feed_rank": 5
           },
           {
             "query": "다이소 유심 개통",
@@ -6454,25 +6408,25 @@
             "blog_id": "esim87_",
             "post_id": "224474311363",
             "post_url": "https://blog.naver.com/esim87_/224474311363",
-            "feed_rank": 10
+            "feed_rank": 13
           }
         ],
         "하루": [
           {
             "query": "다이소 유심",
-            "rank": 9,
+            "rank": 10,
             "blog_id": "ntelecom59",
             "post_id": "224474159568",
             "post_url": "https://blog.naver.com/ntelecom59/224474159568",
-            "feed_rank": 15
+            "feed_rank": 16
           },
           {
             "query": "다이소 선불유심",
-            "rank": 6,
+            "rank": 7,
             "blog_id": "ntelecom59",
             "post_id": "224474159568",
             "post_url": "https://blog.naver.com/ntelecom59/224474159568",
-            "feed_rank": 12
+            "feed_rank": 13
           },
           {
             "query": "다이소 유심 개통",
@@ -6486,11 +6440,11 @@
         "수진": [
           {
             "query": "다이소 유심",
-            "rank": 5,
+            "rank": 6,
             "blog_id": "jjuny1253",
             "post_id": "224474303053",
             "post_url": "https://blog.naver.com/jjuny1253/224474303053",
-            "feed_rank": 8
+            "feed_rank": 12
           }
         ]
       },
@@ -6523,17 +6477,17 @@
         {
           "query": "선불폰 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:05.379954+09:00"
+          "observed_at": "2026-11-13T10:15:36.396519+09:00"
         },
         {
           "query": "선불폰 셀프개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:17.969200+09:00"
+          "observed_at": "2026-11-13T10:15:49.354448+09:00"
         },
         {
           "query": "선불폰 비대면 개통",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:30.672078+09:00"
+          "observed_at": "2026-11-13T10:16:02.478347+09:00"
         }
       ],
       "matches": {
@@ -6544,15 +6498,15 @@
             "blog_id": "carrotmobile_",
             "post_id": "224472991816",
             "post_url": "https://blog.naver.com/carrotmobile_/224472991816",
-            "feed_rank": 5
+            "feed_rank": 6
           },
           {
             "query": "선불폰 셀프개통",
-            "rank": 6,
+            "rank": 8,
             "blog_id": "lifeon5g_",
-            "post_id": "224474071306",
-            "post_url": "https://blog.naver.com/lifeon5g_/224474071306",
-            "feed_rank": 11
+            "post_id": "224474017015",
+            "post_url": "https://blog.naver.com/lifeon5g_/224474017015",
+            "feed_rank": 13
           }
         ],
         "영은": [],
@@ -6589,17 +6543,17 @@
         {
           "query": "요금미납 선불폰",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:43.581102+09:00"
+          "observed_at": "2026-11-13T10:16:15.853134+09:00"
         },
         {
           "query": "미납정지 선불폰",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:55:56.264474+09:00"
+          "observed_at": "2026-11-13T10:16:28.999605+09:00"
         },
         {
           "query": "휴대폰 정지 선불폰",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:08.803419+09:00"
+          "observed_at": "2026-11-13T10:16:41.806077+09:00"
         }
       ],
       "matches": {
@@ -6641,11 +6595,11 @@
           },
           {
             "query": "미납정지 선불폰",
-            "rank": 6,
+            "rank": 5,
             "blog_id": "ntelecom59",
             "post_id": "224474217132",
             "post_url": "https://blog.naver.com/ntelecom59/224474217132",
-            "feed_rank": 11
+            "feed_rank": 8
           }
         ],
         "수진": []
@@ -6669,8 +6623,8 @@
       "decision_note": "등록된 모든 변형 검색어가 최신 VERIFIED"
     },
     "편의점 선불유심": {
-      "status": "UNKNOWN",
-      "complete": false,
+      "status": "VERIFIED",
+      "complete": true,
       "queries": [
         "편의점 선불유심",
         "편의점 유심 개통",
@@ -6680,17 +6634,17 @@
         {
           "query": "편의점 선불유심",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:21.728051+09:00"
+          "observed_at": "2026-11-13T10:16:55.314567+09:00"
         },
         {
           "query": "편의점 유심 개통",
-          "status": "PARTIAL",
-          "observed_at": "2026-11-13T09:56:34.496419+09:00"
+          "status": "VERIFIED",
+          "observed_at": "2026-11-13T10:17:08.505637+09:00"
         },
         {
           "query": "선불유심 구매",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:47.029804+09:00"
+          "observed_at": "2026-11-13T10:17:21.647473+09:00"
         }
       ],
       "matches": {
@@ -6704,12 +6658,20 @@
             "feed_rank": 5
           },
           {
-            "query": "선불유심 구매",
-            "rank": 5,
+            "query": "편의점 유심 개통",
+            "rank": 4,
             "blog_id": "lifeon5g_",
             "post_id": "224474319422",
             "post_url": "https://blog.naver.com/lifeon5g_/224474319422",
-            "feed_rank": 7
+            "feed_rank": 9
+          },
+          {
+            "query": "선불유심 구매",
+            "rank": 7,
+            "blog_id": "lifeon5g_",
+            "post_id": "224474319422",
+            "post_url": "https://blog.naver.com/lifeon5g_/224474319422",
+            "feed_rank": 12
           }
         ],
         "영은": [],
@@ -6717,16 +6679,22 @@
         "수진": []
       },
       "owner_states": {
-        "건호": "UNKNOWN",
-        "영은": "UNKNOWN",
-        "하루": "UNKNOWN",
-        "수진": "UNKNOWN"
+        "건호": "EXPOSED",
+        "영은": "NOT_FOUND",
+        "하루": "NOT_FOUND",
+        "수진": "NOT_FOUND"
       },
-      "exposed": [],
-      "missing": [],
+      "exposed": [
+        "건호"
+      ],
+      "missing": [
+        "영은",
+        "하루",
+        "수진"
+      ],
       "dropped": [],
       "exits": [],
-      "decision_note": "변형 검색어 중 미검증 항목이 있어 미노출 확정 금지"
+      "decision_note": "등록된 모든 변형 검색어가 최신 VERIFIED"
     },
     "앤텔레콤 396": {
       "status": "VERIFIED",
@@ -6740,17 +6708,17 @@
         {
           "query": "앤텔레콤 396",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:56:59.945611+09:00"
+          "observed_at": "2026-11-13T10:17:34.986912+09:00"
         },
         {
           "query": "KT 396 요금제",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:57:12.250087+09:00"
+          "observed_at": "2026-11-13T10:17:47.628514+09:00"
         },
         {
           "query": "선불폰 396 요금제",
           "status": "VERIFIED",
-          "observed_at": "2026-11-13T09:57:24.933904+09:00"
+          "observed_at": "2026-11-13T10:18:00.631133+09:00"
         }
       ],
       "matches": {
@@ -6807,14 +6775,6 @@
             "feed_rank": 4
           },
           {
-            "query": "KT 396 요금제",
-            "rank": 9,
-            "blog_id": "ntelecom59",
-            "post_id": "224470665186",
-            "post_url": "https://blog.naver.com/ntelecom59/224470665186",
-            "feed_rank": 11
-          },
-          {
             "query": "선불폰 396 요금제",
             "rank": 8,
             "blog_id": "ntelecom59",
@@ -6848,8 +6808,19 @@
       "missing": [
         "영은"
       ],
-      "dropped": [],
-      "exits": [],
+      "dropped": [
+        "하루"
+      ],
+      "exits": [
+        {
+          "owner": "하루",
+          "query": "KT 396 요금제",
+          "previous_ranks": [
+            9
+          ],
+          "status": "OBSERVED_EXIT"
+        }
+      ],
       "decision_note": "등록된 모든 변형 검색어가 최신 VERIFIED"
     }
   },
@@ -6873,17 +6844,6 @@
         "다이소 유심",
         "다이소 선불유심",
         "다이소 유심 개통"
-      ],
-      "source": "observed_visible_naver_related_search",
-      "status": "PROPOSED",
-      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
-    },
-    {
-      "group": "KT바로유심",
-      "query": "KT 바로유심 개통",
-      "sources": [
-        "KT바로유심",
-        "바로유심"
       ],
       "source": "observed_visible_naver_related_search",
       "status": "PROPOSED",
@@ -7056,7 +7016,7 @@
     },
     {
       "group": "태블릿소유자회원번호",
-      "query": "태블릿 소유자 회원번호 2932491입력",
+      "query": "태블릿 소유자 회원번호2932491입력",
       "sources": [
         "태블릿소유자회원번호",
         "태블릿 소유자 회원번호"
@@ -7067,7 +7027,7 @@
     },
     {
       "group": "태블릿소유자회원번호",
-      "query": "태블릿 소유자 회원번호 입력",
+      "query": "태블릿 소유자 회원번호입력",
       "sources": [
         "태블릿소유자회원번호",
         "태블릿 소유자 회원번호"
@@ -7100,9 +7060,9 @@
     },
     {
       "group": "KT바로유심",
-      "query": "KT 바로유심 개통 후불",
+      "query": "KT 바로유심 개통",
       "sources": [
-        "KT바로유심 개통"
+        "바로유심"
       ],
       "source": "observed_visible_naver_related_search",
       "status": "PROPOSED",
@@ -7110,7 +7070,7 @@
     },
     {
       "group": "KT바로유심",
-      "query": "KT 바로유심 개통선불",
+      "query": "KT 바로유심 개통 후불",
       "sources": [
         "KT바로유심 개통"
       ],
@@ -7180,6 +7140,26 @@
     },
     {
       "group": "KT바로유심",
+      "query": "kt 바로유심 선불폰 개통",
+      "sources": [
+        "KT바로유심 개통"
+      ],
+      "source": "observed_visible_naver_related_search",
+      "status": "PROPOSED",
+      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
+    },
+    {
+      "group": "KT바로유심",
+      "query": "kt 바로유심 판매처",
+      "sources": [
+        "KT바로유심"
+      ],
+      "source": "observed_visible_naver_related_search",
+      "status": "PROPOSED",
+      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
+    },
+    {
+      "group": "KT바로유심",
       "query": "kt 바로유심 편의점 가격",
       "sources": [
         "KT바로유심"
@@ -7221,16 +7201,6 @@
     {
       "group": "KT바로유심",
       "query": "kt바로유심구매",
-      "sources": [
-        "KT바로유심"
-      ],
-      "source": "observed_visible_naver_related_search",
-      "status": "PROPOSED",
-      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
-    },
-    {
-      "group": "KT바로유심",
-      "query": "kt바로유심칩",
       "sources": [
         "KT바로유심"
       ],
@@ -7330,17 +7300,7 @@
     },
     {
       "group": "LG모두의 원칩",
-      "query": "LG 모두의 원칩 선불폰",
-      "sources": [
-        "LG모두의 원칩"
-      ],
-      "source": "observed_visible_naver_related_search",
-      "status": "PROPOSED",
-      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
-    },
-    {
-      "group": "LG모두의 원칩",
-      "query": "LG 모두의 원칩 편의점",
+      "query": "LG 모두의원칩 다이소",
       "sources": [
         "LG모두의 원칩"
       ],
@@ -7370,7 +7330,7 @@
     },
     {
       "group": "LG모두의 원칩",
-      "query": "lg 모두의 원칩 cu",
+      "query": "lg 모두의 원칩 셀프개통",
       "sources": [
         "LG모두의 원칩"
       ],
@@ -7380,7 +7340,7 @@
     },
     {
       "group": "LG모두의 원칩",
-      "query": "lg 모두의 원칩 셀프개통",
+      "query": "lg 모두의 원칩 편의점",
       "sources": [
         "LG모두의 원칩"
       ],
@@ -7430,7 +7390,7 @@
     },
     {
       "group": "LG모두의 원칩",
-      "query": "lg모두의 원칩 다이소",
+      "query": "lg모두의 원칩 편의점 CU",
       "sources": [
         "LG모두의 원칩"
       ],
@@ -7600,6 +7560,16 @@
     },
     {
       "group": "다이소 유심",
+      "query": "고고비 다이소 유심가입",
+      "sources": [
+        "다이소 유심"
+      ],
+      "source": "observed_visible_naver_related_search",
+      "status": "PROPOSED",
+      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
+    },
+    {
+      "group": "다이소 유심",
       "query": "다이소 고고비 유심",
       "sources": [
         "다이소 유심"
@@ -7630,7 +7600,7 @@
     },
     {
       "group": "다이소 유심",
-      "query": "다이소 로밍유심",
+      "query": "다이소 로밍 유심",
       "sources": [
         "다이소 유심"
       ],
@@ -7720,7 +7690,7 @@
     },
     {
       "group": "다이소 유심",
-      "query": "다이소 선불유심 이용법",
+      "query": "다이소 선불유심 파는곳",
       "sources": [
         "다이소 선불유심"
       ],
@@ -7740,9 +7710,9 @@
     },
     {
       "group": "다이소 유심",
-      "query": "다이소 유심 가격",
+      "query": "다이소 유심 개통 skt",
       "sources": [
-        "다이소 유심"
+        "다이소 유심 개통"
       ],
       "source": "observed_visible_naver_related_search",
       "status": "PROPOSED",
@@ -7780,6 +7750,16 @@
     },
     {
       "group": "다이소 유심",
+      "query": "다이소 유심 어댑터",
+      "sources": [
+        "다이소 유심"
+      ],
+      "source": "observed_visible_naver_related_search",
+      "status": "PROPOSED",
+      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
+    },
+    {
+      "group": "다이소 유심",
       "query": "다이소 유심 요금제",
       "sources": [
         "다이소 유심"
@@ -7800,7 +7780,7 @@
     },
     {
       "group": "다이소 유심",
-      "query": "다이소 해외유심",
+      "query": "다이소 해외 유심",
       "sources": [
         "다이소 유심"
       ],
@@ -7813,16 +7793,6 @@
       "query": "다이소선불유심데이터",
       "sources": [
         "다이소 선불유심"
-      ],
-      "source": "observed_visible_naver_related_search",
-      "status": "PROPOSED",
-      "note": "네이버 화면에서 발견한 검색어 후보. 운영자 승인 전까지 정기 검색에 포함하지 않음"
-    },
-    {
-      "group": "다이소 유심",
-      "query": "다이소유심 선불폰",
-      "sources": [
-        "다이소 유심"
       ],
       "source": "observed_visible_naver_related_search",
       "status": "PROPOSED",
@@ -7870,7 +7840,7 @@
     },
     {
       "group": "선불폰 개통",
-      "query": "skt 선불폰 셀프개통",
+      "query": "kt 바로유심 선불폰 셀프개통",
       "sources": [
         "선불폰 셀프개통"
       ],
@@ -7897,24 +7867,72 @@
         "team_number": 1,
         "keyword": "태블릿소유자회원번호",
         "people": [
-          "하루",
-          "수진"
+          "영은",
+          "하루"
         ],
         "titles": [
           {
-            "owner": "하루",
+            "owner": "영은",
             "intent": "질문 정리",
-            "title": "태블릿소유자회원번호 관련 자주 묻는 질문 모음 — 하루 관점",
+            "title": "태블릿소유자회원번호 관련 자주 묻는 질문 모음 — 영은 관점",
+            "source": "RULE_BASED_DRAFT",
+            "editable": true,
+            "blog_id": "esim99",
+            "blog_url": "https://blog.naver.com/esim99",
+            "blog_reason": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다."
+          },
+          {
+            "owner": "하루",
+            "intent": "입력 절차",
+            "title": "태블릿소유자회원번호 입력 위치와 확인 순서 정리 — 하루 관점",
             "source": "RULE_BASED_DRAFT",
             "editable": true,
             "blog_id": "ntelecom59",
             "blog_url": "https://blog.naver.com/ntelecom59",
             "blog_reason": "이 담당자가 등록한 블로그 ID는 하나이므로 해당 계정에서 발행합니다."
+          }
+        ],
+        "blog_ids": {
+          "영은": "esim99",
+          "하루": "ntelecom59"
+        },
+        "blog_reasons": {
+          "영은": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다.",
+          "하루": "이 담당자가 등록한 블로그 ID는 하나이므로 해당 계정에서 발행합니다."
+        },
+        "owner_reasons": {
+          "영은": "일부 검색어에서 블로그 카드 9번째로 관측돼 해당 검색 의도를 보강합니다.",
+          "하루": "관련 검색어 3개를 모두 확인했지만 블로그 카드 상위 10개에서 글을 찾지 못해 신규 노출을 우선합니다."
+        },
+        "owner_priorities": {
+          "영은": 2,
+          "하루": 0
+        },
+        "reason": "동일 핵심 키워드를 두 사람이 서로 다른 글과 각자 지정된 블로그에 발행",
+        "evidence_status": "VERIFIED"
+      },
+      {
+        "team_number": 2,
+        "keyword": "LG모두의 원칩",
+        "people": [
+          "건호",
+          "수진"
+        ],
+        "titles": [
+          {
+            "owner": "건호",
+            "intent": "초보 안내",
+            "title": "LG모두의 원칩 처음 준비하는 사람을 위한 단계별 안내 — 건호 관점",
+            "source": "RULE_BASED_DRAFT",
+            "editable": true,
+            "blog_id": "lifeon5g_",
+            "blog_url": "https://blog.naver.com/lifeon5g_",
+            "blog_reason": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다."
           },
           {
             "owner": "수진",
-            "intent": "입력 절차",
-            "title": "태블릿소유자회원번호 입력 위치와 확인 순서 정리 — 수진 관점",
+            "intent": "준비·순서",
+            "title": "LG모두의 원칩 준비물과 개통 순서를 한눈에 정리 — 수진 관점",
             "source": "RULE_BASED_DRAFT",
             "editable": true,
             "blog_id": "jjuny1253",
@@ -7923,68 +7941,20 @@
           }
         ],
         "blog_ids": {
-          "하루": "ntelecom59",
+          "건호": "lifeon5g_",
           "수진": "jjuny1253"
         },
         "blog_reasons": {
-          "하루": "이 담당자가 등록한 블로그 ID는 하나이므로 해당 계정에서 발행합니다.",
+          "건호": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다.",
           "수진": "이 담당자가 등록한 블로그 ID는 하나이므로 해당 계정에서 발행합니다."
         },
         "owner_reasons": {
-          "하루": "관련 검색어 3개를 모두 확인했지만 블로그 카드 상위 10개에서 글을 찾지 못해 신규 노출을 우선합니다.",
-          "수진": "관련 검색어에서 가장 좋은 관측 순번도 블로그 카드 8번째입니다. 8~10번째 노출을 보강할 글을 권합니다."
+          "건호": "관련 검색어에서 가장 좋은 관측 순번도 블로그 카드 9번째입니다. 8~10번째 노출을 보강할 글을 권합니다.",
+          "수진": "관련 검색어에서 가장 좋은 관측 순번도 블로그 카드 10번째입니다. 8~10번째 노출을 보강할 글을 권합니다."
         },
         "owner_priorities": {
-          "하루": 0,
+          "건호": 1,
           "수진": 1
-        },
-        "reason": "동일 핵심 키워드를 두 사람이 서로 다른 글과 각자 지정된 블로그에 발행",
-        "evidence_status": "VERIFIED"
-      },
-      {
-        "team_number": 2,
-        "keyword": "KT바로유심",
-        "people": [
-          "건호",
-          "영은"
-        ],
-        "titles": [
-          {
-            "owner": "건호",
-            "intent": "초보 안내",
-            "title": "KT바로유심 처음 준비할 때 알아둘 핵심 단계 — 건호 관점",
-            "source": "RULE_BASED_DRAFT",
-            "editable": true,
-            "blog_id": "carrotmobile_",
-            "blog_url": "https://blog.naver.com/carrotmobile_",
-            "blog_reason": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다."
-          },
-          {
-            "owner": "영은",
-            "intent": "준비·순서",
-            "title": "KT바로유심 개통 전 준비물과 진행 순서 정리 — 영은 관점",
-            "source": "RULE_BASED_DRAFT",
-            "editable": true,
-            "blog_id": "esim99_",
-            "blog_url": "https://blog.naver.com/esim99_",
-            "blog_reason": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다."
-          }
-        ],
-        "blog_ids": {
-          "건호": "carrotmobile_",
-          "영은": "esim99_"
-        },
-        "blog_reasons": {
-          "건호": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다.",
-          "영은": "같은 담당자의 다른 블로그는 관련 검색어에 나타났지만, 이 블로그는 상위 10개에서 보이지 않아 노출 보강 대상으로 선택했습니다."
-        },
-        "owner_reasons": {
-          "건호": "일부 검색어에서 블로그 카드 8번째로 관측돼 해당 검색 의도를 보강합니다.",
-          "영은": "관련 검색어에서 가장 좋은 관측 순번도 블로그 카드 10번째입니다. 8~10번째 노출을 보강할 글을 권합니다."
-        },
-        "owner_priorities": {
-          "건호": 2,
-          "영은": 1
         },
         "reason": "동일 핵심 키워드를 두 사람이 서로 다른 글과 각자 지정된 블로그에 발행",
         "evidence_status": "VERIFIED"
@@ -7996,7 +7966,7 @@
   },
   "errors": [],
   "evidence": {
-    "local_directory": "monitor-evidence/2026-11-13_095229",
+    "local_directory": "monitor-evidence/2026-11-13_101254",
     "contains_raw_html": false,
     "public_upload_default": false
   }
