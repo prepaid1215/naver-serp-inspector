@@ -40,8 +40,9 @@ try:
         def mock_dispatch(route):
             req = route.request
             if req.method == "GET":
+                authorized = "serp-test-session=ok" in req.headers.get("cookie", "")
                 route.fulfill(status=200, content_type="application/json",
-                              body='{"configured":true,"authenticated":false}')
+                              body=json.dumps({"configured": True, "authenticated": authorized}))
             elif req.method == "POST":
                 action = req.post_data_json.get("action")
                 if action == "login":
