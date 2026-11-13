@@ -115,6 +115,23 @@ try:
             body=json.dumps(fixture, ensure_ascii=False)))
         page.reload()
         expect(page.locator("#message")).to_contain_text("GitHub main 최신 검색 결과")
+        # Admin code persists only through a browser-managed password vault:
+        # unsupported browser or failed authentication never stores it.
+        expect(page.locator("#run-remember")).to_be_checked()
+        expect(page.locator("#run-load-saved")).to_be_visible()
+        assert page.locator("#run-search-secret").get_attribute("autocomplete") == "current-password"
+        page.evaluate("""() => {
+          window.__passwordSaved = null;
+          window.PasswordCredential = class {
+            constructor(options) { Object.assign(this, options); }
+          };
+          Object.defineProperty(navigator, 'credentials', {
+            configurable: true, value: {
+              store: async cred => { window.__passwordSaved = cred; },
+              get: async () => window.__passwordSaved
+            }
+          });
+        }""")
         # Admin-only workflow dispatch uses the API, never a GitHub token in JS.
         expect(page.locator("#run-search-button")).to_be_enabled()
         page.locator("#run-search-secret").fill("incorrect-code-abcdefghijklmnopqrstuvwxyz")
@@ -125,6 +142,21 @@ try:
         expect(page.locator("#run-search-message")).to_contain_text("실행 요청 접수 완료")
         assert dispatch_requests[-1] == "test-secret-abcdefghijklmnopqrstuvwxyz"
         expect(page.locator("#run-search-secret")).to_have_value("")
+        assert page.evaluate("() => window.__passwordSaved?.id") == "59man-serp-admin"
+        page.locator("#run-load-saved").click()
+        expect(page.locator("#run-search-secret")).to_have_value("test-secret-abcdefghijklmnopqrstuvwxyz")
+        # Cancel browser save on shared workstations.
+        page.locator("#run-remember").uncheck()
+        page.locator("#run-search-button").click()
+        expect(page.locator("#run-search-message")).to_contain_text("실행 요청 접수 완료")
+        expect(page.locator("#run-search-secret")).to_have_value("")
+        # Bad input is never persisted.
+        page.evaluate("() => { window.__passwordSaved = null; }")
+        page.locator("#run-remember").check()
+        page.locator("#run-search-secret").fill("incorrect-code-abcdefghijklmnopqrstuvwxyz")
+        page.locator("#run-search-button").click()
+        expect(page.locator("#run-search-message")).to_contain_text("올바르지 않습니다")
+        assert page.evaluate("() => window.__passwordSaved") is None
 
         # A custom keyword form is always visible at the very top.
         expect(page.locator("#keyword-request-form")).to_be_visible()

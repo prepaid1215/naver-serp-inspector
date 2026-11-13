@@ -44,9 +44,13 @@
     </div>
     <form id="run-search-form" class="serp-run-form">
       <label for="run-search-secret">관리자 실행 코드</label>
-      <input id="run-search-secret" type="password" autocomplete="off" spellcheck="false" placeholder="Vercel에서 설정한 관리자 코드" minlength="24" required/>
+      <input id="run-operator-name" class="visually-hidden" type="text" name="username" autocomplete="username" value="59man-serp-admin" readonly tabindex="-1"/>
+      <input id="run-search-secret" type="password" name="password" autocomplete="current-password" spellcheck="false" placeholder="Vercel에서 설정한 관리자 코드" minlength="24" required/>
       <button class="primary" id="run-search-button" type="submit" disabled>새 검색 실행</button>
+      <button id="run-load-saved" type="button">저장된 코드 불러오기</button>
     </form>
+    <label class="serp-remember"><input id="run-remember" type="checkbox" checked/> 검색 실행이 승인되면 Chrome 비밀번호 관리자에 저장 요청</label>
+    <p class="muted serp-sync-explain">다른 PC에서도 사용하려면 두 컴퓨터의 Chrome에서 같은 Google 계정으로 비밀번호 동기화를 켜야 합니다. 공용 PC에서는 체크를 해제하세요. 저장된 코드는 Chrome 비밀번호 관리자에서 삭제할 수 있습니다.</p>
     <p id="run-search-message" class="muted" role="status" aria-live="polite">서버 연결 상태 확인 중…</p>
     <a id="run-search-vercel-link" class="button" href="https://59man-serp-v1-download.vercel.app/" hidden>Vercel 관제판에서 검색 실행</a>
   </section>

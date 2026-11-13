@@ -517,10 +517,55 @@
     $('run-search-message').textContent = message;
   }
 
+  // Do not put an administrator secret in localStorage, cookies, source code,
+  // or a publicly accessible server response. Chrome's password manager owns
+  // persistence and (if opted-in by the browser user) device syncing.
+  const SERP_OPERATOR_CREDENTIAL_ID = '59man-serp-admin';
+
+  async function saveInPasswordManager(password) {
+    if (!navigator.credentials?.store || typeof PasswordCredential === 'undefined') {
+      return '이 브라우저는 자동 저장을 지원하지 않습니다. Chrome 비밀번호 관리자에 직접 추가할 수 있습니다.';
+    }
+    try {
+      const credential = new PasswordCredential({
+        id: SERP_OPERATOR_CREDENTIAL_ID,
+        password,
+        name: '59만모바일 SERP 관제판 관리자',
+      });
+      await navigator.credentials.store(credential);
+      return '브라우저 비밀번호 관리자에 저장을 요청했습니다. Chrome의 저장 안내와 동기화 설정을 확인하세요.';
+    } catch (_) {
+      return '브라우저 저장이 취소되거나 지원되지 않습니다. 필요하면 비밀번호 관리자에서 직접 저장하세요.';
+    }
+  }
+
+  async function loadFromPasswordManager() {
+    if (!navigator.credentials?.get) {
+      runMessage('이 브라우저에서는 저장된 코드 자동 불러오기를 지원하지 않습니다.');
+      return;
+    }
+    try {
+      const credential = await navigator.credentials.get({
+        password: true,
+        mediation: 'optional',
+      });
+      if (!credential?.password || credential.id !== SERP_OPERATOR_CREDENTIAL_ID) {
+        runMessage('저장된 관리자 코드가 없습니다. 먼저 한 번 입력하고 저장하거나 Chrome 비밀번호 관리자 동기화를 확인하세요.');
+        return;
+      }
+      $('run-search-secret').value = credential.password;
+      runMessage('저장된 관리자 코드를 불러왔습니다. 새 검색 실행 버튼을 눌러주세요.');
+    } catch (_) {
+      runMessage('브라우저가 코드 불러오기를 허용하지 않았습니다. Chrome 자동완성 기능을 확인하세요.');
+    }
+  }
+
   async function configureRunControl() {
     // GitHub Pages cannot host a Vercel serverless function.
     if (window.location.hostname.endsWith('.github.io')) {
       $('run-search-form').hidden = true;
+      $('run-remember').closest('label').hidden = true;
+      $('run-load-saved').hidden = true;
       $('run-search-vercel-link').hidden = false;
       runMessage('보안이 필요한 실행 기능은 Vercel 관제판에서 사용하세요.');
       return;
@@ -543,7 +588,8 @@
     event.preventDefault();
     const secretInput = $('run-search-secret');
     const secret = secretInput.value;
-    // Do not retain the operator code in storage or the page after use.
+    const wantsBrowserSave = $('run-remember').checked;
+    // Keep the code only in this invocation until the server validates it.
     secretInput.value = '';
     const button = $('run-search-button');
     button.disabled = true;
@@ -559,8 +605,13 @@
         cache: 'no-store',
       });
       const result = await response.json();
-      if (response.status === 202 && result.accepted) {
-        runMessage('실행 요청 접수 완료. GitHub Actions 수집이 끝나면 발행 추천이 자동으로 바뀝니다.');
+      if ((response.status === 202 && result.accepted) ||
+          (response.status === 409 && result.running)) {
+        const savedMessage = wantsBrowserSave ? await saveInPasswordManager(secret) : '';
+        const status = response.status === 202
+          ? '실행 요청 접수 완료. GitHub Actions 수집 후 발행 추천이 자동으로 바뀝니다.'
+          : '이미 네이버 검색 작업이 진행 중입니다.';
+        runMessage(savedMessage ? status + ' ' + savedMessage : status);
       } else {
         runMessage(result.error || '검색 실행 요청을 처리하지 못했습니다.');
       }
@@ -587,6 +638,7 @@
   });
   $('refresh').addEventListener('click', () => void load());
   $('run-search-form').addEventListener('submit', requestNewSerpSearch);
+  $('run-load-saved').addEventListener('click', () => void loadFromPasswordManager());
   void configureRunControl();
   setInterval(autoCheckIfVisible, AUTO_CHECK_MS);
   document.addEventListener('visibilitychange', autoCheckIfVisible);

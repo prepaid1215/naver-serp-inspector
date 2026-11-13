@@ -220,3 +220,10 @@ main { width: min(950px, 100%); }
   .serp-run-form { flex-direction: column; align-items: stretch; }
   .serp-run-form input, .serp-run-form button { width: 100%; }
 }
+
+/* Cross-device convenience uses a browser-managed synchronized password vault.
+   No administrator password is stored in localStorage or site cookies. */
+.serp-remember { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; font-size: 12px; color: #273f63; }
+.serp-remember input { margin-top: 2px; width: 16px; height: 16px; flex: 0 0 auto; }
+.serp-sync-explain { margin: 5px 0 0; line-height: 1.6; }
+.serp-run-control button#run-load-saved { min-height: 42px; }
