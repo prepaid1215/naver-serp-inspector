@@ -36,6 +36,22 @@ try:
         page = context.new_page()
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
+        dispatch_requests = []
+        def mock_dispatch(route):
+            req = route.request
+            if req.method == "GET":
+                route.fulfill(status=200, content_type="application/json",
+                              body='{"configured":true}')
+            elif req.method == "POST":
+                dispatch_requests.append(req.headers.get("x-serp-run-secret", ""))
+                if dispatch_requests[-1] == "test-secret-abcdefghijklmnopqrstuvwxyz":
+                    route.fulfill(status=202, content_type="application/json",
+                                  body='{"accepted":true}')
+                else:
+                    route.fulfill(status=401, content_type="application/json",
+                                  body='{"error":"관리자 실행 코드가 올바르지 않습니다."}')
+        page.route("**/api/serp-run", mock_dispatch)
+
         latest = json.loads((ROOT / "web" / "ops-data" / "latest.json").read_text(encoding="utf-8"))
         captured = datetime.fromisoformat(latest["captured_at_kst"])
         verified_total = sum(
@@ -99,6 +115,17 @@ try:
             body=json.dumps(fixture, ensure_ascii=False)))
         page.reload()
         expect(page.locator("#message")).to_contain_text("GitHub main 최신 검색 결과")
+        # Admin-only workflow dispatch uses the API, never a GitHub token in JS.
+        expect(page.locator("#run-search-button")).to_be_enabled()
+        page.locator("#run-search-secret").fill("incorrect-code-abcdefghijklmnopqrstuvwxyz")
+        page.locator("#run-search-button").click()
+        expect(page.locator("#run-search-message")).to_contain_text("올바르지 않습니다")
+        page.locator("#run-search-secret").fill("test-secret-abcdefghijklmnopqrstuvwxyz")
+        page.locator("#run-search-button").click()
+        expect(page.locator("#run-search-message")).to_contain_text("실행 요청 접수 완료")
+        assert dispatch_requests[-1] == "test-secret-abcdefghijklmnopqrstuvwxyz"
+        expect(page.locator("#run-search-secret")).to_have_value("")
+
         # A custom keyword form is always visible at the very top.
         expect(page.locator("#keyword-request-form")).to_be_visible()
         page.locator("#keyword-request-input").fill("새 선불폰 검색어")

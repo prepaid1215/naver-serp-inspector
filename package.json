@@ -5,11 +5,12 @@
   "type": "module",
   "description": "Offline Naver SERP inspector (GitHub Pages + Windows + opt-in Chrome/Edge extension capture)",
   "scripts": {
-    "check": "node --check web/engine.js && node --check web/zip.js && node --check web/app.js && node --check web/desktop-ui.js && node --check web/keyword-ops.js && node --check extension/popup.js && node --check extension/capture-store.js && node --check extension/capture-meta.js",
+    "check": "node --check web/engine.js && node --check web/zip.js && node --check web/app.js && node --check web/desktop-ui.js && node --check web/keyword-ops.js && node --check extension/popup.js && node --check extension/capture-store.js && node --check extension/capture-meta.js && node --check api/serp-run.js",
     "test:zip": "node tests/zip_reader.mjs",
     "test:blocks": "node tests/blocks.mjs",
-    "test": "npm run check && npm run test:zip && npm run test:blocks && npm run test:extension",
-    "test:extension": "node tests/extension-meta.mjs"
+    "test": "npm run check && npm run test:zip && npm run test:blocks && npm run test:extension && npm run test:serp-run",
+    "test:extension": "node tests/extension-meta.mjs",
+    "test:serp-run": "node --test tests/api_serp_run.test.mjs"
   },
   "license": "MIT"
 }

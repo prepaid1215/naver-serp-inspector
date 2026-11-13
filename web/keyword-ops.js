@@ -512,6 +512,65 @@
     } catch (error) { message.textContent = error.message; }
   }
 
+
+  function runMessage(message) {
+    $('run-search-message').textContent = message;
+  }
+
+  async function configureRunControl() {
+    // GitHub Pages cannot host a Vercel serverless function.
+    if (window.location.hostname.endsWith('.github.io')) {
+      $('run-search-form').hidden = true;
+      $('run-search-vercel-link').hidden = false;
+      runMessage('보안이 필요한 실행 기능은 Vercel 관제판에서 사용하세요.');
+      return;
+    }
+    try {
+      const response = await fetch('/api/serp-run', {cache: 'no-store'});
+      if (!response.ok) throw new Error('서버 응답 오류');
+      const data = await response.json();
+      $('run-search-button').disabled = !data.configured;
+      runMessage(data.configured
+        ? '관리자 실행 코드를 입력하면 GitHub Actions 검색 수집을 직접 시작합니다.'
+        : '관리자 설정이 필요합니다. Vercel에 SERP_GITHUB_TOKEN, SERP_RUN_SECRET을 등록하세요.');
+    } catch (_) {
+      $('run-search-button').disabled = true;
+      runMessage('검색 실행 서버를 확인할 수 없습니다. Vercel에서 연결 상태를 확인하세요.');
+    }
+  }
+
+  async function requestNewSerpSearch(event) {
+    event.preventDefault();
+    const secretInput = $('run-search-secret');
+    const secret = secretInput.value;
+    // Do not retain the operator code in storage or the page after use.
+    secretInput.value = '';
+    const button = $('run-search-button');
+    button.disabled = true;
+    runMessage('GitHub Actions 실행 요청 중…');
+    try {
+      const response = await fetch('/api/serp-run', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-SERP-Run-Secret': secret,
+        },
+        body: '{}',
+        cache: 'no-store',
+      });
+      const result = await response.json();
+      if (response.status === 202 && result.accepted) {
+        runMessage('실행 요청 접수 완료. GitHub Actions 수집이 끝나면 발행 추천이 자동으로 바뀝니다.');
+      } else {
+        runMessage(result.error || '검색 실행 요청을 처리하지 못했습니다.');
+      }
+    } catch (_) {
+      runMessage('검색 실행 서버에 연결하지 못했습니다. GitHub 실행 기록을 확인하세요.');
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   $('keyword-request-form').addEventListener('submit', event => {
     event.preventDefault();
     openKeywordRequest($('keyword-request-group').value, $('keyword-request-input').value);
@@ -527,6 +586,8 @@
     $('keyword-request-message').textContent = '네이버 검색 화면을 열었습니다. 자동 추적은 별도의 승인 요청이 필요합니다.';
   });
   $('refresh').addEventListener('click', () => void load());
+  $('run-search-form').addEventListener('submit', requestNewSerpSearch);
+  void configureRunControl();
   setInterval(autoCheckIfVisible, AUTO_CHECK_MS);
   document.addEventListener('visibilitychange', autoCheckIfVisible);
   window.addEventListener('focus', autoCheckIfVisible);
