@@ -114,3 +114,60 @@ test('upstream API failure is handled without leaking token', async () => {
     assert.equal(body.includes('upstream secret'), false);
   } finally { restore(); }
 });
+
+test('one-time login issues HttpOnly Secure session; cookie works across visits without resending code', async () => {
+  try {
+    configure();
+    globalThis.fetch = async (url, options) => options.method === 'GET'
+      ? Response.json({workflow_runs: []})
+      : new Response(null, {status: 204});
+    const login = await api.fetch(new Request(ADDRESS, {
+      method: 'POST', headers: {
+        Origin: new URL(ADDRESS).origin, 'Content-Type': 'application/json',
+        'X-SERP-Run-Secret': CODE,
+      }, body: '{"action":"login"}',
+    }));
+    assert.equal(login.status, 200);
+    assert.equal((await login.json()).authenticated, true);
+    const cookie = login.headers.get('set-cookie');
+    assert.match(cookie, /^__Host-serp_session=v1\./);
+    assert.match(cookie, /HttpOnly/);
+    assert.match(cookie, /Secure/);
+    assert.match(cookie, /SameSite=Strict/);
+    assert.match(cookie, /Max-Age=2592000/);
+    const cookieValue = cookie.split(';')[0];
+
+    const status = await api.fetch(new Request(ADDRESS, {headers: {Cookie: cookieValue}}));
+    assert.equal((await status.json()).authenticated, true);
+    const execute = await api.fetch(new Request(ADDRESS, {method: 'POST', headers: {
+      Origin: new URL(ADDRESS).origin, 'Content-Type': 'application/json',
+      Cookie: cookieValue,
+    }, body: '{"action":"dispatch"}'}));
+    assert.equal(execute.status, 202);
+    assert.equal((await execute.json()).accepted, true);
+    const logout = await api.fetch(new Request(ADDRESS, {method: 'POST', headers: {
+      Origin: new URL(ADDRESS).origin, 'Content-Type': 'application/json',
+      Cookie: cookieValue,
+    }, body: '{"action":"logout"}'}));
+    assert.equal(logout.status, 200);
+    assert.match(logout.headers.get('set-cookie'), /Max-Age=0/);
+  } finally { restore(); }
+});
+
+test('modified or expired session cookie is rejected', async () => {
+  try {
+    configure();
+    const login = await api.fetch(new Request(ADDRESS, {method: 'POST', headers: {
+      Origin: new URL(ADDRESS).origin, 'Content-Type': 'application/json',
+      'X-SERP-Run-Secret': CODE,
+    }, body: '{"action":"login"}'}));
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const modified = cookie.slice(0,-1) + (cookie.slice(-1)==='a'?'b':'a');
+    const res = await api.fetch(new Request(ADDRESS, {method: 'POST', headers: {
+      Origin: new URL(ADDRESS).origin, 'Content-Type': 'application/json',
+      Cookie: modified,
+    }, body: '{"action":"dispatch"}'}));
+    assert.equal(res.status, 401);
+    assert.equal((await (await api.fetch(new Request(ADDRESS, {headers: {Cookie: modified}}))).json()).authenticated, false);
+  } finally { restore(); }
+});

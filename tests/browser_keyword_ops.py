@@ -41,15 +41,30 @@ try:
             req = route.request
             if req.method == "GET":
                 route.fulfill(status=200, content_type="application/json",
-                              body='{"configured":true}')
+                              body='{"configured":true,"authenticated":false}')
             elif req.method == "POST":
-                dispatch_requests.append(req.headers.get("x-serp-run-secret", ""))
-                if dispatch_requests[-1] == "test-secret-abcdefghijklmnopqrstuvwxyz":
-                    route.fulfill(status=202, content_type="application/json",
-                                  body='{"accepted":true}')
-                else:
-                    route.fulfill(status=401, content_type="application/json",
-                                  body='{"error":"관리자 실행 코드가 올바르지 않습니다."}')
+                action = req.post_data_json.get("action")
+                if action == "login":
+                    secret = req.headers.get("x-serp-run-secret", "")
+                    if secret == "test-secret-abcdefghijklmnopqrstuvwxyz":
+                        route.fulfill(status=200, content_type="application/json",
+                                      headers={"Set-Cookie": "serp-test-session=ok; Path=/; SameSite=Lax"},
+                                      body='{"authenticated":true}')
+                    else:
+                        route.fulfill(status=401, content_type="application/json",
+                                      body='{"error":"관리자 실행 코드가 올바르지 않습니다."}')
+                elif action == "dispatch":
+                    dispatch_requests.append(req.headers.get("x-serp-run-secret", ""))
+                    if "serp-test-session=ok" in req.headers.get("cookie", ""):
+                        route.fulfill(status=202, content_type="application/json",
+                                      body='{"accepted":true}')
+                    else:
+                        route.fulfill(status=401, content_type="application/json",
+                                      body='{"error":"로그인 기간 만료"}')
+                elif action == "logout":
+                    route.fulfill(status=200, content_type="application/json",
+                                  headers={"Set-Cookie": "serp-test-session=; Path=/; Max-Age=0"},
+                                  body='{"authenticated":false}')
         page.route("**/api/serp-run", mock_dispatch)
 
         latest = json.loads((ROOT / "web" / "ops-data" / "latest.json").read_text(encoding="utf-8"))
@@ -115,16 +130,29 @@ try:
             body=json.dumps(fixture, ensure_ascii=False)))
         page.reload()
         expect(page.locator("#message")).to_contain_text("GitHub main 최신 검색 결과")
-        # Admin-only workflow dispatch uses the API, never a GitHub token in JS.
+        # The first successful login issues a browser-owned cookie.
+        # Repeated Actions dispatch must not include the administrator secret.
         expect(page.locator("#run-search-button")).to_be_enabled()
+        expect(page.locator("#run-search-button")).to_have_text("이 컴퓨터에 로그인")
         page.locator("#run-search-secret").fill("incorrect-code-abcdefghijklmnopqrstuvwxyz")
         page.locator("#run-search-button").click()
         expect(page.locator("#run-search-message")).to_contain_text("올바르지 않습니다")
         page.locator("#run-search-secret").fill("test-secret-abcdefghijklmnopqrstuvwxyz")
         page.locator("#run-search-button").click()
+        expect(page.locator("#run-search-message")).to_contain_text("로그인이 저장됐습니다")
+        expect(page.locator("#run-search-button")).to_have_text("새 검색 실행")
+        expect(page.locator("#run-search-secret")).to_be_hidden()
+        expect(page.locator("#run-logout")).to_be_visible()
+        page.locator("#run-search-button").click()
         expect(page.locator("#run-search-message")).to_contain_text("실행 요청 접수 완료")
-        assert dispatch_requests[-1] == "test-secret-abcdefghijklmnopqrstuvwxyz"
+        assert dispatch_requests[-1] == ""
         expect(page.locator("#run-search-secret")).to_have_value("")
+        # A reload sees the server cookie and can dispatch without input.
+        page.reload()
+        expect(page.locator("#run-search-button")).to_be_enabled()
+        page.locator("#run-logout").click()
+        expect(page.locator("#run-search-message")).to_contain_text("로그아웃했습니다")
+        expect(page.locator("#run-search-button")).to_have_text("이 컴퓨터에 로그인")
 
         # A custom keyword form is always visible at the very top.
         expect(page.locator("#keyword-request-form")).to_be_visible()
